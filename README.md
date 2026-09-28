@@ -48,3 +48,5 @@ uv run python -c "from django.core.management.utils import get_random_secret_key
 ```
 
 Lokaal verandert er niets: zonder deze variabelen draait alles met SQLite en `DEBUG` aan.
+
+Op een eigen server naast andere sites: zie [`deploy/README.md`](deploy/README.md).
