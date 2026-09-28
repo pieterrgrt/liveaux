@@ -1,0 +1,395 @@
+/* liveaux — gig-poster look: dark stage, acid-yellow accent, condensed headlines. */
+
+:root {
+  --bg: #0d0d0d;
+  --surface: #171717;
+  --line: #2a2a2a;
+  --text: #f2f2f2;
+  --muted: #8a8a8a;
+  --accent: #d4ff3a;
+  --accent-ink: #0d0d0d;
+  --display: "Anton", "Impact", sans-serif;
+  --body: "Inter", system-ui, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+}
+
+main,
+.site-header,
+.site-footer {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+/* Header */
+
+.site-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--line);
+}
+
+.wordmark {
+  font-family: var(--display);
+  font-size: 2rem;
+  text-decoration: none;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.wordmark span {
+  color: var(--accent);
+}
+
+.tagline {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+/* Hero */
+
+.hero {
+  padding: 64px 0 40px;
+}
+
+.hero h1 {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(3rem, 12vw, 8rem);
+  line-height: 0.92;
+  text-transform: uppercase;
+}
+
+.hero em {
+  font-style: normal;
+  color: var(--accent);
+}
+
+.hero-count {
+  margin: 24px 0 0;
+  color: var(--muted);
+}
+
+/* District filter */
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 48px;
+}
+
+.chip {
+  padding: 6px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.chip:hover {
+  border-color: var(--accent);
+}
+
+.chip.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 700;
+}
+
+/* Month sections */
+
+.month {
+  margin-bottom: 48px;
+}
+
+.month-heading {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  margin: 0;
+  padding: 12px 0;
+  background: var(--bg);
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  border-bottom: 2px solid var(--accent);
+}
+
+/* Event rows */
+
+.event-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.event-row {
+  display: grid;
+  grid-template-columns: 64px 1fr auto auto;
+  align-items: center;
+  gap: 20px;
+  padding: 18px 8px;
+  border-bottom: 1px solid var(--line);
+  text-decoration: none;
+  transition: background 0.15s, padding 0.15s;
+}
+
+.event-row:hover {
+  background: var(--surface);
+  padding-left: 16px;
+}
+
+.date-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+}
+
+.day {
+  font-family: var(--display);
+  font-size: 2.25rem;
+}
+
+.weekday {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.event-info h3 {
+  margin: 0 0 4px;
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.event-info p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.price {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.arrow {
+  color: var(--muted);
+  font-size: 1.25rem;
+  transition: transform 0.15s, color 0.15s;
+}
+
+.event-row:hover .arrow {
+  color: var(--accent);
+  transform: translateX(4px);
+}
+
+.empty {
+  padding: 24px 0;
+  color: var(--muted);
+}
+
+/* Detail pages */
+
+.back {
+  display: inline-block;
+  margin: 32px 0;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.875rem;
+}
+
+.back:hover {
+  color: var(--accent);
+}
+
+.event-detail {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 40px;
+  margin-bottom: 64px;
+}
+
+.poster {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 3 / 4;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-family: var(--display);
+  text-transform: uppercase;
+  line-height: 0.9;
+}
+
+.poster-day {
+  font-size: 6rem;
+}
+
+.poster-month {
+  font-size: 2.5rem;
+}
+
+.event-body h1,
+.venue-header h1 {
+  margin: 0 0 24px;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(2.5rem, 7vw, 4.5rem);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.facts {
+  margin: 0 0 24px;
+}
+
+.facts div {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 16px;
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+}
+
+.facts dt {
+  color: var(--muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding-top: 3px;
+}
+
+.facts dd {
+  margin: 0;
+}
+
+.facts a {
+  text-decoration-color: var(--accent);
+  text-underline-offset: 3px;
+}
+
+.button {
+  display: inline-block;
+  padding: 14px 28px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 700;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  transition: transform 0.15s;
+}
+
+.button:hover {
+  transform: translateY(-2px);
+}
+
+.button-ghost {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+}
+
+.venue-header {
+  margin-bottom: 48px;
+}
+
+.venue-header h1 {
+  margin-bottom: 8px;
+}
+
+.venue-header .muted {
+  margin: 0 0 24px;
+}
+
+/* Footer */
+
+.site-footer {
+  padding-top: 32px;
+  padding-bottom: 48px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+/* Phones */
+
+@media (max-width: 600px) {
+  .tagline {
+    display: none;
+  }
+
+  .hero {
+    padding: 40px 0 32px;
+  }
+
+  .event-row {
+    grid-template-columns: 48px 1fr auto;
+    gap: 14px;
+  }
+
+  .arrow {
+    display: none;
+  }
+
+  .day {
+    font-size: 1.75rem;
+  }
+
+  .event-detail {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .poster {
+    aspect-ratio: auto;
+    flex-direction: row;
+    gap: 16px;
+    padding: 24px;
+  }
+
+  .poster-day {
+    font-size: 4rem;
+  }
+}
