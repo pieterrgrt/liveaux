@@ -18,7 +18,7 @@
   </div>
 
   <div class="event-body">
-    <a class="tag" href="{% url 'events:event_list' %}?category={{ event.category.slug }}">{{ event.category.name }}</a>
+    <a class="tag tag-{{ event.category.slug }}" href="{% url 'events:event_list' %}?category={{ event.category.slug }}">{{ event.category.name }}</a>
     <h1>{{ event.title }}</h1>
     <dl class="facts">
       {% if event.is_multi_day %}

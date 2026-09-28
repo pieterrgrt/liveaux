@@ -5,7 +5,7 @@
 {% block content %}
 <section class="hero">
   <p class="eyebrow">{{ today|date:"j M" }} – {{ last_day|date:"j M" }}</p>
-  <h1>This week<br>in <em>{{ city.name }}.</em></h1>
+  <h1>This week in <em>{{ city.name }}</em></h1>
   <p class="hero-count">{{ count }} event{{ count|pluralize }}{% if current_category %} · {{ current_category.name|lower }}{% endif %}</p>
 </section>
 

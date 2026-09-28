@@ -5,7 +5,7 @@
       <span class="weekday">{{ entry.event.starts_at|date:"M" }}</span>
     </div>
     <div class="event-info">
-      <span class="tag">{{ entry.event.category.name }}</span>
+      <span class="tag tag-{{ entry.event.category.slug }}">{{ entry.event.category.name }}</span>
       <h3>{{ entry.event.title }}</h3>
       <p>{{ entry.event.venue.name }} · {{ entry.event.venue.city }}</p>
       {% if entry.note %}<p class="log-note">“{{ entry.note }}”</p>{% endif %}

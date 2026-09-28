@@ -10,9 +10,9 @@
   {% if is_own %}
     <p class="privacy-note">
       {% if user.log_is_public %}
-        🔓 Your log is public: <a href="{% url 'logbook:public' user.pk %}">{{ request.scheme }}://{{ request.get_host }}{% url 'logbook:public' user.pk %}</a>.
+        Your log is public: <a href="{% url 'logbook:public' user.pk %}">{{ request.scheme }}://{{ request.get_host }}{% url 'logbook:public' user.pk %}</a>.
       {% else %}
-        🔒 Only you can see this.
+        Only you can see this.
       {% endif %}
       <a href="{% url 'accounts:settings' %}">Change</a>
     </p>

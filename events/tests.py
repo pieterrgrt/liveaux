@@ -201,7 +201,7 @@ class CityWeekTests(TestCase):
 
     def test_week_shows_only_this_city_and_week(self):
         response = self.client.get(reverse("events:city_week", args=["berlin"]))
-        self.assertContains(response, "This week<br>in <em>Berlin.</em>", html=False)
+        self.assertContains(response, "This week in <em>Berlin</em>", html=False)
         self.assertContains(response, "Punk Night")
         self.assertNotContains(response, "Next Month")
         self.assertNotContains(response, "Yesterday")
