@@ -1,0 +1,16 @@
+<li class="log-entry">
+  <a class="event-row" href="{{ entry.event.get_absolute_url }}">
+    <div class="date-block">
+      <span class="day">{{ entry.event.starts_at|date:"d" }}</span>
+      <span class="weekday">{{ entry.event.starts_at|date:"M" }}</span>
+    </div>
+    <div class="event-info">
+      <h3>{{ entry.event.title }}</h3>
+      <p>{{ entry.event.venue.name }} · {{ entry.event.venue.city }}</p>
+      {% if entry.note %}<p class="log-note">“{{ entry.note }}”</p>{% endif %}
+    </div>
+    <div class="rating">{% if entry.rating %}{{ entry.rating }}<span>/10</span>{% endif %}</div>
+    <span class="arrow" aria-hidden="true">→</span>
+  </a>
+  {% if is_own %}<a class="link-button log-edit" href="{{ entry.get_edit_url }}">Edit</a>{% endif %}
+</li>

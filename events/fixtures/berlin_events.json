@@ -1,12 +1,20 @@
 [
   {
+    "model": "events.city",
+    "pk": 1,
+    "fields": {
+      "name": "Berlin",
+      "slug": "berlin"
+    }
+  },
+  {
     "model": "events.venue",
     "pk": 1,
     "fields": {
       "name": "SO36",
       "address": "Oranienstraße 190",
       "district": "Kreuzberg",
-      "city": "Berlin",
+      "city": 1,
       "website": "https://www.so36.com"
     }
   },
@@ -17,7 +25,7 @@
       "name": "Lido",
       "address": "Cuvrystraße 7",
       "district": "Kreuzberg",
-      "city": "Berlin",
+      "city": 1,
       "website": "https://www.lido-berlin.de"
     }
   },
@@ -28,7 +36,7 @@
       "name": "Astra Kulturhaus",
       "address": "Revaler Straße 99",
       "district": "Friedrichshain",
-      "city": "Berlin",
+      "city": 1,
       "website": "https://www.astra-berlin.de"
     }
   },
@@ -39,7 +47,7 @@
       "name": "Columbiahalle",
       "address": "Columbiadamm 13–21",
       "district": "Tempelhof",
-      "city": "Berlin",
+      "city": 1,
       "website": "https://www.columbiahalle.berlin"
     }
   },
@@ -50,7 +58,7 @@
       "name": "Huxleys Neue Welt",
       "address": "Hasenheide 107–113",
       "district": "Neukölln",
-      "city": "Berlin",
+      "city": 1,
       "website": "https://www.huxleysneuewelt.com"
     }
   },
@@ -61,7 +69,7 @@
       "name": "Bi Nuu",
       "address": "Im U-Bahnhof Schlesisches Tor",
       "district": "Kreuzberg",
-      "city": "Berlin",
+      "city": 1,
       "website": "https://bi-nuu.de"
     }
   },
@@ -72,7 +80,7 @@
       "name": "Privatclub",
       "address": "Skalitzer Straße 85–86",
       "district": "Kreuzberg",
-      "city": "Berlin",
+      "city": 1,
       "website": "https://privatclub-berlin.de"
     }
   },
@@ -83,7 +91,7 @@
       "name": "Kesselhaus",
       "address": "Knaackstraße 97",
       "district": "Prenzlauer Berg",
-      "city": "Berlin",
+      "city": 1,
       "website": "https://www.kesselhaus.net"
     }
   },
@@ -94,7 +102,7 @@
       "name": "Quasimodo",
       "address": "Kantstraße 12a",
       "district": "Charlottenburg",
-      "city": "Berlin",
+      "city": 1,
       "website": "https://www.quasimodo.de"
     }
   },
@@ -105,7 +113,7 @@
       "name": "Festsaal Kreuzberg",
       "address": "Am Flutgraben 2",
       "district": "Treptow",
-      "city": "Berlin",
+      "city": 1,
       "website": "https://festsaal-kreuzberg.de"
     }
   },

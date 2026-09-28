@@ -17,4 +17,11 @@
   <div><dt>Email</dt><dd>{{ user.email }}<br><a href="{% url 'account_email' %}">Change email address</a></dd></div>
   <div><dt>Password</dt><dd><a href="{% url 'account_change_password' %}">Change password</a></dd></div>
 </dl>
+
+<h2>Your data</h2>
+<p class="muted">Your log is private unless you switch on <em>Public log</em> above. Read how we handle your data in the <a href="{% url 'privacy' %}">privacy statement</a>.</p>
+<dl class="facts">
+  <div><dt>Download</dt><dd><a href="{% url 'accounts:export' %}">Download all your data</a> <span class="muted">(JSON)</span></dd></div>
+  <div><dt>Delete</dt><dd><a href="{% url 'accounts:delete' %}">Delete your account and everything in it</a></dd></div>
+</dl>
 {% endblock %}

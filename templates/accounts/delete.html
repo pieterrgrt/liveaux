@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Delete account — liveaux{% endblock %}
+{% block main_class %}narrow{% endblock %}
+
+{% block content %}
+<a class="back" href="{% url 'accounts:settings' %}">← Account settings</a>
+<h1>Delete your account</h1>
+<p>This removes, straight away and for good:</p>
+<ul>
+  <li>your account and email address,</li>
+  <li>your log: every show, rating and note,</li>
+  <li>your saved shows and who you follow,</li>
+  <li>your access to venue, promoter and artist pages, and the events you submitted for review.</li>
+</ul>
+<p class="muted">Events you published on a page stay online; they belong to that page. Want a copy first? <a href="{% url 'accounts:export' %}">Download your data</a>.</p>
+
+<form class="form" method="post">
+  {% csrf_token %}
+  {% include "_form_fields.html" %}
+  <div class="form-actions"><button type="submit" class="button button-danger">Delete my account</button></div>
+</form>
+{% endblock %}

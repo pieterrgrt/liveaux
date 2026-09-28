@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "allauth.account",
     "accounts",
     "events",
+    "logbook",
 ]
 
 MIDDLEWARE = [
@@ -172,6 +173,7 @@ LOGIN_URL = "account_login"
 
 # Email: printed in the terminal locally; SMTP in production when EMAIL_HOST is set.
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "liveaux <noreply@liveaux.eu>")
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
 if os.environ.get("EMAIL_HOST"):
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
     EMAIL_HOST = os.environ["EMAIL_HOST"]
@@ -181,6 +183,12 @@ if os.environ.get("EMAIL_HOST"):
     EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "1") == "1"
 else:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+# Shown in the privacy statement as the address for data requests.
+CONTACT_EMAIL = os.environ.get("LIVEAUX_CONTACT_EMAIL", "privacy@liveaux.eu")
+
+# Who gets an email when a venue submits an event. Comma-separated addresses.
+ADMINS = [("liveaux", a.strip()) for a in os.environ.get("DJANGO_ADMIN_EMAILS", "").split(",") if a.strip()]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

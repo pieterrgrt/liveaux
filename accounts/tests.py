@@ -1,8 +1,13 @@
 import re
+from datetime import timedelta
 
 from django.core import mail
 from django.test import TestCase
 from django.urls import reverse
+from django.utils import timezone
+
+from events.models import City, Event, Venue
+from logbook.models import LogEntry
 
 from .models import User
 
@@ -48,3 +53,42 @@ class SettingsTests(TestCase):
         user.refresh_from_db()
         self.assertEqual(user.display_name, "Pieter")
         self.assertEqual(str(user), "Pieter")
+
+
+class PrivacyTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user("fan@example.com", "a-long-Passw0rd!")
+        self.user.emailaddress_set.create(email=self.user.email, primary=True, verified=True)
+        venue = Venue.objects.create(name="SO36", city=City.objects.create(name="Berlin", slug="berlin"))
+        self.event = Event.objects.create(title="Punk Night", venue=venue, starts_at=timezone.now() - timedelta(days=1))
+        LogEntry.objects.create(user=self.user, event=self.event, rating=8, note="Loud")
+        venue.memberships.create(user=self.user, role="owner")
+        self.client.force_login(self.user)
+
+    def test_privacy_page(self):
+        self.client.logout()
+        response = self.client.get(reverse("privacy"))
+        self.assertContains(response, "private by default")
+        self.assertContains(response, "privacy@liveaux.eu")
+
+    def test_export(self):
+        response = self.client.get(reverse("accounts:export"))
+        self.assertEqual(response["Content-Disposition"], 'attachment; filename="liveaux-data.json"')
+        data = response.json()
+        self.assertEqual(data["account"]["email"], "fan@example.com")
+        self.assertEqual(data["log"][0]["note"], "Loud")
+        self.assertEqual(data["manages"]["venues"], ["SO36"])
+
+    def test_delete_needs_password(self):
+        response = self.client.post(reverse("accounts:delete"), {"password": "wrong", "confirm": "on"})
+        self.assertContains(response, "not your password")
+        self.assertTrue(User.objects.filter(pk=self.user.pk).exists())
+
+    def test_delete_account_removes_everything(self):
+        response = self.client.post(reverse("accounts:delete"), {"password": "a-long-Passw0rd!", "confirm": "on"})
+        self.assertRedirects(response, "/")
+        self.assertFalse(User.objects.exists())
+        self.assertFalse(LogEntry.objects.exists())
+        self.assertFalse(self.event.venue.memberships.exists())
+        self.assertTrue(Event.objects.filter(pk=self.event.pk).exists())
+        self.assertEqual(self.client.get(reverse("accounts:dashboard")).status_code, 302)

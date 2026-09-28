@@ -1,5 +1,42 @@
 /* liveaux — gig-poster look: dark stage, acid-yellow accent, condensed headlines. */
 
+/* Fonts are served from liveaux itself, so visitors' browsers don't contact Google. Both are SIL OFL. */
+@font-face {
+  font-family: "Anton";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("fonts/anton-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Anton";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("fonts/anton-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("fonts/inter-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("fonts/inter-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 :root {
   --bg: #0d0d0d;
   --surface: #171717;
@@ -659,6 +696,223 @@ main.narrow {
   opacity: 0.6;
 }
 
+/* City week */
+
+.month-heading .muted {
+  font-family: var(--body);
+  font-size: 0.875rem;
+  letter-spacing: 0.05em;
+}
+
+.month.quiet {
+  margin-bottom: 20px;
+}
+
+.month.quiet .empty {
+  padding: 8px 0;
+}
+
+.week-link {
+  margin: 8px 0 48px;
+  font-weight: 700;
+}
+
+.week-link a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.week-link a:hover {
+  text-decoration: underline;
+}
+
+.site-footer a {
+  color: var(--muted);
+}
+
+.site-footer a:hover {
+  color: var(--text);
+}
+
+/* Log */
+
+.log-entry {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.log-entry .event-row {
+  flex: 1;
+  min-width: 0;
+}
+
+.log-note {
+  margin-top: 6px !important;
+  color: var(--text) !important;
+  font-style: italic;
+}
+
+.rating {
+  font-family: var(--display);
+  font-size: 1.75rem;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.rating span {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.privacy-note {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.privacy-note a {
+  color: var(--text);
+}
+
+.danger-zone {
+  margin-top: 48px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+
+.status {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+  color: var(--muted);
+}
+
+.status-approved {
+  color: var(--accent);
+}
+
+.status-rejected {
+  color: var(--danger);
+}
+
+/* Year in review */
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  margin: 8px 0 48px;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background: var(--bg);
+}
+
+.stat-number {
+  font-family: var(--display);
+  font-size: 3rem;
+  line-height: 1;
+  color: var(--accent);
+}
+
+.stat-label {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.months-chart {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 6px;
+  height: 200px;
+  margin: 0;
+  padding-top: 24px;
+  padding: 0;
+  list-style: none;
+}
+
+.months-chart li {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: stretch;
+  min-width: 0;
+}
+
+.bar {
+  position: relative;
+  height: var(--size);
+  min-height: 2px;
+  background: var(--accent);
+}
+
+.bar-count {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  padding-bottom: 4px;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.bar-label {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 0.7rem;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.two-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+
+.ranking {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: rank;
+}
+
+.ranking li:not(.empty) {
+  display: flex;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+  counter-increment: rank;
+}
+
+.ranking li:not(.empty)::before {
+  content: counter(rank);
+  width: 1.5em;
+  color: var(--muted);
+  font-family: var(--display);
+}
+
+.ranking a {
+  flex: 1;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.ranking a:hover {
+  color: var(--accent);
+}
+
 /* Phones */
 
 @media (max-width: 600px) {
@@ -707,5 +961,22 @@ main.narrow {
 
   .poster-day {
     font-size: 4rem;
+  }
+
+  .stats {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .two-columns {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .months-chart {
+    gap: 3px;
+  }
+
+  .bar-label {
+    font-size: 0.6rem;
   }
 }

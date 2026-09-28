@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}{% if is_own %}My log{% else %}{{ owner.public_name }}'s log{% endif %} — liveaux{% endblock %}
+
+{% block content %}
+<section class="venue-header page-top">
+  <p class="eyebrow">{% if is_own %}My log{% else %}Log{% endif %}</p>
+  <h1>{% if is_own %}Where I've been{% else %}{{ owner.public_name }}{% endif %}</h1>
+  <p class="muted">{{ entries|length }} show{{ entries|length|pluralize }}</p>
+  {% if is_own %}
+    <p class="privacy-note">
+      {% if user.log_is_public %}
+        🔓 Your log is public: <a href="{% url 'logbook:public' user.pk %}">{{ request.scheme }}://{{ request.get_host }}{% url 'logbook:public' user.pk %}</a>.
+      {% else %}
+        🔒 Only you can see this.
+      {% endif %}
+      <a href="{% url 'accounts:settings' %}">Change</a>
+    </p>
+  {% endif %}
+  {% if years %}
+    <p class="chips-label">Year in review</p>
+    <div class="filters">
+      {% for year in years %}<a class="chip" href="{% if is_own %}{% url 'logbook:my_year' year %}{% else %}{% url 'logbook:public_year' owner.pk year %}{% endif %}">{{ year }}</a>{% endfor %}
+    </div>
+  {% endif %}
+</section>
+
+{% regroup entries by year as by_year %}
+{% for group in by_year %}
+  <section class="month">
+    <h2 class="month-heading">{{ group.grouper }}</h2>
+    <ul class="event-list">
+      {% for entry in group.list %}{% include "logbook/_entry_row.html" %}{% endfor %}
+    </ul>
+  </section>
+{% empty %}
+  <p class="empty">
+    {% if is_own %}Nothing here yet. Open a show you went to and press <strong>I was there</strong>.{% else %}Nothing logged yet.{% endif %}
+  </p>
+{% endfor %}
+{% endblock %}

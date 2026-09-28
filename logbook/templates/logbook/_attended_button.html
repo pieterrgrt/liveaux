@@ -1,0 +1,10 @@
+{% if log_entry %}
+  <a class="button button-ghost" href="{{ log_entry.get_edit_url }}">You were there ✓{% if log_entry.rating %} · {{ log_entry.rating }}/10{% endif %}</a>
+{% elif user.is_authenticated %}
+  <form method="post" action="{% url 'logbook:attended' event.pk %}">
+    {% csrf_token %}
+    <button type="submit" class="button">I was there</button>
+  </form>
+{% else %}
+  <a class="button button-ghost" href="{% url 'account_login' %}?next={{ request.get_full_path|urlencode }}">Log in to add this to your log</a>
+{% endif %}
