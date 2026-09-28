@@ -7,7 +7,7 @@
 
 <section class="hero">
   <p class="eyebrow">{% if is_own %}Your{% else %}{{ owner.public_name }}'s{% endif %} year in review</p>
-  <h1><em>{{ year }}</em> in {{ stats.count }} event{{ stats.count|pluralize }}</h1>
+  <h1>{{ year }} <em>in {{ stats.count }} event{{ stats.count|pluralize }}</em></h1>
   {% if years|length > 1 %}
     <div class="filters">
       {% for y in years %}<a class="chip{% if y == year %} active{% endif %}" href="{% if is_own %}{% url 'logbook:my_year' y %}{% else %}{% url 'logbook:public_year' owner.pk y %}{% endif %}">{{ y }}</a>{% endfor %}

@@ -8,7 +8,7 @@
       <span class="tag tag-{{ entry.event.category.slug }}">{{ entry.event.category.name }}</span>
       <h3>{{ entry.event.title }}</h3>
       <p>{{ entry.event.venue.name }} · {{ entry.event.venue.city }}</p>
-      {% if entry.note %}<p class="log-note">“{{ entry.note }}”</p>{% endif %}
+      {% if entry.note %}<p class="log-note">{{ entry.note }}</p>{% endif %}
     </div>
     <div class="rating">{% if entry.rating %}{{ entry.rating }}<span>/10</span>{% endif %}</div>
     <span class="arrow" aria-hidden="true">→</span>
