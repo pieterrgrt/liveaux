@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}{% if page %}Edit {{ page.name }}{% else %}New {{ kind }} page{% endif %} — liveaux{% endblock %}
+{% block main_class %}narrow{% endblock %}
+
+{% block content %}
+<a class="back" href="{% if page %}{{ page.get_manage_url }}{% else %}{% url 'accounts:dashboard' %}{% endif %}">← Back</a>
+<h1>{% if page %}Edit {{ page.name }}{% else %}New {{ kind }} page{% endif %}</h1>
+{% if not page %}<p class="muted">You become the owner and can invite your team afterwards.</p>{% endif %}
+<form class="form" method="post">
+  {% csrf_token %}
+  {% include "_form_fields.html" %}
+  <div class="form-actions"><button type="submit" class="button">{% if page %}Save changes{% else %}Create page{% endif %}</button></div>
+</form>
+{% endblock %}

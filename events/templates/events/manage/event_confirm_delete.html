@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Delete {{ event.title }} — liveaux{% endblock %}
+{% block main_class %}narrow{% endblock %}
+
+{% block content %}
+<h1>Delete event?</h1>
+<p><strong>{{ event.title }}</strong>, {{ event.starts_at|date:"l j F Y" }} at {{ event.venue.name }}. This removes it from liveaux for everyone, including people who saved it.</p>
+<form class="form" method="post">
+  {% csrf_token %}
+  <div class="form-actions">
+    <button type="submit" class="button button-danger">Delete event</button>
+    <a class="link-button" href="{% url 'events:edit_event' event.pk %}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

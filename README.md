@@ -21,10 +21,26 @@ Daarna:
 
 Tests draaien: `uv run python manage.py test`
 
+## Accounts
+
+Iedereen logt in met e-mail en wachtwoord (django-allauth, met e-mailbevestiging).
+Lokaal verschijnen de bevestigingsmails in de terminal waar `runserver` draait.
+
+- **Fans:** evenementen opslaan en zalen, artiesten en promoters volgen → *My liveaux* (`/me/`)
+- **Zalen, promoters, artiesten:** een account kan lid zijn van zo'n pagina, als *owner* of *editor*.
+  Zalen en promoters plaatsen hun eigen evenementen; artiesten beheren hun profiel.
+- Artiest- en promoterpagina's maken gebruikers zelf aan. Toegang tot een **zaal** geef je in de
+  admin: open de zaal en voeg iemand toe onder *Venue members*.
+
+> Heb je al een `db.sqlite3` van vóór de accounts? Verwijder die en draai `migrate`,
+> `createsuperuser` en `loaddata berlin_events` opnieuw. Het User-model is veranderd.
+
 ## Structuur
 
 - `config/` – projectinstellingen (tijdzone `Europe/Berlin`)
-- `events/` – app met de modellen `Venue` (zaal) en `Event` (evenement)
+- `accounts/` – eigen User-model (inloggen met e-mail), *My liveaux* en instellingen
+- `events/` – zalen, promoters, artiesten, evenementen, en de beheerpagina's (`views_manage.py`)
+- `templates/` – gedeelde layout en de opgemaakte inlogpagina's van allauth
 - `events/fixtures/berlin_events.json` – voorbeelddata: echte Berlijnse zalen, verzonnen programma
 
 ## Online zetten (productie)

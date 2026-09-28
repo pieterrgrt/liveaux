@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Account settings — liveaux{% endblock %}
+{% block main_class %}narrow{% endblock %}
+
+{% block content %}
+<a class="back" href="{% url 'accounts:dashboard' %}">← My liveaux</a>
+<h1>Account settings</h1>
+
+<form class="form" method="post">
+  {% csrf_token %}
+  {% include "_form_fields.html" %}
+  <div class="form-actions"><button type="submit" class="button">Save</button></div>
+</form>
+
+<dl class="facts">
+  <div><dt>Email</dt><dd>{{ user.email }}<br><a href="{% url 'account_email' %}">Change email address</a></dd></div>
+  <div><dt>Password</dt><dd><a href="{% url 'account_change_password' %}">Change password</a></dd></div>
+</dl>
+{% endblock %}

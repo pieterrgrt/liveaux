@@ -13,9 +13,26 @@
   <header class="site-header">
     <a class="wordmark" href="{% url 'events:event_list' %}">liveaux<span>.</span></a>
     <p class="tagline">Live music in Berlin</p>
+    <nav class="account-nav" aria-label="Account">
+      {% if user.is_authenticated %}
+        <a href="{% url 'accounts:dashboard' %}">My liveaux</a>
+        <form method="post" action="{% url 'account_logout' %}">
+          {% csrf_token %}
+          <button type="submit" class="link-button">Log out</button>
+        </form>
+      {% else %}
+        <a href="{% url 'account_login' %}">Log in</a>
+        <a class="nav-cta" href="{% url 'account_signup' %}">Sign up</a>
+      {% endif %}
+    </nav>
   </header>
 
-  <main>
+  <main class="{% block main_class %}{% endblock %}">
+    {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}<li class="message message-{{ message.tags }}">{{ message }}</li>{% endfor %}
+      </ul>
+    {% endif %}
     {% block content %}{% endblock %}
   </main>
 

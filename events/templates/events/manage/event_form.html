@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}{% if event %}Edit {{ event.title }}{% else %}New event{% endif %} — liveaux{% endblock %}
+{% block main_class %}narrow{% endblock %}
+
+{% block content %}
+<a class="back" href="{% if page %}{{ page.get_manage_url }}{% else %}{{ event.get_absolute_url }}{% endif %}">← Back</a>
+<h1>{% if event %}Edit event{% else %}New event{% endif %}</h1>
+{% if page %}<p class="muted">For {{ page.name }}</p>{% endif %}
+<form class="form" method="post">
+  {% csrf_token %}
+  {% include "_form_fields.html" %}
+  <div class="form-actions">
+    <button type="submit" class="button">{% if event %}Save changes{% else %}Publish event{% endif %}</button>
+    {% if event %}<a class="link-button danger" href="{% url 'events:delete_event' event.pk %}">Delete event</a>{% endif %}
+  </div>
+</form>
+{% endblock %}

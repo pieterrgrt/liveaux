@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page.name }} — liveaux{% endblock %}
+
+{% block content %}
+<a class="back" href="{% url 'events:event_list' %}">← All shows</a>
+
+<section class="venue-header">
+  <p class="eyebrow">{{ page.kind }}</p>
+  <h1>{{ page.name }}</h1>
+  {% if page.kind == "venue" %}
+    <p class="muted">{{ page.address }}{% if page.district %} · {{ page.district }}{% endif %}</p>
+  {% elif page.kind == "artist" and page.hometown %}
+    <p class="muted">From {{ page.hometown }}</p>
+  {% endif %}
+  {% if page.description %}<div class="description">{{ page.description|linebreaks }}</div>{% endif %}
+  <div class="actions">
+    {% include "events/_follow_button.html" %}
+    {% if page.website %}<a class="button button-ghost" href="{{ page.website }}" rel="noopener">Website</a>{% endif %}
+    {% if is_member %}<a class="link-button" href="{{ page.get_manage_url }}">Manage this page</a>{% endif %}
+  </div>
+</section>
+
+<section class="month">
+  <h2 class="month-heading">Upcoming</h2>
+  <ul class="event-list">
+    {% for event in events %}{% include "events/_event_row.html" %}
+    {% empty %}<li class="empty">Nothing scheduled right now.</li>{% endfor %}
+  </ul>
+</section>
+{% endblock %}
