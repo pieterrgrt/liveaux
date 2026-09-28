@@ -1,4 +1,6 @@
 from django.db import models
+from django.urls import reverse
+from django.utils import timezone
 
 
 class Venue(models.Model):
@@ -14,6 +16,9 @@ class Venue(models.Model):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return reverse("events:venue_detail", args=[self.pk])
+
 
 class Event(models.Model):
     title = models.CharField(max_length=200)
@@ -28,3 +33,12 @@ class Event(models.Model):
 
     def __str__(self):
         return f"{self.title} ({self.starts_at:%d-%m-%Y})"
+
+    def get_absolute_url(self):
+        return reverse("events:event_detail", args=[self.pk])
+
+    @property
+    def month(self):
+        """(year, month) in local time, used to group events by month in templates."""
+        local = timezone.localtime(self.starts_at)
+        return (local.year, local.month)

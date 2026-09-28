@@ -1,0 +1,29 @@
+{% extends "events/base.html" %}
+
+{% block content %}
+<section class="hero">
+  <h1>Tonight.<br>Tomorrow.<br><em>Loud.</em></h1>
+  <p class="hero-count">{{ events|length }} upcoming show{{ events|length|pluralize }}</p>
+</section>
+
+<nav class="filters" aria-label="Filter by district">
+  <a class="chip{% if not current_district %} active{% endif %}" href="{% url 'events:event_list' %}">All</a>
+  {% for district in districts %}
+    <a class="chip{% if district == current_district %} active{% endif %}" href="?district={{ district|urlencode }}">{{ district }}</a>
+  {% endfor %}
+</nav>
+
+{% regroup events by month as months %}
+{% for group in months %}
+  <section class="month">
+    <h2 class="month-heading">{{ group.list.0.starts_at|date:"F Y" }}</h2>
+    <ul class="event-list">
+      {% for event in group.list %}
+        {% include "events/_event_row.html" %}
+      {% endfor %}
+    </ul>
+  </section>
+{% empty %}
+  <p class="empty">No upcoming shows{% if current_district %} in {{ current_district }}{% endif %}.</p>
+{% endfor %}
+{% endblock %}

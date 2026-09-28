@@ -1,0 +1,36 @@
+{% extends "events/base.html" %}
+
+{% block title %}{{ event.title }} — liveaux{% endblock %}
+
+{% block content %}
+<a class="back" href="{% url 'events:event_list' %}">← All shows</a>
+
+<article class="event-detail">
+  <div class="poster">
+    <span class="poster-day">{{ event.starts_at|date:"d" }}</span>
+    <span class="poster-month">{{ event.starts_at|date:"M" }}</span>
+  </div>
+
+  <div class="event-body">
+    <h1>{{ event.title }}</h1>
+    <dl class="facts">
+      <div><dt>When</dt><dd>{{ event.starts_at|date:"l j F Y" }}, {{ event.starts_at|time:"H:i" }}</dd></div>
+      <div><dt>Where</dt><dd><a href="{{ event.venue.get_absolute_url }}">{{ event.venue.name }}</a>{% if event.venue.address %}<br><span class="muted">{{ event.venue.address }}, {{ event.venue.district }}</span>{% endif %}</dd></div>
+      {% if event.price is not None %}<div><dt>Price</dt><dd>€{{ event.price|floatformat:"-2" }}</dd></div>{% endif %}
+    </dl>
+
+    {% if event.description %}<div class="description">{{ event.description|linebreaks }}</div>{% endif %}
+
+    {% if event.ticket_url %}<a class="button" href="{{ event.ticket_url }}" rel="noopener">Get tickets</a>{% endif %}
+  </div>
+</article>
+
+{% if more_at_venue %}
+<section class="month">
+  <h2 class="month-heading">More at {{ event.venue.name }}</h2>
+  <ul class="event-list">
+    {% for event in more_at_venue %}{% include "events/_event_row.html" %}{% endfor %}
+  </ul>
+</section>
+{% endif %}
+{% endblock %}

@@ -14,7 +14,12 @@ uv run python manage.py loaddata berlin_events   # optioneel: 10 zalen + 20 voor
 uv run python manage.py runserver
 ```
 
-Daarna: <http://127.0.0.1:8000/admin/>
+Daarna:
+
+- <http://127.0.0.1:8000/> – de website (frontend)
+- <http://127.0.0.1:8000/admin/> – beheer (backend)
+
+Tests draaien: `uv run python manage.py test`
 
 ## Structuur
 
