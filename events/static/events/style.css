@@ -69,8 +69,9 @@
   --accent: #b8452a;
   --accent-ink: #fffdf8;
   --accent-soft: #f1dccf;
+  --accent-deep: #9a3a22;
   --danger: #a8281e;
-  --field-border: #cfc6b5;
+  --field-border: #8f8574;
 
   /* One colour per kind of event, used as a small dot. Unknown categories get --cat-default. */
   --cat-default: #8a8276;
@@ -80,7 +81,7 @@
   --cat-film: #2f5d9e;
   --cat-theatre: #9c3064;
   --cat-dance: #c07a14;
-  --cat-comedy: #b39200;
+  --cat-comedy: #937a00;
   --cat-talk: #5c6b36;
   --cat-festival: #d0602e;
   --cat-family: #2b8aa6;
@@ -102,8 +103,9 @@
     --accent: #ec8a66;
     --accent-ink: #1b1411;
     --accent-soft: #3b271f;
+    --accent-deep: #ec8a66;
     --danger: #f08a80;
-    --field-border: #4a453e;
+    --field-border: #756d62;
     --cat-default: #a59d90;
     --cat-music: #ec8a66;
     --cat-club: #a98be0;
@@ -506,7 +508,7 @@ a.tag:hover {
   aspect-ratio: 4 / 5;
   border-radius: var(--radius);
   background: var(--accent-soft);
-  color: var(--accent);
+  color: var(--accent-deep);
   font-family: var(--display);
   line-height: 1;
 }
