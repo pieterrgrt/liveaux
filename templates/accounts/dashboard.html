@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}My liveaux{% endblock %}
+
+{% block content %}
+<section class="venue-header page-top">
+  <p class="eyebrow">Hi {{ user }}</p>
+  <h1>My liveaux</h1>
+  <div class="actions">
+    <a class="link-button" href="{% url 'accounts:settings' %}">Account settings</a>
+  </div>
+</section>
+
+<section class="month">
+  <h2 class="month-heading">Saved shows</h2>
+  <ul class="event-list">
+    {% for event in saved %}{% include "events/_event_row.html" %}
+    {% empty %}<li class="empty">Nothing saved yet. Open a show and press Save to keep it here.</li>{% endfor %}
+  </ul>
+</section>
+
+<section class="month">
+  <h2 class="month-heading">From who you follow</h2>
+  <ul class="event-list">
+    {% for event in from_follows %}{% include "events/_event_row.html" %}
+    {% empty %}<li class="empty">{% if following %}No new shows from venues, artists or promoters you follow.{% else %}Follow a venue, artist or promoter to see their shows here.{% endif %}</li>{% endfor %}
+  </ul>
+  {% if following %}
+    <p class="chips-label">Following</p>
+    <div class="filters">
+      {% for page in following %}<a class="chip" href="{{ page.get_absolute_url }}">{{ page.name }}</a>{% endfor %}
+    </div>
+  {% endif %}
+</section>
+
+<section class="month">
+  <h2 class="month-heading">Pages you manage</h2>
+  <ul class="manage-list">
+    {% for page in pages %}
+      <li>
+        <span class="manage-date">{{ page.kind|capfirst }}</span>
+        <a href="{{ page.get_manage_url }}">{{ page.name }}</a>
+        <span></span>
+        <a class="link-button" href="{{ page.get_manage_url }}">Manage</a>
+      </li>
+    {% empty %}
+      <li class="empty">You don't manage any pages yet.</li>
+    {% endfor %}
+  </ul>
+  <div class="actions">
+    <a class="button button-ghost" href="{% url 'events:create_page' 'artist' %}">Create an artist page</a>
+    <a class="button button-ghost" href="{% url 'events:create_page' 'promoter' %}">Create a promoter page</a>
+  </div>
+  <p class="help">Run a venue? Get in touch and we'll give your account access to its page.</p>
+</section>
+{% endblock %}

@@ -1,0 +1,10 @@
+# Add to the server's existing Caddyfile, then: sudo systemctl reload caddy
+# Caddy gets the HTTPS certificates by itself.
+
+liveaux.eu {
+	reverse_proxy 127.0.0.1:8001
+}
+
+www.liveaux.eu {
+	redir https://liveaux.eu{uri} permanent
+}

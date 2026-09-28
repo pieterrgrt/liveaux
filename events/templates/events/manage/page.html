@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Manage {{ page.name }} — liveaux{% endblock %}
+
+{% block content %}
+<a class="back" href="{% url 'accounts:dashboard' %}">← My liveaux</a>
+
+<section class="venue-header">
+  <p class="eyebrow">Manage {{ page.kind }}{% if membership %} · you are {{ membership.get_role_display|lower }}{% endif %}</p>
+  <h1>{{ page.name }}</h1>
+  <div class="actions">
+    {% if can_add_events %}<a class="button" href="{% url 'events:create_event' page.kind page.pk %}">Add event</a>{% endif %}
+    <a class="button button-ghost" href="{% url 'events:edit_page' page.kind page.pk %}">Edit page</a>
+    <a class="link-button" href="{{ page.get_absolute_url }}">View public page</a>
+  </div>
+</section>
+
+<section class="month">
+  <h2 class="month-heading">Upcoming events</h2>
+  <ul class="manage-list">
+    {% for event in upcoming %}
+      <li>
+        <span class="manage-date">{{ event.starts_at|date:"D d M · H:i" }}</span>
+        <a href="{{ event.get_absolute_url }}">{{ event.title }}</a>
+        <span class="muted">{{ event.venue.name }}</span>
+        <a class="link-button" href="{% url 'events:edit_event' event.pk %}">Edit</a>
+      </li>
+    {% empty %}
+      <li class="empty">{% if can_add_events %}No upcoming events. Add your first one.{% else %}No upcoming shows yet. Venues and promoters add you to their events.{% endif %}</li>
+    {% endfor %}
+  </ul>
+</section>
+
+{% if past %}
+<section class="month">
+  <h2 class="month-heading">Past events</h2>
+  <ul class="manage-list">
+    {% for event in past %}
+      <li class="is-past">
+        <span class="manage-date">{{ event.starts_at|date:"D d M Y" }}</span>
+        <a href="{{ event.get_absolute_url }}">{{ event.title }}</a>
+        <span class="muted">{{ event.venue.name }}</span>
+        <span></span>
+      </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+<section class="month">
+  <h2 class="month-heading">Team</h2>
+  <ul class="manage-list">
+    {% for m in memberships %}
+      <li>
+        <span class="manage-date">{{ m.get_role_display }}</span>
+        <span>{{ m.user }}</span>
+        <span class="muted">{{ m.user.email }}</span>
+        {% if is_owner and m.user != user %}
+          <form method="post" action="{% url 'events:remove_member' page.kind page.pk m.pk %}">
+            {% csrf_token %}<button type="submit" class="link-button">Remove</button>
+          </form>
+        {% else %}<span></span>{% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+
+  {% if is_owner %}
+    <form class="form form-inline" method="post" action="{% url 'events:add_member' page.kind page.pk %}">
+      {% csrf_token %}
+      {% include "_form_fields.html" with form=member_form %}
+      <div class="form-actions"><button type="submit" class="button">Add to team</button></div>
+    </form>
+    <p class="help">Owners can add and remove people. Editors can edit the page and its events.</p>
+  {% endif %}
+</section>
+{% endblock %}

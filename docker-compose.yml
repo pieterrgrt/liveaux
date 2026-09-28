@@ -1,0 +1,34 @@
+# liveaux on a server that already hosts other sites.
+# The app listens on 127.0.0.1:8001 only; the server's existing web server
+# (Caddy, nginx, ...) forwards liveaux.eu to it. See deploy/README.md.
+
+services:
+  web:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://liveaux:${POSTGRES_PASSWORD}@db:5432/liveaux
+    ports:
+      - "127.0.0.1:${LIVEAUX_PORT:-8001}:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: liveaux
+      POSTGRES_USER: liveaux
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U liveaux -d liveaux"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pgdata:
