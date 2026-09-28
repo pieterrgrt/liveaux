@@ -8,17 +8,29 @@
   <link rel="stylesheet" href="{% static 'events/style.css' %}">
 </head>
 <body>
+  <div class="ticker" aria-label="What's on liveaux">
+    <div class="ticker-track">
+      {% for copy in "12" %}
+        <p{% if not forloop.first %} aria-hidden="true"{% endif %}>
+          <span>Concerts</span><span>Exhibitions</span><span>Film</span><span>Theatre</span><span>Club nights</span><span>Dance</span><span>Comedy</span><span>Talks</span><span>Festivals</span><span>Berlin</span><span>Hamburg</span>
+        </p>
+      {% endfor %}
+    </div>
+  </div>
+
   <header class="site-header">
-    <a class="wordmark" href="{% url 'events:event_list' %}">liveaux<span>.</span></a>
-    <p class="tagline">What's on, logged</p>
-    <nav class="account-nav" aria-label="Account">
+    <nav class="main-nav" aria-label="Main">
       <a href="{% url 'events:this_week' %}">This week</a>
+      <a href="{% url 'events:event_list' %}">Everything</a>
+    </nav>
+    <a class="wordmark" href="{% url 'events:event_list' %}">liveaux</a>
+    <nav class="account-nav" aria-label="Account">
       {% if user.is_authenticated %}
         <a href="{% url 'logbook:mine' %}">My log</a>
-        <a href="{% url 'accounts:dashboard' %}">My liveaux</a>
+        <a href="{% url 'accounts:dashboard' %}">Account</a>
         <form method="post" action="{% url 'account_logout' %}">
           {% csrf_token %}
-          <button type="submit" class="link-button">Log out</button>
+          <button type="submit" class="nav-button">Log out</button>
         </form>
       {% else %}
         <a href="{% url 'account_login' %}">Log in</a>
@@ -37,7 +49,13 @@
   </main>
 
   <footer class="site-footer">
-    <p>liveaux · <a href="{% url 'events:submit_event' %}">Organising something? Submit an event</a> · <a href="{% url 'privacy' %}">Privacy</a></p>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="{% url 'events:this_week' %}">This week</a>
+      <a href="{% url 'events:event_list' %}">Everything</a>
+      <a href="{% url 'events:submit_event' %}">Submit an event</a>
+      <a href="{% url 'privacy' %}">Privacy</a>
+    </nav>
+    <p class="footer-mark" aria-hidden="true">liveaux</p>
   </footer>
 </body>
 </html>

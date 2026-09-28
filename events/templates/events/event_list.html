@@ -8,7 +8,7 @@
 
 {% include "events/_chips.html" with chips=category_chips label="Filter by kind of event" %}
 {% if city_chips %}{% include "events/_chips.html" with chips=city_chips label="Filter by city" %}{% endif %}
-{% include "events/_chips.html" with chips=district_chips label="Filter by district" %}
+{% if current_city %}{% include "events/_chips.html" with chips=district_chips label="Filter by district" %}{% endif %}
 
 <p class="week-link"><a href="{% if current_city %}{{ current_city.get_absolute_url }}{% else %}{% url 'events:this_week' %}{% endif %}{% if current_category %}?category={{ current_category.slug }}{% endif %}">Just this week{% if current_city %} in {{ current_city.name }}{% endif %} →</a></p>
 
