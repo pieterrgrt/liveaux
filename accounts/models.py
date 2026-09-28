@@ -34,6 +34,11 @@ class User(AbstractUser):
     last_name = None
     email = models.EmailField("email address", unique=True)
     display_name = models.CharField(max_length=100, blank=True)
+    log_is_public = models.BooleanField(
+        "public log",
+        default=False,
+        help_text="Let anyone with the link see the shows you went to, with your name, ratings and notes.",
+    )
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
@@ -42,6 +47,11 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.display_name or self.email
+
+    @property
+    def public_name(self):
+        """Name shown on a public log. Never the email address."""
+        return self.display_name or "A liveaux fan"
 
     def get_full_name(self):
         return str(self)

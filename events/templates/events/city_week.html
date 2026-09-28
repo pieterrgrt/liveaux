@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}This week in {{ city.name }} — liveaux{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <p class="eyebrow">{{ today|date:"j M" }} – {{ last_day|date:"j M" }}</p>
+  <h1>This week<br>in <em>{{ city.name }}.</em></h1>
+  <p class="hero-count">{{ count }} show{{ count|pluralize }}</p>
+</section>
+
+{% if cities|length > 1 %}
+<nav class="filters" aria-label="Choose a city">
+  {% for other in cities %}
+    <a class="chip{% if other == city %} active{% endif %}" href="{{ other.get_absolute_url }}">{{ other.name }}</a>
+  {% endfor %}
+</nav>
+{% endif %}
+
+{% for day in days %}
+  <section class="month{% if not day.events %} quiet{% endif %}">
+    <h2 class="month-heading">{% if day.date == today %}Today{% else %}{{ day.date|date:"l" }}{% endif %} <span class="muted">{{ day.date|date:"j F" }}</span></h2>
+    <ul class="event-list">
+      {% for event in day.events %}
+        {% include "events/_event_row.html" %}
+      {% empty %}
+        <li class="empty">Nothing on.</li>
+      {% endfor %}
+    </ul>
+  </section>
+{% endfor %}
+
+<p class="week-link"><a href="{% url 'events:event_list' %}?city={{ city.slug }}">Everything coming up in {{ city.name }} →</a></p>
+{% endblock %}

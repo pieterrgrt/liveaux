@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}{{ entry.event.title }} — My log — liveaux{% endblock %}
+{% block main_class %}narrow{% endblock %}
+
+{% block content %}
+<a class="back" href="{% url 'logbook:mine' %}">← My log</a>
+<p class="eyebrow">You were there</p>
+<h1>{{ entry.event.title }}</h1>
+<p class="muted">{{ entry.event.venue.name }} · {{ entry.event.starts_at|date:"l j F Y" }}</p>
+
+<form class="form" method="post">
+  {% csrf_token %}
+  {% include "_form_fields.html" %}
+  <div class="form-actions">
+    <button type="submit" class="button">Save</button>
+    <a class="link-button" href="{{ entry.event.get_absolute_url }}">View event</a>
+  </div>
+</form>
+
+<form method="post" action="{% url 'logbook:delete' entry.pk %}" class="danger-zone">
+  {% csrf_token %}
+  <button type="submit" class="link-button danger">Remove from my log</button>
+</form>
+{% endblock %}

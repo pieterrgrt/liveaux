@@ -1,0 +1,196 @@
+[
+  {
+    "model": "events.city",
+    "pk": 2,
+    "fields": {
+      "name": "Hamburg",
+      "slug": "hamburg"
+    }
+  },
+  {
+    "model": "events.venue",
+    "pk": 101,
+    "fields": {
+      "name": "Molotow",
+      "address": "Nobistor 14",
+      "district": "St. Pauli",
+      "city": 2,
+      "website": "https://www.molotowclub.com"
+    }
+  },
+  {
+    "model": "events.venue",
+    "pk": 102,
+    "fields": {
+      "name": "Knust",
+      "address": "Neuer Kamp 30",
+      "district": "St. Pauli",
+      "city": 2,
+      "website": "https://www.knusthamburg.de"
+    }
+  },
+  {
+    "model": "events.venue",
+    "pk": 103,
+    "fields": {
+      "name": "Uebel & Gefährlich",
+      "address": "Feldstraße 66",
+      "district": "St. Pauli",
+      "city": 2,
+      "website": "https://www.uebelundgefaehrlich.com"
+    }
+  },
+  {
+    "model": "events.venue",
+    "pk": 104,
+    "fields": {
+      "name": "Große Freiheit 36",
+      "address": "Große Freiheit 36",
+      "district": "St. Pauli",
+      "city": 2,
+      "website": "https://www.grossefreiheit36.de"
+    }
+  },
+  {
+    "model": "events.venue",
+    "pk": 105,
+    "fields": {
+      "name": "Markthalle",
+      "address": "Klosterwall 11",
+      "district": "Altstadt",
+      "city": 2,
+      "website": "https://www.markthalle-hamburg.de"
+    }
+  },
+  {
+    "model": "events.venue",
+    "pk": 106,
+    "fields": {
+      "name": "Fabrik",
+      "address": "Barnerstraße 36",
+      "district": "Ottensen",
+      "city": 2,
+      "website": "https://www.fabrik.de"
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 101,
+    "fields": {
+      "title": "Reeperbahn Garage Night",
+      "venue": 101,
+      "starts_at": "2026-10-01T21:00:00+02:00",
+      "description": "",
+      "price": "14.00",
+      "ticket_url": ""
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 102,
+    "fields": {
+      "title": "Hanseatic Indie Club",
+      "venue": 102,
+      "starts_at": "2026-10-03T20:00:00+02:00",
+      "description": "",
+      "price": "16.00",
+      "ticket_url": ""
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 103,
+    "fields": {
+      "title": "Bunker Beats: Techno bis früh",
+      "venue": 103,
+      "starts_at": "2026-10-04T23:00:00+02:00",
+      "description": "",
+      "price": "20.00",
+      "ticket_url": ""
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 104,
+    "fields": {
+      "title": "Hamburger Schule Revisited",
+      "venue": 104,
+      "starts_at": "2026-10-08T20:00:00+02:00",
+      "description": "",
+      "price": "28.00",
+      "ticket_url": ""
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 105,
+    "fields": {
+      "title": "Elbe Folk Session",
+      "venue": 106,
+      "starts_at": "2026-10-11T19:30:00+02:00",
+      "description": "",
+      "price": "18.00",
+      "ticket_url": ""
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 106,
+    "fields": {
+      "title": "Punk im Hafen",
+      "venue": 105,
+      "starts_at": "2026-10-16T20:00:00+02:00",
+      "description": "",
+      "price": "22.00",
+      "ticket_url": ""
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 107,
+    "fields": {
+      "title": "Molotow Newcomer Night",
+      "venue": 101,
+      "starts_at": "2026-10-22T20:30:00+02:00",
+      "description": "",
+      "price": "8.00",
+      "ticket_url": ""
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 108,
+    "fields": {
+      "title": "Jazz aus Ottensen",
+      "venue": 106,
+      "starts_at": "2026-10-30T20:00:00+01:00",
+      "description": "",
+      "price": "24.00",
+      "ticket_url": ""
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 109,
+    "fields": {
+      "title": "Kiez Karaoke Live Band",
+      "venue": 102,
+      "starts_at": "2026-11-05T21:00:00+01:00",
+      "description": "",
+      "price": "12.00",
+      "ticket_url": ""
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 110,
+    "fields": {
+      "title": "Nordlicht Electronica",
+      "venue": 103,
+      "starts_at": "2026-11-14T22:00:00+01:00",
+      "description": "",
+      "price": "19.00",
+      "ticket_url": ""
+    }
+  }
+]

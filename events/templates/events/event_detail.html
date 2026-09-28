@@ -3,7 +3,7 @@
 {% block title %}{{ event.title }} — liveaux{% endblock %}
 
 {% block content %}
-<a class="back" href="{% url 'events:event_list' %}">← All shows</a>
+<a class="back" href="{{ event.venue.city.get_absolute_url }}">← This week in {{ event.venue.city }}</a>
 
 <article class="event-detail">
   <div class="poster">
@@ -15,7 +15,7 @@
     <h1>{{ event.title }}</h1>
     <dl class="facts">
       <div><dt>When</dt><dd>{{ event.starts_at|date:"l j F Y" }}, {{ event.starts_at|time:"H:i" }}</dd></div>
-      <div><dt>Where</dt><dd><a href="{{ event.venue.get_absolute_url }}">{{ event.venue.name }}</a>{% if event.venue.address %}<br><span class="muted">{{ event.venue.address }}, {{ event.venue.district }}</span>{% endif %}</dd></div>
+      <div><dt>Where</dt><dd><a href="{{ event.venue.get_absolute_url }}">{{ event.venue.name }}</a><br><span class="muted">{% if event.venue.address %}{{ event.venue.address }}, {% endif %}{% if event.venue.district %}{{ event.venue.district }}, {% endif %}{{ event.venue.city }}</span></dd></div>
       {% if artists %}<div><dt>Artists</dt><dd>{% for artist in artists %}<a href="{{ artist.get_absolute_url }}">{{ artist.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</dd></div>{% endif %}
       {% if event.promoter %}<div><dt>By</dt><dd><a href="{{ event.promoter.get_absolute_url }}">{{ event.promoter.name }}</a></dd></div>{% endif %}
       {% if event.price is not None %}<div><dt>Price</dt><dd>€{{ event.price|floatformat:"-2" }}</dd></div>{% endif %}
@@ -25,7 +25,7 @@
 
     <div class="actions">
       {% if event.ticket_url %}<a class="button" href="{{ event.ticket_url }}" rel="noopener">Get tickets</a>{% endif %}
-      {% include "events/_save_button.html" %}
+      {% if event.has_started %}{% include "logbook/_attended_button.html" %}{% else %}{% include "events/_save_button.html" %}{% endif %}
       {% if can_edit %}<a class="link-button" href="{% url 'events:edit_event' event.pk %}">Edit event</a>{% endif %}
     </div>
   </div>

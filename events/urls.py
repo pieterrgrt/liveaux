@@ -6,6 +6,9 @@ app_name = "events"
 
 urlpatterns = [
     path("", views.event_list, name="event_list"),
+    path("week/", views.this_week, name="this_week"),
+    path("week/<slug:slug>/", views.city_week, name="city_week"),
+    path("submit/", views.submit_event, name="submit_event"),
     path("events/<int:pk>/", views.event_detail, name="event_detail"),
     path("events/<int:pk>/save/", views.toggle_save, name="toggle_save"),
     path("venues/<int:pk>/", views.page_detail, {"kind": "venue"}, name="venue_detail"),

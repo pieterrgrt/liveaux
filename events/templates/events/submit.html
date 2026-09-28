@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Submit an event — liveaux{% endblock %}
+{% block main_class %}narrow{% endblock %}
+
+{% block content %}
+<a class="back" href="{% url 'events:event_list' %}">← All shows</a>
+<h1>Submit an event</h1>
+<p class="muted">Run a venue, or book shows for one? Send us your event. We check every submission by hand and publish it within a few days. You'll see its status on <a href="{% url 'accounts:dashboard' %}">My liveaux</a>.</p>
+
+<form class="form" method="post">
+  {% csrf_token %}
+  {% include "_form_fields.html" %}
+  <div class="form-actions"><button type="submit" class="button">Send for review</button></div>
+</form>
+{% endblock %}

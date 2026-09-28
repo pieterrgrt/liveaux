@@ -11,6 +11,34 @@
   </div>
 </section>
 
+{% if to_log %}
+<section class="month">
+  <h2 class="month-heading">Were you there?</h2>
+  <ul class="manage-list">
+    {% for event in to_log %}
+      <li>
+        <span class="manage-date">{{ event.starts_at|date:"j M Y" }}</span>
+        <a href="{{ event.get_absolute_url }}">{{ event.title }}</a>
+        <span class="muted">{{ event.venue.name }}</span>
+        <form method="post" action="{% url 'logbook:attended' event.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="link-button">I was there</button>
+        </form>
+      </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+<section class="month">
+  <h2 class="month-heading">My log <span class="muted">{{ log_count }} show{{ log_count|pluralize }}</span></h2>
+  <ul class="event-list">
+    {% for entry in recent_log %}{% include "logbook/_entry_row.html" with is_own=True %}
+    {% empty %}<li class="empty">Went to a show? Open it and press <strong>I was there</strong> to start your log.</li>{% endfor %}
+  </ul>
+  {% if log_count %}<div class="actions"><a class="button button-ghost" href="{% url 'logbook:mine' %}">Your whole log</a></div>{% endif %}
+</section>
+
 <section class="month">
   <h2 class="month-heading">Saved shows</h2>
   <ul class="event-list">
@@ -51,6 +79,22 @@
     <a class="button button-ghost" href="{% url 'events:create_page' 'artist' %}">Create an artist page</a>
     <a class="button button-ghost" href="{% url 'events:create_page' 'promoter' %}">Create a promoter page</a>
   </div>
-  <p class="help">Run a venue? Get in touch and we'll give your account access to its page.</p>
+  <p class="help">Run a venue? <a href="{% url 'events:submit_event' %}">Submit your events</a>, or get in touch and we'll give your account access to its page.</p>
 </section>
+
+{% if submissions %}
+<section class="month">
+  <h2 class="month-heading">Events you submitted</h2>
+  <ul class="manage-list">
+    {% for submission in submissions %}
+      <li>
+        <span class="manage-date">{{ submission.starts_at|date:"j M Y" }}</span>
+        {% if submission.event %}<a href="{{ submission.event.get_absolute_url }}">{{ submission.title }}</a>{% else %}<span>{{ submission.title }}</span>{% endif %}
+        <span class="muted">{{ submission.venue_name }}</span>
+        <span class="status status-{{ submission.status }}">{{ submission.get_status_display }}</span>
+      </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
 {% endblock %}
