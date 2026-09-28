@@ -1,0 +1,352 @@
+[
+  {
+    "model": "events.venue",
+    "pk": 1,
+    "fields": {
+      "name": "SO36",
+      "address": "Oranienstraße 190",
+      "district": "Kreuzberg",
+      "city": "Berlin",
+      "website": "https://www.so36.com"
+    }
+  },
+  {
+    "model": "events.venue",
+    "pk": 2,
+    "fields": {
+      "name": "Lido",
+      "address": "Cuvrystraße 7",
+      "district": "Kreuzberg",
+      "city": "Berlin",
+      "website": "https://www.lido-berlin.de"
+    }
+  },
+  {
+    "model": "events.venue",
+    "pk": 3,
+    "fields": {
+      "name": "Astra Kulturhaus",
+      "address": "Revaler Straße 99",
+      "district": "Friedrichshain",
+      "city": "Berlin",
+      "website": "https://www.astra-berlin.de"
+    }
+  },
+  {
+    "model": "events.venue",
+    "pk": 4,
+    "fields": {
+      "name": "Columbiahalle",
+      "address": "Columbiadamm 13–21",
+      "district": "Tempelhof",
+      "city": "Berlin",
+      "website": "https://www.columbiahalle.berlin"
+    }
+  },
+  {
+    "model": "events.venue",
+    "pk": 5,
+    "fields": {
+      "name": "Huxleys Neue Welt",
+      "address": "Hasenheide 107–113",
+      "district": "Neukölln",
+      "city": "Berlin",
+      "website": "https://www.huxleysneuewelt.com"
+    }
+  },
+  {
+    "model": "events.venue",
+    "pk": 6,
+    "fields": {
+      "name": "Bi Nuu",
+      "address": "Im U-Bahnhof Schlesisches Tor",
+      "district": "Kreuzberg",
+      "city": "Berlin",
+      "website": "https://bi-nuu.de"
+    }
+  },
+  {
+    "model": "events.venue",
+    "pk": 7,
+    "fields": {
+      "name": "Privatclub",
+      "address": "Skalitzer Straße 85–86",
+      "district": "Kreuzberg",
+      "city": "Berlin",
+      "website": "https://privatclub-berlin.de"
+    }
+  },
+  {
+    "model": "events.venue",
+    "pk": 8,
+    "fields": {
+      "name": "Kesselhaus",
+      "address": "Knaackstraße 97",
+      "district": "Prenzlauer Berg",
+      "city": "Berlin",
+      "website": "https://www.kesselhaus.net"
+    }
+  },
+  {
+    "model": "events.venue",
+    "pk": 9,
+    "fields": {
+      "name": "Quasimodo",
+      "address": "Kantstraße 12a",
+      "district": "Charlottenburg",
+      "city": "Berlin",
+      "website": "https://www.quasimodo.de"
+    }
+  },
+  {
+    "model": "events.venue",
+    "pk": 10,
+    "fields": {
+      "name": "Festsaal Kreuzberg",
+      "address": "Am Flutgraben 2",
+      "district": "Treptow",
+      "city": "Berlin",
+      "website": "https://festsaal-kreuzberg.de"
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 1,
+    "fields": {
+      "title": "Punk Night: Kreuzberg Classics",
+      "venue": 1,
+      "starts_at": "2026-10-02T20:00:00+02:00",
+      "description": "",
+      "price": "18.00",
+      "ticket_url": ""
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 2,
+    "fields": {
+      "title": "Indie Showcase: Neue Bands aus Berlin",
+      "venue": 2,
+      "starts_at": "2026-10-03T20:30:00+02:00",
+      "description": "",
+      "price": "15.00",
+      "ticket_url": ""
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 3,
+    "fields": {
+      "title": "Synthwave Live",
+      "venue": 3,
+      "starts_at": "2026-10-07T21:00:00+02:00",
+      "description": "",
+      "price": "25.00",
+      "ticket_url": ""
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 4,
+    "fields": {
+      "title": "Rock im Herbst",
+      "venue": 4,
+      "starts_at": "2026-10-09T19:30:00+02:00",
+      "description": "",
+      "price": "45.00",
+      "ticket_url": ""
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 5,
+    "fields": {
+      "title": "Elektronische Nacht",
+      "venue": 5,
+      "starts_at": "2026-10-10T22:00:00+02:00",
+      "description": "",
+      "price": "30.00",
+      "ticket_url": ""
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 6,
+    "fields": {
+      "title": "Singer-Songwriter Abend",
+      "venue": 6,
+      "starts_at": "2026-10-14T20:00:00+02:00",
+      "description": "",
+      "price": "20.00",
+      "ticket_url": ""
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 7,
+    "fields": {
+      "title": "Garage Rock Revue",
+      "venue": 7,
+      "starts_at": "2026-10-16T21:00:00+02:00",
+      "description": "",
+      "price": "16.00",
+      "ticket_url": ""
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 8,
+    "fields": {
+      "title": "Jazz & Soul Session",
+      "venue": 9,
+      "starts_at": "2026-10-17T21:00:00+02:00",
+      "description": "",
+      "price": "22.00",
+      "ticket_url": ""
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 9,
+    "fields": {
+      "title": "Post-Punk Festival Tag 1",
+      "venue": 10,
+      "starts_at": "2026-10-23T19:00:00+02:00",
+      "description": "",
+      "price": "35.00",
+      "ticket_url": ""
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 10,
+    "fields": {
+      "title": "Post-Punk Festival Tag 2",
+      "venue": 10,
+      "starts_at": "2026-10-24T19:00:00+02:00",
+      "description": "",
+      "price": "35.00",
+      "ticket_url": ""
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 11,
+    "fields": {
+      "title": "Halloween Punk Special",
+      "venue": 1,
+      "starts_at": "2026-10-31T21:00:00+01:00",
+      "description": "",
+      "price": "20.00",
+      "ticket_url": ""
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 12,
+    "fields": {
+      "title": "Shoegaze Abend",
+      "venue": 2,
+      "starts_at": "2026-11-04T20:00:00+01:00",
+      "description": "",
+      "price": "19.00",
+      "ticket_url": ""
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 13,
+    "fields": {
+      "title": "Hip-Hop Live",
+      "venue": 3,
+      "starts_at": "2026-11-06T20:30:00+01:00",
+      "description": "",
+      "price": "32.00",
+      "ticket_url": ""
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 14,
+    "fields": {
+      "title": "Metal Night",
+      "venue": 4,
+      "starts_at": "2026-11-07T19:00:00+01:00",
+      "description": "",
+      "price": "39.00",
+      "ticket_url": ""
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 15,
+    "fields": {
+      "title": "Folk im Kesselhaus",
+      "venue": 8,
+      "starts_at": "2026-11-11T20:00:00+01:00",
+      "description": "",
+      "price": "24.00",
+      "ticket_url": ""
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 16,
+    "fields": {
+      "title": "Blues Jam",
+      "venue": 9,
+      "starts_at": "2026-11-13T21:00:00+01:00",
+      "description": "",
+      "price": "14.00",
+      "ticket_url": ""
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 17,
+    "fields": {
+      "title": "Dream Pop Live",
+      "venue": 6,
+      "starts_at": "2026-11-18T20:00:00+01:00",
+      "description": "",
+      "price": "21.00",
+      "ticket_url": ""
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 18,
+    "fields": {
+      "title": "Noise Rock Nacht",
+      "venue": 7,
+      "starts_at": "2026-11-20T21:30:00+01:00",
+      "description": "",
+      "price": "15.00",
+      "ticket_url": ""
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 19,
+    "fields": {
+      "title": "Big Band Swing",
+      "venue": 5,
+      "starts_at": "2026-11-21T20:00:00+01:00",
+      "description": "",
+      "price": "28.00",
+      "ticket_url": ""
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 20,
+    "fields": {
+      "title": "Jahresabschluss-Konzert",
+      "venue": 8,
+      "starts_at": "2026-11-28T20:00:00+01:00",
+      "description": "",
+      "price": "30.00",
+      "ticket_url": ""
+    }
+  }
+]
