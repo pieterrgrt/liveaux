@@ -16,15 +16,15 @@ from .models import LogEntry
 
 
 def _entries(user):
-    """The user's log entries, each with `year`: the local year of the show."""
-    entries = list(user.log_entries.select_related("event__venue__city").prefetch_related("event__artists"))
+    """The user's log entries, each with `year`: the local year of the event."""
+    entries = list(user.log_entries.select_related("event__venue__city", "event__category").prefetch_related("event__artists"))
     for entry in entries:
         entry.year = timezone.localtime(entry.event.starts_at).year
     return entries
 
 
 def _years(entries):
-    """Years with at least one logged show, newest first."""
+    """Years with at least one logged event, newest first."""
     return sorted({e.year for e in entries}, reverse=True)
 
 
@@ -33,7 +33,7 @@ def _years(entries):
 def attended(request, pk):
     event = get_object_or_404(Event, pk=pk)
     if not event.has_started:
-        messages.error(request, "You can log a show once it has started.")
+        messages.error(request, "You can add an event to your log once it has started.")
         return redirect(event)
     entry, created = LogEntry.objects.get_or_create(user=request.user, event=event)
     if created:
@@ -92,6 +92,7 @@ def public(request, pk):
 def year_stats(entries):
     """Numbers for a year overview. `entries` are LogEntry objects from one year."""
     venues = Counter(e.event.venue for e in entries)
+    categories = Counter(e.event.category for e in entries)
     cities = Counter(e.event.venue.city for e in entries)
     artists = Counter(artist for e in entries for artist in e.event.artists.all())
     ratings = [e.rating for e in entries if e.rating]
@@ -102,6 +103,7 @@ def year_stats(entries):
         "venue_count": len(venues),
         "city_count": len(cities),
         "top_venues": venues.most_common(5),
+        "categories": categories.most_common(),
         "top_artists": artists.most_common(5),
         "average_rating": round(sum(ratings) / len(ratings), 1) if ratings else None,
         "best": sorted((e for e in entries if e.rating), key=lambda e: (-e.rating, e.event.starts_at))[:5],

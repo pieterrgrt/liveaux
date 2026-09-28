@@ -3,10 +3,10 @@
 {% block title %}{{ page.name }} — liveaux{% endblock %}
 
 {% block content %}
-<a class="back" href="{% url 'events:event_list' %}">← All shows</a>
+<a class="back" href="{% url 'events:event_list' %}">← Everything on</a>
 
 <section class="venue-header">
-  <p class="eyebrow">{{ page.kind }}</p>
+  <p class="eyebrow">{{ page.kind_label }}</p>
   <h1>{{ page.name }}</h1>
   {% if page.kind == "venue" %}
     <p class="muted">{{ page.address }}{% if page.district %} · {{ page.district }}{% endif %}</p>

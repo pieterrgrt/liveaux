@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}{{ year }} in live music — liveaux{% endblock %}
+{% block title %}{{ year }} in review — liveaux{% endblock %}
 
 {% block content %}
 <a class="back" href="{% if is_own %}{% url 'logbook:mine' %}{% else %}{% url 'logbook:public' owner.pk %}{% endif %}">← {% if is_own %}My log{% else %}{{ owner.public_name }}{% endif %}</a>
 
 <section class="hero">
   <p class="eyebrow">{% if is_own %}Your{% else %}{{ owner.public_name }}'s{% endif %} year in review</p>
-  <h1><em>{{ year }}.</em><br>{{ stats.count }} show{{ stats.count|pluralize }}.</h1>
+  <h1><em>{{ year }}.</em><br>{{ stats.count }} event{{ stats.count|pluralize }}.</h1>
   {% if years|length > 1 %}
     <div class="filters">
       {% for y in years %}<a class="chip{% if y == year %} active{% endif %}" href="{% if is_own %}{% url 'logbook:my_year' y %}{% else %}{% url 'logbook:public_year' owner.pk y %}{% endif %}">{{ y }}</a>{% endfor %}
@@ -17,7 +17,7 @@
 
 {% if stats.count %}
 <div class="stats">
-  <div class="stat"><span class="stat-number">{{ stats.count }}</span><span class="stat-label">show{{ stats.count|pluralize }}</span></div>
+  <div class="stat"><span class="stat-number">{{ stats.count }}</span><span class="stat-label">event{{ stats.count|pluralize }}</span></div>
   <div class="stat"><span class="stat-number">{{ stats.venue_count }}</span><span class="stat-label">venue{{ stats.venue_count|pluralize }}</span></div>
   <div class="stat"><span class="stat-number">{{ stats.city_count }}</span><span class="stat-label">cit{{ stats.city_count|pluralize:"y,ies" }}</span></div>
   <div class="stat"><span class="stat-number">{{ stats.average_rating|default:"–" }}</span><span class="stat-label">average rating</span></div>
@@ -35,6 +35,15 @@
   </ol>
 </section>
 
+{% if stats.categories|length > 1 %}
+<section class="month">
+  <h2 class="month-heading">What you went to</h2>
+  <div class="filters">
+    {% for category, count in stats.categories %}<span class="chip">{{ category.name }} <strong>{{ count }}</strong></span>{% endfor %}
+  </div>
+</section>
+{% endif %}
+
 <div class="two-columns">
   <section class="month">
     <h2 class="month-heading">Most visited venues</h2>
@@ -50,7 +59,7 @@
       {% for artist, count in stats.top_artists %}
         <li><a href="{{ artist.get_absolute_url }}">{{ artist.name }}</a><span class="muted">{{ count }}×</span></li>
       {% empty %}
-        <li class="empty">No artists linked to these shows.</li>
+        <li class="empty">No artists linked to these events.</li>
       {% endfor %}
     </ol>
   </section>
@@ -66,12 +75,12 @@
 {% endif %}
 
 <section class="month">
-  <h2 class="month-heading">Every show</h2>
+  <h2 class="month-heading">Everything</h2>
   <ul class="event-list">
     {% for entry in entries %}{% include "logbook/_entry_row.html" %}{% endfor %}
   </ul>
 </section>
 {% else %}
-  <p class="empty">No shows logged in {{ year }}.</p>
+  <p class="empty">Nothing logged in {{ year }}.</p>
 {% endif %}
 {% endblock %}

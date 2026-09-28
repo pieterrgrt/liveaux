@@ -1,12 +1,19 @@
 <li>
   <a class="event-row" href="{{ event.get_absolute_url }}">
     <div class="date-block">
-      <span class="day">{{ event.starts_at|date:"d" }}</span>
-      <span class="weekday">{{ event.starts_at|date:"D" }}</span>
+      {% if event.is_running %}
+        <span class="weekday">until</span>
+        <span class="day">{{ event.ends_at|date:"d" }}</span>
+        <span class="weekday">{{ event.ends_at|date:"M" }}</span>
+      {% else %}
+        <span class="day">{{ event.starts_at|date:"d" }}</span>
+        <span class="weekday">{{ event.starts_at|date:"D" }}</span>
+      {% endif %}
     </div>
     <div class="event-info">
+      <span class="tag">{{ event.category.name }}</span>
       <h3>{{ event.title }}</h3>
-      <p>{{ event.venue.name }}{% if event.venue.district %} · {{ event.venue.district }}{% endif %} · {{ event.starts_at|time:"H:i" }}</p>
+      <p>{{ event.venue.name }}{% if event.venue.district %} · {{ event.venue.district }}{% endif %} · {% if event.is_multi_day %}{{ event.starts_at|date:"j M" }} – {{ event.ends_at|date:"j M Y" }}{% else %}{{ event.starts_at|time:"H:i" }}{% endif %}</p>
     </div>
     <div class="price">{% if event.price is not None %}€{{ event.price|floatformat:"-2" }}{% endif %}</div>
     <span class="arrow" aria-hidden="true">→</span>

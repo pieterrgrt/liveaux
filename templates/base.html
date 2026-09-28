@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}liveaux — live music, logged{% endblock %}</title>
+  <title>{% block title %}liveaux — what's on, and where you've been{% endblock %}</title>
   <link rel="stylesheet" href="{% static 'events/style.css' %}">
 </head>
 <body>
   <header class="site-header">
     <a class="wordmark" href="{% url 'events:event_list' %}">liveaux<span>.</span></a>
-    <p class="tagline">Live music, logged</p>
+    <p class="tagline">What's on, logged</p>
     <nav class="account-nav" aria-label="Account">
       <a href="{% url 'events:this_week' %}">This week</a>
       {% if user.is_authenticated %}
@@ -36,7 +36,7 @@
   </main>
 
   <footer class="site-footer">
-    <p>liveaux · <a href="{% url 'events:submit_event' %}">Run a venue? Submit an event</a> · <a href="{% url 'privacy' %}">Privacy</a></p>
+    <p>liveaux · <a href="{% url 'events:submit_event' %}">Organising something? Submit an event</a> · <a href="{% url 'privacy' %}">Privacy</a></p>
   </footer>
 </body>
 </html>

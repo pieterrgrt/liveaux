@@ -7,7 +7,6 @@ from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
-from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from .forms import AddMemberForm, EventForm, page_form_class
@@ -42,13 +41,14 @@ def create_page(request, kind):
             page.memberships.create(user=request.user, role=Membership.OWNER)
         messages.success(request, f"{page.name} is live. You are its owner.")
         return redirect(page.get_manage_url())
-    return render(request, "events/manage/page_form.html", {"form": form, "kind": kind, "page": None})
+    return render(
+        request, "events/manage/page_form.html", {"form": form, "kind_label": model.kind_label, "page": None}
+    )
 
 
 @login_required
 def manage_page(request, kind, pk):
     page, membership = _member_page(request, kind, pk)
-    now = timezone.now()
     events = page.events.select_related("venue").order_by("starts_at")
     return render(
         request,
@@ -58,8 +58,8 @@ def manage_page(request, kind, pk):
             "membership": membership,
             "is_owner": request.user.is_superuser or (membership and membership.is_owner),
             "can_add_events": kind in EVENT_KINDS,
-            "upcoming": events.filter(starts_at__gte=now),
-            "past": events.filter(starts_at__lt=now).order_by("-starts_at")[:10],
+            "upcoming": events.on_now_or_later(),
+            "past": events.exclude(pk__in=events.on_now_or_later()).order_by("-starts_at")[:10],
             "memberships": page.memberships.select_related("user").order_by("created_at"),
             "member_form": AddMemberForm(),
         },
@@ -74,7 +74,9 @@ def edit_page(request, kind, pk):
         form.save()
         messages.success(request, "Changes saved.")
         return redirect(page.get_manage_url())
-    return render(request, "events/manage/page_form.html", {"form": form, "kind": kind, "page": page})
+    return render(
+        request, "events/manage/page_form.html", {"form": form, "kind_label": page.kind_label, "page": page}
+    )
 
 
 @require_POST

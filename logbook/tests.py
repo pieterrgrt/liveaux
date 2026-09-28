@@ -5,9 +5,13 @@ from django.urls import reverse
 from django.utils import timezone
 
 from accounts.models import User
-from events.models import Artist, City, Event, Venue
+from events.models import Artist, Category, City, Event, Venue
 
 from .models import LogEntry
+
+
+def music():
+    return Category.objects.get(slug="music")  # created by a migration
 
 
 def local(*args):
@@ -21,8 +25,8 @@ class LogbookTests(TestCase):
         cls.other = User.objects.create_user("other@example.com", "pw")
         city = City.objects.create(name="Berlin", slug="berlin")
         cls.venue = Venue.objects.create(name="SO36", city=city)
-        cls.past = Event.objects.create(title="Punk Night", venue=cls.venue, starts_at=timezone.now() - timedelta(days=2))
-        cls.future = Event.objects.create(title="Next Week", venue=cls.venue, starts_at=timezone.now() + timedelta(days=7))
+        cls.past = Event.objects.create(category=music(), title="Punk Night", venue=cls.venue, starts_at=timezone.now() - timedelta(days=2))
+        cls.future = Event.objects.create(category=music(), title="Next Week", venue=cls.venue, starts_at=timezone.now() + timedelta(days=7))
 
     def setUp(self):
         self.client.force_login(self.fan)
@@ -119,7 +123,7 @@ class YearTests(TestCase):
             ("Other year", so36, local(2024, 5, 1, 20), 7),
         ]
         for title, venue, starts_at, rating in shows:
-            event = Event.objects.create(title=title, venue=venue, starts_at=starts_at)
+            event = Event.objects.create(category=music(), title=title, venue=venue, starts_at=starts_at)
             event.artists.add(band)
             LogEntry.objects.create(user=cls.fan, event=event, rating=rating)
 
@@ -131,6 +135,7 @@ class YearTests(TestCase):
         self.assertEqual(stats["venue_count"], 3)
         self.assertEqual(stats["city_count"], 2)
         self.assertEqual(stats["average_rating"], 8.0)
+        self.assertEqual([(c.slug, n) for c, n in stats["categories"]], [("music", 4)])
         self.assertEqual(stats["top_venues"][0][0].name, "SO36")
         self.assertEqual(stats["top_artists"][0][1], 4)
         self.assertEqual([e.event.title for e in stats["best"]], ["Four", "One", "Two"])
@@ -141,7 +146,7 @@ class YearTests(TestCase):
 
     def test_empty_year(self):
         self.client.force_login(self.fan)
-        self.assertContains(self.client.get(reverse("logbook:my_year", args=[2010])), "No shows logged in 2010")
+        self.assertContains(self.client.get(reverse("logbook:my_year", args=[2010])), "Nothing logged in 2010")
 
     def test_public_year(self):
         self.fan.log_is_public = True

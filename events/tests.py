@@ -6,7 +6,11 @@ from django.utils import timezone
 
 from accounts.models import User
 
-from .models import Artist, City, Event, EventSubmission, Membership, Promoter, Venue
+from .models import Artist, Category, City, Event, EventSubmission, Membership, Promoter, Venue
+
+
+def music():
+    return Category.objects.get(slug="music")  # created by a migration
 
 
 def berlin():
@@ -19,9 +23,9 @@ class FrontendTests(TestCase):
         now = timezone.now()
         cls.so36 = Venue.objects.create(city=berlin(), name="SO36", district="Kreuzberg")
         cls.kesselhaus = Venue.objects.create(city=berlin(), name="Kesselhaus", district="Prenzlauer Berg")
-        cls.upcoming = Event.objects.create(title="Punk Night", venue=cls.so36, starts_at=now + timedelta(days=3))
-        cls.other = Event.objects.create(title="Folk Evening", venue=cls.kesselhaus, starts_at=now + timedelta(days=5))
-        cls.past = Event.objects.create(title="Old Show", venue=cls.so36, starts_at=now - timedelta(days=3))
+        cls.upcoming = Event.objects.create(category=music(), title="Punk Night", venue=cls.so36, starts_at=now + timedelta(days=3))
+        cls.other = Event.objects.create(category=music(), title="Folk Evening", venue=cls.kesselhaus, starts_at=now + timedelta(days=5))
+        cls.past = Event.objects.create(category=music(), title="Old Show", venue=cls.so36, starts_at=now - timedelta(days=3))
 
     def test_list_shows_only_upcoming_events(self):
         response = self.client.get(reverse("events:event_list"))
@@ -56,10 +60,10 @@ class FanTests(TestCase):
         cls.fan = User.objects.create_user("fan@example.com", "pw")
         cls.venue = Venue.objects.create(city=berlin(), name="SO36", district="Kreuzberg")
         cls.artist = Artist.objects.create(name="Die Ärzte")
-        cls.event = Event.objects.create(
+        cls.event = Event.objects.create(category=music(), 
             title="Punk Night", venue=cls.venue, starts_at=timezone.now() + timedelta(days=3)
         )
-        cls.gig = Event.objects.create(
+        cls.gig = Event.objects.create(category=music(), 
             title="Ärzte live", venue=Venue.objects.create(city=berlin(), name="Lido"), starts_at=timezone.now() + timedelta(days=4)
         )
         cls.gig.artists.add(cls.artist)
@@ -105,7 +109,14 @@ class ManageTests(TestCase):
         cls.venue.memberships.create(user=cls.editor, role=Membership.EDITOR)
 
     def event_data(self, **extra):
-        data = {"title": "Punk Night", "starts_at": "2030-10-02T20:00", "price": "18", "ticket_url": "", "description": ""}
+        data = {
+            "title": "Punk Night",
+            "category": music().pk,
+            "starts_at": "2030-10-02T20:00",
+            "price": "18",
+            "ticket_url": "",
+            "description": "",
+        }
         data.update(extra)
         return data
 
@@ -141,7 +152,7 @@ class ManageTests(TestCase):
         self.assertFalse(event.can_edit(self.owner))
 
     def test_edit_and_delete_event(self):
-        event = Event.objects.create(title="Old title", venue=self.venue, starts_at=timezone.now() + timedelta(days=1))
+        event = Event.objects.create(category=music(), title="Old title", venue=self.venue, starts_at=timezone.now() + timedelta(days=1))
         self.client.force_login(self.editor)
         self.client.post(reverse("events:edit_event", args=[event.pk]), self.event_data(title="New title"))
         event.refresh_from_db()
@@ -183,10 +194,10 @@ class CityWeekTests(TestCase):
         cls.hamburg = City.objects.create(name="Hamburg", slug="hamburg")
         so36 = Venue.objects.create(city=berlin(), name="SO36", district="Kreuzberg")
         molotow = Venue.objects.create(city=cls.hamburg, name="Molotow", district="St. Pauli")
-        Event.objects.create(title="Punk Night", venue=so36, starts_at=now + timedelta(days=2))
-        Event.objects.create(title="Next Month", venue=so36, starts_at=now + timedelta(days=30))
-        Event.objects.create(title="Yesterday", venue=so36, starts_at=now - timedelta(days=1))
-        Event.objects.create(title="Garage Night", venue=molotow, starts_at=now + timedelta(days=2))
+        Event.objects.create(category=music(), title="Punk Night", venue=so36, starts_at=now + timedelta(days=2))
+        Event.objects.create(category=music(), title="Next Month", venue=so36, starts_at=now + timedelta(days=30))
+        Event.objects.create(category=music(), title="Yesterday", venue=so36, starts_at=now - timedelta(days=1))
+        Event.objects.create(category=music(), title="Garage Night", venue=molotow, starts_at=now + timedelta(days=2))
 
     def test_week_shows_only_this_city_and_week(self):
         response = self.client.get(reverse("events:city_week", args=["berlin"]))
@@ -219,7 +230,13 @@ class SubmissionTests(TestCase):
         cls.venue = Venue.objects.create(city=berlin(), name="SO36")
 
     def data(self, **extra):
-        data = {"title": "Punk Night", "starts_at": "2030-10-02T20:00", "relation": "Booker", "price": "12"}
+        data = {
+            "title": "Punk Night",
+            "category": music().pk,
+            "starts_at": "2030-10-02T20:00",
+            "relation": "Booker",
+            "price": "12",
+        }
         data.update(extra)
         return data
 
@@ -264,7 +281,7 @@ class SubmissionTests(TestCase):
         self.assertFalse(event.can_edit(self.booker))  # venue access is still granted by hand
 
     def test_admin_rejects(self):
-        submission = EventSubmission.objects.create(
+        submission = EventSubmission.objects.create(category=music(), 
             submitted_by=self.booker, venue=self.venue, title="Spam", starts_at=timezone.now(), relation="x"
         )
         self.client.force_login(self.admin)
@@ -277,3 +294,92 @@ class SubmissionTests(TestCase):
         self.assertFalse(Event.objects.exists())
         with self.assertRaises(ValueError):
             submission.approve()
+
+
+class CategoryAndRunTests(TestCase):
+    """Events of every kind, and ones that run for days (exhibitions, festivals)."""
+
+    @classmethod
+    def setUpTestData(cls):
+        now = timezone.now()
+        cls.exhibition = Category.objects.get(slug="exhibition")
+        museum = Venue.objects.create(city=berlin(), name="Neue Nationalgalerie", district="Tiergarten")
+        club = Venue.objects.create(city=berlin(), name="SO36", district="Kreuzberg")
+        cls.running = Event.objects.create(
+            category=cls.exhibition,
+            title="Farbe als Raum",
+            venue=museum,
+            starts_at=now - timedelta(days=30),
+            ends_at=now + timedelta(days=60),
+        )
+        Event.objects.create(
+            category=cls.exhibition,
+            title="Closed Show",
+            venue=museum,
+            starts_at=now - timedelta(days=90),
+            ends_at=now - timedelta(days=1),
+        )
+        Event.objects.create(category=music(), title="Punk Night", venue=club, starts_at=now + timedelta(days=2))
+
+    def test_running_exhibition_is_on_now(self):
+        response = self.client.get(reverse("events:event_list"))
+        self.assertContains(response, "On now")
+        self.assertEqual([e.title for e in response.context["on_now"]], ["Farbe als Raum"])
+        self.assertEqual([e.title for e in response.context["events"]], ["Punk Night"])
+        self.assertNotContains(response, "Closed Show")
+
+    def test_filter_by_category_keeps_city(self):
+        response = self.client.get(reverse("events:event_list"), {"category": "exhibition", "city": "berlin"})
+        self.assertContains(response, "Farbe als Raum")
+        self.assertNotContains(response, "Punk Night")
+        chip = next(c for c in response.context["category_chips"] if c["label"] == "Music")
+        self.assertEqual(chip["href"], "?city=berlin&category=music")
+
+    def test_week_lists_running_things_once(self):
+        response = self.client.get(reverse("events:city_week", args=["berlin"]))
+        self.assertEqual([e.title for e in response.context["running"]], ["Farbe als Raum"])
+        self.assertContains(response, "All week")
+        self.assertContains(response, "Farbe als Raum", count=1)
+        self.assertContains(response, "Punk Night")
+        self.assertNotContains(response, "Closed Show")
+        response = self.client.get(reverse("events:city_week", args=["berlin"]), {"category": "music"})
+        self.assertNotContains(response, "Farbe als Raum")
+
+    def test_running_exhibition_can_be_saved_and_logged(self):
+        self.client.force_login(User.objects.create_user("fan@example.com", "pw"))
+        response = self.client.get(self.running.get_absolute_url())
+        self.assertContains(response, "I was there")
+        self.assertContains(response, ">Save<")
+        self.assertContains(response, "Exhibition")
+
+    def test_end_before_start_is_refused(self):
+        owner = User.objects.create_user("owner@example.com", "pw")
+        venue = self.running.venue
+        venue.memberships.create(user=owner, role=Membership.OWNER)
+        self.client.force_login(owner)
+        response = self.client.post(
+            reverse("events:create_event", args=["venue", venue.pk]),
+            {
+                "title": "Backwards",
+                "category": self.exhibition.pk,
+                "starts_at": "2030-10-02T10:00",
+                "ends_at": "2030-09-01T18:00",
+            },
+        )
+        self.assertContains(response, "can&#x27;t be before the start")
+        self.assertFalse(Event.objects.filter(title="Backwards").exists())
+
+    def test_submit_running_exhibition(self):
+        """An exhibition that already opened can be submitted, as long as it hasn't closed."""
+        self.client.force_login(User.objects.create_user("curator@example.com", "pw"))
+        data = {
+            "title": "Late Addition",
+            "category": self.exhibition.pk,
+            "venue": self.running.venue.pk,
+            "starts_at": "2020-01-01T10:00",
+            "ends_at": "2030-01-01T18:00",
+            "relation": "Curator",
+        }
+        self.assertRedirects(self.client.post(reverse("events:submit_event"), data), reverse("accounts:dashboard"))
+        submission = EventSubmission.objects.get()
+        self.assertEqual(submission.approve().category, self.exhibition)

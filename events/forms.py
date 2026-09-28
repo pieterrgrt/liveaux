@@ -19,13 +19,34 @@ class EventForm(forms.ModelForm):
 
     class Meta:
         model = Event
-        fields = ["title", "starts_at", "venue", "promoter", "artists", "price", "ticket_url", "description"]
+        fields = [
+            "title",
+            "category",
+            "starts_at",
+            "ends_at",
+            "venue",
+            "promoter",
+            "artists",
+            "price",
+            "ticket_url",
+            "description",
+        ]
         widgets = {
             "starts_at": forms.DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),
+            "ends_at": forms.DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),
             "artists": forms.SelectMultiple(attrs={"size": 6}),
         }
-        labels = {"starts_at": "Starts at", "ticket_url": "Ticket link", "price": "Price (€)"}
-        help_texts = {"artists": "Hold Ctrl (Cmd on a Mac) to select more than one."}
+        labels = {
+            "starts_at": "Starts",
+            "ends_at": "Ends",
+            "promoter": "Organiser",
+            "ticket_url": "Ticket link",
+            "price": "Price (€)",
+        }
+        help_texts = {
+            "artists": "Artists, performers, directors or speakers. Hold Ctrl (Cmd on a Mac) to select more than one.",
+            "ends_at": "Only for things that run several days, like an exhibition or a festival.",
+        }
 
     def __init__(self, *args, fixed_page=None, **kwargs):
         super().__init__(*args, **kwargs)
@@ -65,7 +86,9 @@ class EventSubmissionForm(forms.ModelForm):
             "new_venue_district",
             "new_venue_city",
             "title",
+            "category",
             "starts_at",
+            "ends_at",
             "price",
             "ticket_url",
             "description",
@@ -73,14 +96,18 @@ class EventSubmissionForm(forms.ModelForm):
         ]
         widgets = {
             "starts_at": forms.DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),
+            "ends_at": forms.DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),
         }
         labels = {
-            "starts_at": "Starts at",
+            "starts_at": "Starts",
+            "ends_at": "Ends",
             "ticket_url": "Ticket link",
             "price": "Price (€)",
             "title": "Event title",
         }
-        help_texts = {"venue": "Not in the list? Leave this empty and fill in the new venue below."}
+        help_texts = {
+            "venue": "Museum, cinema, theatre, club… Not in the list? Leave this empty and fill in the new venue below."
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -99,7 +126,11 @@ class EventSubmissionForm(forms.ModelForm):
                 self.add_error("new_venue_name", "Pick a venue above, or give the name of the new venue.")
             if not data.get("new_venue_city"):
                 self.add_error("new_venue_city", "Which city is the new venue in?")
-        starts_at = data.get("starts_at")
-        if starts_at and starts_at < timezone.now():
+        starts_at, ends_at = data.get("starts_at"), data.get("ends_at")
+        if ends_at and ends_at < timezone.now():
+            self.add_error("ends_at", "This date is in the past.")
+        elif starts_at and starts_at < timezone.now() and not ends_at:
             self.add_error("starts_at", "This date is in the past.")
+        if starts_at and ends_at and ends_at < starts_at:
+            self.add_error("ends_at", "The end can't be before the start.")
         return data

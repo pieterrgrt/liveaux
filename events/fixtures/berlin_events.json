@@ -118,6 +118,72 @@
     }
   },
   {
+    "model": "events.venue",
+    "pk": 11,
+    "fields": {
+      "name": "Hamburger Bahnhof",
+      "address": "Invalidenstraße 50–51",
+      "district": "Mitte",
+      "city": 1,
+      "website": "https://www.smb.museum/museen-einrichtungen/hamburger-bahnhof/"
+    }
+  },
+  {
+    "model": "events.venue",
+    "pk": 12,
+    "fields": {
+      "name": "Neue Nationalgalerie",
+      "address": "Potsdamer Straße 50",
+      "district": "Tiergarten",
+      "city": 1,
+      "website": "https://www.smb.museum/museen-einrichtungen/neue-nationalgalerie/"
+    }
+  },
+  {
+    "model": "events.venue",
+    "pk": 13,
+    "fields": {
+      "name": "Babylon",
+      "address": "Rosa-Luxemburg-Straße 30",
+      "district": "Mitte",
+      "city": 1,
+      "website": "https://babylonberlin.eu"
+    }
+  },
+  {
+    "model": "events.venue",
+    "pk": 14,
+    "fields": {
+      "name": "Kino International",
+      "address": "Karl-Marx-Allee 33",
+      "district": "Mitte",
+      "city": 1,
+      "website": "https://www.yorck.de/kinos/kino-international"
+    }
+  },
+  {
+    "model": "events.venue",
+    "pk": 15,
+    "fields": {
+      "name": "Schaubühne",
+      "address": "Kurfürstendamm 153",
+      "district": "Charlottenburg",
+      "city": 1,
+      "website": "https://www.schaubuehne.de"
+    }
+  },
+  {
+    "model": "events.venue",
+    "pk": 16,
+    "fields": {
+      "name": "Radialsystem",
+      "address": "Holzmarktstraße 33",
+      "district": "Friedrichshain",
+      "city": 1,
+      "website": "https://www.radialsystem.de"
+    }
+  },
+  {
     "model": "events.event",
     "pk": 1,
     "fields": {
@@ -126,7 +192,10 @@
       "starts_at": "2026-10-02T20:00:00+02:00",
       "description": "",
       "price": "18.00",
-      "ticket_url": ""
+      "ticket_url": "",
+      "category": [
+        "music"
+      ]
     }
   },
   {
@@ -138,7 +207,10 @@
       "starts_at": "2026-10-03T20:30:00+02:00",
       "description": "",
       "price": "15.00",
-      "ticket_url": ""
+      "ticket_url": "",
+      "category": [
+        "music"
+      ]
     }
   },
   {
@@ -150,7 +222,10 @@
       "starts_at": "2026-10-07T21:00:00+02:00",
       "description": "",
       "price": "25.00",
-      "ticket_url": ""
+      "ticket_url": "",
+      "category": [
+        "music"
+      ]
     }
   },
   {
@@ -162,7 +237,10 @@
       "starts_at": "2026-10-09T19:30:00+02:00",
       "description": "",
       "price": "45.00",
-      "ticket_url": ""
+      "ticket_url": "",
+      "category": [
+        "music"
+      ]
     }
   },
   {
@@ -174,7 +252,10 @@
       "starts_at": "2026-10-10T22:00:00+02:00",
       "description": "",
       "price": "30.00",
-      "ticket_url": ""
+      "ticket_url": "",
+      "category": [
+        "club"
+      ]
     }
   },
   {
@@ -186,7 +267,10 @@
       "starts_at": "2026-10-14T20:00:00+02:00",
       "description": "",
       "price": "20.00",
-      "ticket_url": ""
+      "ticket_url": "",
+      "category": [
+        "music"
+      ]
     }
   },
   {
@@ -198,7 +282,10 @@
       "starts_at": "2026-10-16T21:00:00+02:00",
       "description": "",
       "price": "16.00",
-      "ticket_url": ""
+      "ticket_url": "",
+      "category": [
+        "music"
+      ]
     }
   },
   {
@@ -210,7 +297,10 @@
       "starts_at": "2026-10-17T21:00:00+02:00",
       "description": "",
       "price": "22.00",
-      "ticket_url": ""
+      "ticket_url": "",
+      "category": [
+        "music"
+      ]
     }
   },
   {
@@ -222,7 +312,10 @@
       "starts_at": "2026-10-23T19:00:00+02:00",
       "description": "",
       "price": "35.00",
-      "ticket_url": ""
+      "ticket_url": "",
+      "category": [
+        "music"
+      ]
     }
   },
   {
@@ -234,7 +327,10 @@
       "starts_at": "2026-10-24T19:00:00+02:00",
       "description": "",
       "price": "35.00",
-      "ticket_url": ""
+      "ticket_url": "",
+      "category": [
+        "music"
+      ]
     }
   },
   {
@@ -246,7 +342,10 @@
       "starts_at": "2026-10-31T21:00:00+01:00",
       "description": "",
       "price": "20.00",
-      "ticket_url": ""
+      "ticket_url": "",
+      "category": [
+        "music"
+      ]
     }
   },
   {
@@ -258,7 +357,10 @@
       "starts_at": "2026-11-04T20:00:00+01:00",
       "description": "",
       "price": "19.00",
-      "ticket_url": ""
+      "ticket_url": "",
+      "category": [
+        "music"
+      ]
     }
   },
   {
@@ -270,7 +372,10 @@
       "starts_at": "2026-11-06T20:30:00+01:00",
       "description": "",
       "price": "32.00",
-      "ticket_url": ""
+      "ticket_url": "",
+      "category": [
+        "music"
+      ]
     }
   },
   {
@@ -282,7 +387,10 @@
       "starts_at": "2026-11-07T19:00:00+01:00",
       "description": "",
       "price": "39.00",
-      "ticket_url": ""
+      "ticket_url": "",
+      "category": [
+        "music"
+      ]
     }
   },
   {
@@ -294,7 +402,10 @@
       "starts_at": "2026-11-11T20:00:00+01:00",
       "description": "",
       "price": "24.00",
-      "ticket_url": ""
+      "ticket_url": "",
+      "category": [
+        "music"
+      ]
     }
   },
   {
@@ -306,7 +417,10 @@
       "starts_at": "2026-11-13T21:00:00+01:00",
       "description": "",
       "price": "14.00",
-      "ticket_url": ""
+      "ticket_url": "",
+      "category": [
+        "music"
+      ]
     }
   },
   {
@@ -318,7 +432,10 @@
       "starts_at": "2026-11-18T20:00:00+01:00",
       "description": "",
       "price": "21.00",
-      "ticket_url": ""
+      "ticket_url": "",
+      "category": [
+        "music"
+      ]
     }
   },
   {
@@ -330,7 +447,10 @@
       "starts_at": "2026-11-20T21:30:00+01:00",
       "description": "",
       "price": "15.00",
-      "ticket_url": ""
+      "ticket_url": "",
+      "category": [
+        "music"
+      ]
     }
   },
   {
@@ -342,7 +462,10 @@
       "starts_at": "2026-11-21T20:00:00+01:00",
       "description": "",
       "price": "28.00",
-      "ticket_url": ""
+      "ticket_url": "",
+      "category": [
+        "music"
+      ]
     }
   },
   {
@@ -354,6 +477,147 @@
       "starts_at": "2026-11-28T20:00:00+01:00",
       "description": "",
       "price": "30.00",
+      "ticket_url": "",
+      "category": [
+        "music"
+      ]
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 21,
+    "fields": {
+      "title": "Licht und Beton: Fotografie der Nachkriegsmoderne",
+      "category": [
+        "exhibition"
+      ],
+      "venue": 11,
+      "starts_at": "2026-09-10T10:00:00+02:00",
+      "description": "",
+      "price": "14.00",
+      "ticket_url": "",
+      "ends_at": "2027-01-17T18:00:00+01:00"
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 22,
+    "fields": {
+      "title": "Farbe als Raum",
+      "category": [
+        "exhibition"
+      ],
+      "venue": 12,
+      "starts_at": "2026-10-09T10:00:00+02:00",
+      "description": "",
+      "price": "16.00",
+      "ticket_url": "",
+      "ends_at": "2027-02-28T18:00:00+01:00"
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 23,
+    "fields": {
+      "title": "Stummfilm mit Live-Orgel: Metropolis",
+      "category": [
+        "film"
+      ],
+      "venue": 13,
+      "starts_at": "2026-10-02T20:00:00+02:00",
+      "description": "",
+      "price": "12.00",
+      "ticket_url": ""
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 24,
+    "fields": {
+      "title": "Retrospektive: Berliner Schule",
+      "category": [
+        "film"
+      ],
+      "venue": 14,
+      "starts_at": "2026-10-01T18:00:00+02:00",
+      "description": "",
+      "price": "10.00",
+      "ticket_url": "",
+      "ends_at": "2026-10-07T23:00:00+02:00"
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 25,
+    "fields": {
+      "title": "Hedda Gabler",
+      "category": [
+        "theatre"
+      ],
+      "venue": 15,
+      "starts_at": "2026-09-30T19:30:00+02:00",
+      "description": "",
+      "price": "38.00",
+      "ticket_url": ""
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 26,
+    "fields": {
+      "title": "Körper im Raum: zeitgenössischer Tanz",
+      "category": [
+        "dance"
+      ],
+      "venue": 16,
+      "starts_at": "2026-10-03T20:00:00+02:00",
+      "description": "",
+      "price": "25.00",
+      "ticket_url": ""
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 27,
+    "fields": {
+      "title": "Lesung: Neue Stimmen aus Berlin",
+      "category": [
+        "talk"
+      ],
+      "venue": 16,
+      "starts_at": "2026-10-15T19:00:00+02:00",
+      "description": "",
+      "price": "8.00",
+      "ticket_url": ""
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 28,
+    "fields": {
+      "title": "Stand-up in English",
+      "category": [
+        "comedy"
+      ],
+      "venue": 9,
+      "starts_at": "2026-10-08T21:00:00+02:00",
+      "description": "",
+      "price": "15.00",
+      "ticket_url": ""
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 29,
+    "fields": {
+      "title": "Kinderkino am Sonntag",
+      "category": [
+        "family"
+      ],
+      "venue": 13,
+      "starts_at": "2026-10-04T11:00:00+02:00",
+      "description": "",
+      "price": "5.00",
       "ticket_url": ""
     }
   }

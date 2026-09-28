@@ -2,27 +2,24 @@
 
 {% block content %}
 <section class="hero">
-  <h1>Tonight.<br>Tomorrow.<br><em>Loud.</em></h1>
-  <p class="hero-count">{{ events|length }} upcoming show{{ events|length|pluralize }}</p>
+  <h1>Gigs. Art. Film.<br><em>Everything on.</em></h1>
+  <p class="hero-count">{{ events|length }} upcoming{% if on_now %} · {{ on_now|length }} on now{% endif %}</p>
 </section>
 
-{% if cities|length > 1 %}
-<nav class="filters" aria-label="Filter by city">
-  <a class="chip{% if not current_city %} active{% endif %}" href="{% url 'events:event_list' %}">All cities</a>
-  {% for city in cities %}
-    <a class="chip{% if city == current_city %} active{% endif %}" href="?city={{ city.slug }}">{{ city.name }}</a>
-  {% endfor %}
-</nav>
+{% include "events/_chips.html" with chips=category_chips label="Filter by kind of event" %}
+{% if city_chips %}{% include "events/_chips.html" with chips=city_chips label="Filter by city" %}{% endif %}
+{% include "events/_chips.html" with chips=district_chips label="Filter by district" %}
+
+<p class="week-link"><a href="{% if current_city %}{{ current_city.get_absolute_url }}{% else %}{% url 'events:this_week' %}{% endif %}{% if current_category %}?category={{ current_category.slug }}{% endif %}">Just this week{% if current_city %} in {{ current_city.name }}{% endif %} →</a></p>
+
+{% if on_now %}
+<section class="month">
+  <h2 class="month-heading">On now</h2>
+  <ul class="event-list">
+    {% for event in on_now %}{% include "events/_event_row.html" %}{% endfor %}
+  </ul>
+</section>
 {% endif %}
-
-<nav class="filters" aria-label="Filter by district">
-  <a class="chip{% if not current_district %} active{% endif %}" href="?{% if current_city %}city={{ current_city.slug }}{% endif %}">All{% if current_city %} of {{ current_city.name }}{% endif %}</a>
-  {% for district in districts %}
-    <a class="chip{% if district == current_district %} active{% endif %}" href="?{% if current_city %}city={{ current_city.slug }}&amp;{% endif %}district={{ district|urlencode }}">{{ district }}</a>
-  {% endfor %}
-</nav>
-
-<p class="week-link"><a href="{% if current_city %}{{ current_city.get_absolute_url }}{% else %}{% url 'events:this_week' %}{% endif %}">Just this week{% if current_city %} in {{ current_city.name }}{% endif %} →</a></p>
 
 {% regroup events by month as months %}
 {% for group in months %}
@@ -35,6 +32,8 @@
     </ul>
   </section>
 {% empty %}
-  <p class="empty">No upcoming shows{% if current_district %} in {{ current_district }}{% elif current_city %} in {{ current_city.name }}{% endif %}.</p>
+  {% if not on_now %}
+  <p class="empty">Nothing coming up{% if current_category %} in {{ current_category.name|lower }}{% endif %}{% if current_district %} in {{ current_district }}{% elif current_city %} in {{ current_city.name }}{% endif %}.</p>
+  {% endif %}
 {% endfor %}
 {% endblock %}

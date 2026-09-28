@@ -6,10 +6,14 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from events.models import City, Event, Venue
+from events.models import Category, City, Event, Venue
 from logbook.models import LogEntry
 
 from .models import User
+
+
+def music():
+    return Category.objects.get(slug="music")  # created by a migration
 
 
 class SignupTests(TestCase):
@@ -60,7 +64,7 @@ class PrivacyTests(TestCase):
         self.user = User.objects.create_user("fan@example.com", "a-long-Passw0rd!")
         self.user.emailaddress_set.create(email=self.user.email, primary=True, verified=True)
         venue = Venue.objects.create(name="SO36", city=City.objects.create(name="Berlin", slug="berlin"))
-        self.event = Event.objects.create(title="Punk Night", venue=venue, starts_at=timezone.now() - timedelta(days=1))
+        self.event = Event.objects.create(category=music(), title="Punk Night", venue=venue, starts_at=timezone.now() - timedelta(days=1))
         LogEntry.objects.create(user=self.user, event=self.event, rating=8, note="Loud")
         venue.memberships.create(user=self.user, role="owner")
         self.client.force_login(self.user)

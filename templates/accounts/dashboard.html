@@ -31,19 +31,19 @@
 {% endif %}
 
 <section class="month">
-  <h2 class="month-heading">My log <span class="muted">{{ log_count }} show{{ log_count|pluralize }}</span></h2>
+  <h2 class="month-heading">My log <span class="muted">{{ log_count }} event{{ log_count|pluralize }}</span></h2>
   <ul class="event-list">
     {% for entry in recent_log %}{% include "logbook/_entry_row.html" with is_own=True %}
-    {% empty %}<li class="empty">Went to a show? Open it and press <strong>I was there</strong> to start your log.</li>{% endfor %}
+    {% empty %}<li class="empty">Been to something? Open it and press <strong>I was there</strong> to start your log.</li>{% endfor %}
   </ul>
   {% if log_count %}<div class="actions"><a class="button button-ghost" href="{% url 'logbook:mine' %}">Your whole log</a></div>{% endif %}
 </section>
 
 <section class="month">
-  <h2 class="month-heading">Saved shows</h2>
+  <h2 class="month-heading">Saved events</h2>
   <ul class="event-list">
     {% for event in saved %}{% include "events/_event_row.html" %}
-    {% empty %}<li class="empty">Nothing saved yet. Open a show and press Save to keep it here.</li>{% endfor %}
+    {% empty %}<li class="empty">Nothing saved yet. Open an event and press Save to keep it here.</li>{% endfor %}
   </ul>
 </section>
 
@@ -51,7 +51,7 @@
   <h2 class="month-heading">From who you follow</h2>
   <ul class="event-list">
     {% for event in from_follows %}{% include "events/_event_row.html" %}
-    {% empty %}<li class="empty">{% if following %}No new shows from venues, artists or promoters you follow.{% else %}Follow a venue, artist or promoter to see their shows here.{% endif %}</li>{% endfor %}
+    {% empty %}<li class="empty">{% if following %}Nothing new from venues, artists or organisers you follow.{% else %}Follow a venue, artist or organiser to see their events here.{% endif %}</li>{% endfor %}
   </ul>
   {% if following %}
     <p class="chips-label">Following</p>
@@ -66,7 +66,7 @@
   <ul class="manage-list">
     {% for page in pages %}
       <li>
-        <span class="manage-date">{{ page.kind|capfirst }}</span>
+        <span class="manage-date">{{ page.kind_label|capfirst }}</span>
         <a href="{{ page.get_manage_url }}">{{ page.name }}</a>
         <span></span>
         <a class="link-button" href="{{ page.get_manage_url }}">Manage</a>
@@ -77,9 +77,9 @@
   </ul>
   <div class="actions">
     <a class="button button-ghost" href="{% url 'events:create_page' 'artist' %}">Create an artist page</a>
-    <a class="button button-ghost" href="{% url 'events:create_page' 'promoter' %}">Create a promoter page</a>
+    <a class="button button-ghost" href="{% url 'events:create_page' 'promoter' %}">Create an organiser page</a>
   </div>
-  <p class="help">Run a venue? <a href="{% url 'events:submit_event' %}">Submit your events</a>, or get in touch and we'll give your account access to its page.</p>
+  <p class="help">Run a venue, museum or cinema? <a href="{% url 'events:submit_event' %}">Submit your events</a>, or get in touch and we'll give your account access to its page.</p>
 </section>
 
 {% if submissions %}

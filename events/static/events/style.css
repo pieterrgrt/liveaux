@@ -234,6 +234,25 @@ main,
   letter-spacing: 0.1em;
 }
 
+.tag {
+  display: inline-block;
+  margin-bottom: 4px;
+  color: var(--accent);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  text-decoration: none;
+}
+
+a.tag:hover {
+  text-decoration: underline;
+}
+
+.event-body .tag {
+  margin-bottom: 8px;
+}
+
 .event-info h3 {
   margin: 0 0 4px;
   font-size: 1.125rem;
@@ -307,6 +326,11 @@ main,
 
 .poster-month {
   font-size: 2.5rem;
+}
+
+.chip strong {
+  margin-left: 4px;
+  color: var(--accent);
 }
 
 .event-body h1,

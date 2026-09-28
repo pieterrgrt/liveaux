@@ -7,7 +7,7 @@
 <h1>Privacy</h1>
 <p class="muted">Last updated 28 September 2026</p>
 
-<p>liveaux is a gig guide with a personal log of the shows you went to. Where you've been says a lot about you, so we keep as little as we can, keep your log private unless you choose otherwise, and let you take or delete your data whenever you like.</p>
+<p>liveaux is a guide to what's on in the city (concerts, exhibitions, films, theatre and more) with a personal log of the events you went to. Where you've been says a lot about you, so we keep as little as we can, keep your log private unless you choose otherwise, and let you take or delete your data whenever you like.</p>
 
 <h2>Without an account</h2>
 <p>You can browse the agenda without an account. We don't use analytics, advertising or tracking cookies, and pages don't load anything from other companies: fonts and styles come from liveaux itself. Our web server keeps short technical logs (IP address, page, time) to keep the site running and safe.</p>
@@ -15,29 +15,29 @@
 <h2>What we store when you sign up</h2>
 <ul>
   <li><strong>Account:</strong> your email address, a hashed password (we can't read it), an optional name, and when you signed up and last logged in.</li>
-  <li><strong>Your log:</strong> the shows you marked with <em>I was there</em>, with the rating and note you added.</li>
-  <li><strong>Saved shows and follows:</strong> the events you saved and the venues, artists and promoters you follow.</li>
-  <li><strong>Pages you manage and events you submit:</strong> which venue, promoter or artist pages you help run, and events you sent in for review.</li>
+  <li><strong>Your log:</strong> the events you marked with <em>I was there</em>, with the rating and note you added.</li>
+  <li><strong>Saved events and follows:</strong> the events you saved and the venues, artists and organisers you follow.</li>
+  <li><strong>Pages you manage and events you submit:</strong> which venue, organiser or artist pages you help run, and events you sent in for review.</li>
 </ul>
 
 <h2>Why</h2>
-<p>Only to run liveaux for you: to log you in, show you your log and your saved shows, and let you manage pages. That is the service you signed up for (GDPR article 6(1)(b)). We send email only for things you asked for: confirming your address, resetting your password, and news about an event you submitted.</p>
+<p>Only to run liveaux for you: to log you in, show you your log and your saved events, and let you manage pages. That is the service you signed up for (GDPR article 6(1)(b)). We send email only for things you asked for: confirming your address, resetting your password, and news about an event you submitted.</p>
 
 <h2>Who can see your log</h2>
-<p>Your log is <strong>private by default</strong>: only you can see it. If you switch on <em>Public log</em> in your <a href="{% url 'accounts:settings' %}">settings</a>, anyone with the link can see your name, the shows you logged, your ratings and notes. Your email address is never shown. Switch it off and the page is gone at once.</p>
+<p>Your log is <strong>private by default</strong>: only you can see it. If you switch on <em>Public log</em> in your <a href="{% url 'accounts:settings' %}">settings</a>, anyone with the link can see your name, the events you logged, your ratings and notes. Your email address is never shown. Switch it off and the page is gone at once.</p>
 <p>The people who run liveaux can technically reach the database to fix problems, and look at your data only when that is needed.</p>
 
 <h2>Who else gets your data</h2>
 <p>Nobody buys or receives your data. We use a hosting provider and an email service to run the site; they process data only on our behalf, under a data processing agreement.</p>
 
 <h2>How long we keep it</h2>
-<p>For as long as you have an account. When you delete your account, your account, log, saved shows, follows and submissions are removed straight away. Copies in backups disappear when those backups are replaced. Events you published on a venue or promoter page stay online, because they belong to that page.</p>
+<p>For as long as you have an account. When you delete your account, your account, log, saved events, follows and submissions are removed straight away. Copies in backups disappear when those backups are replaced. Events you published on a venue or organiser page stay online, because they belong to that page.</p>
 
 <h2>Your rights</h2>
 <ul>
   <li><strong>See and take your data:</strong> <a href="{% url 'accounts:export' %}">download everything</a> as a file, at any time.</li>
   <li><strong>Correct it:</strong> edit your name, email, log entries and notes yourself.</li>
-  <li><strong>Delete it:</strong> <a href="{% url 'accounts:delete' %}">delete your account</a> yourself, or remove single shows from your log.</li>
+  <li><strong>Delete it:</strong> <a href="{% url 'accounts:delete' %}">delete your account</a> yourself, or remove single events from your log.</li>
   <li><strong>Object or complain:</strong> email <a href="mailto:{{ contact_email }}">{{ contact_email }}</a>. You can also complain to your data protection authority.</li>
 </ul>
 
