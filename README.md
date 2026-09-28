@@ -1,6 +1,6 @@
 # liveaux
 
-Django-project voor live-evenementen (Berlijn en Hamburg), met een persoonlijk logboek van de concerten waar je bent geweest.
+Django-project voor alles wat er te doen is in de stad (Berlijn en Hamburg): concerten, clubavonden, tentoonstellingen, films, theater, dans, comedy, lezingen en meer. Met een persoonlijk logboek van waar je bent geweest.
 
 ## Starten
 
@@ -27,15 +27,28 @@ Tests draaien: `uv run python manage.py test`
 Iedereen logt in met e-mail en wachtwoord (django-allauth, met e-mailbevestiging).
 Lokaal verschijnen de bevestigingsmails in de terminal waar `runserver` draait.
 
-- **Fans:** evenementen opslaan en zalen, artiesten en promoters volgen → *My liveaux* (`/me/`)
-- **Zalen, promoters, artiesten:** een account kan lid zijn van zo'n pagina, als *owner* of *editor*.
-  Zalen en promoters plaatsen hun eigen evenementen; artiesten beheren hun profiel.
-- Artiest- en promoterpagina's maken gebruikers zelf aan. Toegang tot een **zaal** geef je in de
+- **Fans:** evenementen opslaan en zalen, artiesten en organisatoren volgen → *My liveaux* (`/me/`)
+- **Zalen, organisatoren, artiesten:** een account kan lid zijn van zo'n pagina, als *owner* of *editor*.
+  Zalen en organisatoren plaatsen hun eigen evenementen; artiesten beheren hun profiel.
+- Artiest- en organisatorpagina's maken gebruikers zelf aan. Toegang tot een **zaal** geef je in de
   admin: open de zaal en voeg iemand toe onder *Venue members*.
+
+## Soorten evenementen
+
+Elk evenement heeft een **categorie** (Music, Club night, Exhibition, Film, Theatre, Dance, Comedy,
+Talk & reading, Festival, Kids & family, Other). Categorieën beheer je in de admin (*Categories*):
+toevoegen, hernoemen, of de volgorde van de filterknoppen aanpassen met *position*.
+
+Een evenement kan ook een **einddatum** hebben. Dat is voor dingen die meerdere dagen lopen, zoals
+een tentoonstelling of een filmreeks. Zolang die loopt staat ze bovenaan onder *On now*, en op de
+weekpagina één keer onder *All week* in plaats van elke dag opnieuw. Zo'n evenement kun je
+opslaan zolang het loopt, en in je logboek zetten zodra het begonnen is.
+
+Bestaande evenementen krijgen bij de migratie de categorie *Music*.
 
 ## Logboek
 
-Op elke evenementpagina van een show die al begonnen is staat **Ik was erbij** (*I was there*).
+Op elke evenementpagina van iets dat al begonnen is staat **Ik was erbij** (*I was there*).
 Daarna kun je een cijfer (1–10) en een korte notitie toevoegen. Onder *My log* (`/me/log/`) staan
 al je bezoeken, met per jaar een jaaroverzicht (`/me/log/2026/`).
 
@@ -55,7 +68,7 @@ Steden beheer je in de admin (*Cities*). Elke zaal hoort bij een stad. De weekpa
 
 ## Evenementen indienen door zalen
 
-Zalen zonder eigen liveaux-pagina dienen evenementen in via `/submit/` (inloggen vereist).
+Zalen, musea, bioscopen en theaters zonder eigen liveaux-pagina dienen evenementen in via `/submit/` (inloggen vereist).
 Die komen in de admin onder *Event submissions*. Selecteer ze en kies de actie
 *Approve and publish* of *Reject*; de indiener krijgt een e-mail. Een nieuwe zaal uit een
 inzending wordt bij goedkeuring automatisch aangemaakt. Wil je bij elke nieuwe inzending
@@ -68,7 +81,7 @@ gemaild worden, zet dan `DJANGO_ADMIN_EMAILS`.
 
 - `config/` – projectinstellingen (tijdzone `Europe/Berlin`)
 - `accounts/` – eigen User-model (inloggen met e-mail), *My liveaux* en instellingen
-- `events/` – steden, zalen, promoters, artiesten, evenementen, inzendingen, en de beheerpagina's (`views_manage.py`)
+- `events/` – steden, zalen, organisatoren (in de code: Promoter), artiesten, evenementen, inzendingen, en de beheerpagina's (`views_manage.py`)
 - `logbook/` – het logboek (*Ik was erbij*), openbare logboeken en jaaroverzichten
 - `templates/` – gedeelde layout en de opgemaakte inlogpagina's van allauth
 - `events/fixtures/` – voorbeelddata: echte zalen in Berlijn en Hamburg, verzonnen programma

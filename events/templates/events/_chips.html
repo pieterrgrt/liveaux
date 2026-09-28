@@ -1,0 +1,3 @@
+<nav class="filters" aria-label="{{ label }}">
+  {% for chip in chips %}<a class="chip{% if chip.active %} active{% endif %}" href="{{ chip.href }}">{{ chip.label }}</a>{% endfor %}
+</nav>

@@ -6,13 +6,13 @@
 <section class="venue-header page-top">
   <p class="eyebrow">{% if is_own %}My log{% else %}Log{% endif %}</p>
   <h1>{% if is_own %}Where I've been{% else %}{{ owner.public_name }}{% endif %}</h1>
-  <p class="muted">{{ entries|length }} show{{ entries|length|pluralize }}</p>
+  <p class="muted">{{ entries|length }} event{{ entries|length|pluralize }}</p>
   {% if is_own %}
     <p class="privacy-note">
       {% if user.log_is_public %}
-        🔓 Your log is public: <a href="{% url 'logbook:public' user.pk %}">{{ request.scheme }}://{{ request.get_host }}{% url 'logbook:public' user.pk %}</a>.
+        Your log is public: <a href="{% url 'logbook:public' user.pk %}">{{ request.scheme }}://{{ request.get_host }}{% url 'logbook:public' user.pk %}</a>.
       {% else %}
-        🔒 Only you can see this.
+        Only you can see this.
       {% endif %}
       <a href="{% url 'accounts:settings' %}">Change</a>
     </p>
@@ -35,7 +35,7 @@
   </section>
 {% empty %}
   <p class="empty">
-    {% if is_own %}Nothing here yet. Open a show you went to and press <strong>I was there</strong>.{% else %}Nothing logged yet.{% endif %}
+    {% if is_own %}Nothing here yet. Open an event you went to and press <strong>I was there</strong>.{% else %}Nothing logged yet.{% endif %}
   </p>
 {% endfor %}
 {% endblock %}

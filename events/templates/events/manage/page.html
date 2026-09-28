@@ -6,7 +6,7 @@
 <a class="back" href="{% url 'accounts:dashboard' %}">← My liveaux</a>
 
 <section class="venue-header">
-  <p class="eyebrow">Manage {{ page.kind }}{% if membership %} · you are {{ membership.get_role_display|lower }}{% endif %}</p>
+  <p class="eyebrow">Manage {{ page.kind_label }}{% if membership %} · you are {{ membership.get_role_display|lower }}{% endif %}</p>
   <h1>{{ page.name }}</h1>
   <div class="actions">
     {% if can_add_events %}<a class="button" href="{% url 'events:create_event' page.kind page.pk %}">Add event</a>{% endif %}
@@ -16,7 +16,7 @@
 </section>
 
 <section class="month">
-  <h2 class="month-heading">Upcoming events</h2>
+  <h2 class="month-heading">Current and upcoming</h2>
   <ul class="manage-list">
     {% for event in upcoming %}
       <li>
@@ -26,7 +26,7 @@
         <a class="link-button" href="{% url 'events:edit_event' event.pk %}">Edit</a>
       </li>
     {% empty %}
-      <li class="empty">{% if can_add_events %}No upcoming events. Add your first one.{% else %}No upcoming shows yet. Venues and promoters add you to their events.{% endif %}</li>
+      <li class="empty">{% if can_add_events %}No upcoming events. Add your first one.{% else %}Nothing coming up yet. Venues and organisers add you to their events.{% endif %}</li>
     {% endfor %}
   </ul>
 </section>

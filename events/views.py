@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from .forms import EventSubmissionForm
-from .models import PAGE_MODELS, City, Event, Venue
+from .models import PAGE_MODELS, Category, City, Event, Venue
 
 
 def get_page(kind, pk):
@@ -19,9 +19,31 @@ def get_page(kind, pk):
     return get_object_or_404(model, pk=pk)
 
 
+def _chips(request, param, options, all_label):
+    """Filter links that change one query parameter and keep the others.
+
+    `options` are (value, label) pairs. Returns dicts with label, href and active for the template.
+    """
+    current = request.GET.get(param, "")
+
+    def href(value):
+        query = request.GET.copy()
+        query.pop(param, None)
+        if value:
+            query[param] = value
+        if param == "city":
+            query.pop("district", None)  # districts belong to a city
+        return f"?{query.urlencode()}" if query else request.path
+
+    chips = [{"label": all_label, "href": href(""), "active": not current}]
+    chips += [{"label": label, "href": href(value), "active": value == current} for value, label in options]
+    return chips
+
+
 def event_list(request):
-    events = Event.objects.filter(starts_at__gte=timezone.now()).select_related("venue__city")
+    events = Event.objects.on_now_or_later().select_related("venue__city", "category")
     cities = City.objects.all()
+    categories = Category.objects.all()
 
     city = cities.filter(slug=request.GET.get("city", "")).first()
     venues = Venue.objects.all()
@@ -29,20 +51,32 @@ def event_list(request):
         events = events.filter(venue__city=city)
         venues = venues.filter(city=city)
 
+    category = categories.filter(slug=request.GET.get("category", "")).first()
+    if category:
+        events = events.filter(category=category)
+
     district = request.GET.get("district", "")
     if district:
         events = events.filter(venue__district=district)
 
     districts = venues.exclude(district="").order_by("district").values_list("district", flat=True).distinct()
+    now = timezone.now()
     return render(
         request,
         "events/event_list.html",
         {
-            "events": events,
-            "cities": cities,
+            "on_now": events.filter(starts_at__lt=now).order_by("ends_at"),
+            "events": events.filter(starts_at__gte=now),
             "current_city": city,
-            "districts": districts,
+            "current_category": category,
             "current_district": district,
+            "city_chips": _chips(request, "city", [(c.slug, c.name) for c in cities], "All cities")
+            if len(cities) > 1
+            else [],
+            "category_chips": _chips(request, "category", [(c.slug, c.name) for c in categories], "Everything"),
+            "district_chips": _chips(
+                request, "district", [(d, d) for d in districts], f"All of {city.name}" if city else "All districts"
+            ),
         },
     )
 
@@ -56,25 +90,44 @@ def this_week(request):
 
 
 def city_week(request, slug):
-    """Shows in one city from today through the next six days, grouped by day."""
+    """What's on in one city from today through the next six days.
+
+    Things that run for days (exhibitions, festivals) are listed once, above the days.
+    """
     city = get_object_or_404(City, slug=slug)
     today = timezone.localdate()
     start = timezone.make_aware(datetime.combine(today, time.min))
     end = start + timedelta(days=7)
     events = (
-        Event.objects.filter(venue__city=city, starts_at__gte=max(start, timezone.now()), starts_at__lt=end)
-        .select_related("venue")
+        Event.objects.overlapping(start, end)
+        .filter(venue__city=city)
+        .select_related("venue", "category")
         .order_by("starts_at")
     )
+    category = Category.objects.filter(slug=request.GET.get("category", "")).first()
+    if category:
+        events = events.filter(category=category)
+
+    running = []
     days = {today + timedelta(days=n): [] for n in range(7)}
     for event in events:
-        days[timezone.localdate(event.starts_at)].append(event)
+        if event.is_multi_day:
+            running.append(event)
+        else:
+            days[timezone.localdate(event.starts_at)].append(event)
     return render(
         request,
         "events/city_week.html",
         {
             "city": city,
-            "cities": City.objects.all(),
+            "current_category": category,
+            "city_links": [
+                {"label": c.name, "href": c.get_absolute_url(), "active": c == city} for c in City.objects.all()
+            ],
+            "category_chips": _chips(
+                request, "category", [(c.slug, c.name) for c in Category.objects.all()], "Everything"
+            ),
+            "running": running,
             "days": [{"date": d, "events": e} for d, e in days.items()],
             "count": len(events),
             "today": today,
@@ -84,7 +137,7 @@ def city_week(request, slug):
 
 
 def event_detail(request, pk):
-    event = get_object_or_404(Event.objects.select_related("venue__city", "promoter"), pk=pk)
+    event = get_object_or_404(Event.objects.select_related("venue__city", "promoter", "category"), pk=pk)
     more_at_venue = event.venue.upcoming_events().exclude(pk=event.pk)[:3]
     user = request.user
     is_saved = user.is_authenticated and event.saved_by.filter(pk=user.pk).exists()

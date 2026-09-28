@@ -5,16 +5,20 @@
 {% block content %}
 <section class="hero">
   <p class="eyebrow">{{ today|date:"j M" }} – {{ last_day|date:"j M" }}</p>
-  <h1>This week<br>in <em>{{ city.name }}.</em></h1>
-  <p class="hero-count">{{ count }} show{{ count|pluralize }}</p>
+  <h1>This week in <em>{{ city.name }}</em></h1>
+  <p class="hero-count">{{ count }} event{{ count|pluralize }}{% if current_category %} · {{ current_category.name|lower }}{% endif %}</p>
 </section>
 
-{% if cities|length > 1 %}
-<nav class="filters" aria-label="Choose a city">
-  {% for other in cities %}
-    <a class="chip{% if other == city %} active{% endif %}" href="{{ other.get_absolute_url }}">{{ other.name }}</a>
-  {% endfor %}
-</nav>
+{% if city_links|length > 1 %}{% include "events/_chips.html" with chips=city_links label="Choose a city" %}{% endif %}
+{% include "events/_chips.html" with chips=category_chips label="Filter by kind of event" %}
+
+{% if running %}
+<section class="month">
+  <h2 class="month-heading">All week <span class="muted">exhibitions, film runs, festivals</span></h2>
+  <ul class="event-list">
+    {% for event in running %}{% include "events/_event_row.html" %}{% endfor %}
+  </ul>
+</section>
 {% endif %}
 
 {% for day in days %}
@@ -24,11 +28,11 @@
       {% for event in day.events %}
         {% include "events/_event_row.html" %}
       {% empty %}
-        <li class="empty">Nothing on.</li>
+        <li class="empty">Nothing{% if current_category %} in {{ current_category.name|lower }}{% endif %} on this day.</li>
       {% endfor %}
     </ul>
   </section>
 {% endfor %}
 
-<p class="week-link"><a href="{% url 'events:event_list' %}?city={{ city.slug }}">Everything coming up in {{ city.name }} →</a></p>
+<p class="week-link"><a href="{% url 'events:event_list' %}?city={{ city.slug }}{% if current_category %}&amp;category={{ current_category.slug }}{% endif %}">Everything coming up in {{ city.name }} →</a></p>
 {% endblock %}

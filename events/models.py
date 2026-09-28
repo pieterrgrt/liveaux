@@ -1,5 +1,7 @@
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import Q
 from django.urls import reverse
 from django.utils import timezone
 
@@ -27,6 +29,7 @@ class Page(models.Model):
     """Shared behaviour of venues, promoters and artists: members and followers."""
 
     kind = None  # "venue", "promoter" or "artist"; set on each subclass
+    kind_label = None  # how the kind is called on the site
 
     class Meta:
         abstract = True
@@ -46,7 +49,32 @@ class Page(models.Model):
         return self.membership_for(user) is not None
 
     def upcoming_events(self):
-        return self.events.filter(starts_at__gte=timezone.now()).select_related("venue")
+        return self.events.on_now_or_later().select_related("venue", "category")
+
+
+class CategoryManager(models.Manager):
+    def get_by_natural_key(self, slug):
+        return self.get(slug=slug)
+
+
+class Category(models.Model):
+    """What kind of event: music, exhibition, film, theatre, ..."""
+
+    name = models.CharField(max_length=100, unique=True)
+    slug = models.SlugField(unique=True)
+    position = models.PositiveSmallIntegerField(default=0, help_text="Lower comes first in filters.")
+
+    objects = CategoryManager()
+
+    class Meta:
+        ordering = ["position", "name"]
+        verbose_name_plural = "categories"
+
+    def __str__(self):
+        return self.name
+
+    def natural_key(self):
+        return (self.slug,)
 
 
 class City(models.Model):
@@ -66,6 +94,7 @@ class City(models.Model):
 
 class Venue(Page):
     kind = "venue"
+    kind_label = "venue"
 
     name = models.CharField(max_length=200)
     address = models.CharField(max_length=300, blank=True)
@@ -87,6 +116,7 @@ class Venue(Page):
 
 class Promoter(Page):
     kind = "promoter"
+    kind_label = "organiser"
 
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True)
@@ -98,6 +128,7 @@ class Promoter(Page):
 
     class Meta:
         ordering = ["name"]
+        verbose_name = "organiser"
 
     def __str__(self):
         return self.name
@@ -105,6 +136,7 @@ class Promoter(Page):
 
 class Artist(Page):
     kind = "artist"
+    kind_label = "artist"
 
     name = models.CharField(max_length=200)
     hometown = models.CharField(max_length=100, blank=True)
@@ -146,14 +178,33 @@ class ArtistMember(Membership):
 PAGE_MODELS = {model.kind: model for model in (Venue, Promoter, Artist)}
 
 
+class EventQuerySet(models.QuerySet):
+    def on_now_or_later(self):
+        """Events that haven't finished: upcoming ones, and ones running now (like an exhibition)."""
+        now = timezone.now()
+        return self.filter(Q(starts_at__gte=now) | Q(ends_at__gte=now))
+
+    def started(self):
+        """Events that have begun: finished ones and ones still running."""
+        return self.filter(starts_at__lt=timezone.now())
+
+    def overlapping(self, start, end):
+        """Events that are on at some point between start and end."""
+        return self.filter(starts_at__lt=end).filter(Q(starts_at__gte=start) | Q(ends_at__gte=start))
+
+
 class Event(models.Model):
     title = models.CharField(max_length=200)
+    category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name="events")
     venue = models.ForeignKey(Venue, on_delete=models.CASCADE, related_name="events")
     promoter = models.ForeignKey(
-        Promoter, on_delete=models.SET_NULL, null=True, blank=True, related_name="events"
+        Promoter, on_delete=models.SET_NULL, null=True, blank=True, related_name="events", verbose_name="organiser"
     )
     artists = models.ManyToManyField(Artist, related_name="events", blank=True)
     starts_at = models.DateTimeField()
+    ends_at = models.DateTimeField(
+        null=True, blank=True, help_text="For exhibitions, film runs and festivals: the last day it's on."
+    )
     description = models.TextField(blank=True)
     price = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
     ticket_url = models.URLField(blank=True)
@@ -161,6 +212,8 @@ class Event(models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="+"
     )
     saved_by = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="saved_events", blank=True)
+
+    objects = EventQuerySet.as_manager()
 
     class Meta:
         ordering = ["starts_at"]
@@ -180,6 +233,21 @@ class Event(models.Model):
     @property
     def has_started(self):
         return self.starts_at <= timezone.now()
+
+    @property
+    def is_multi_day(self):
+        """Runs over more than one day, like an exhibition or a festival."""
+        return self.ends_at is not None and timezone.localdate(self.ends_at) > timezone.localdate(self.starts_at)
+
+    @property
+    def is_running(self):
+        """Started, and still on."""
+        return self.is_multi_day and self.has_started and self.ends_at >= timezone.now()
+
+    def clean(self):
+        super().clean()
+        if self.ends_at and self.starts_at and self.ends_at < self.starts_at:
+            raise ValidationError({"ends_at": "The end can't be before the start."})
 
     def can_edit(self, user):
         """Members of the event's venue or promoter may edit it."""
@@ -212,12 +280,14 @@ class EventSubmission(models.Model):
         City, on_delete=models.SET_NULL, null=True, blank=True, related_name="+", verbose_name="city"
     )
     title = models.CharField(max_length=200)
+    category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name="+")
     starts_at = models.DateTimeField()
+    ends_at = models.DateTimeField(null=True, blank=True, help_text="Only for things that run several days.")
     description = models.TextField(blank=True)
     price = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
     ticket_url = models.URLField(blank=True)
     relation = models.CharField(
-        "your role", max_length=200, help_text="For example: booker at the venue.",
+        "your role", max_length=200, help_text="For example: curator at the museum, or booker at the club.",
     )
 
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=PENDING)
@@ -251,8 +321,10 @@ class EventSubmission(models.Model):
             self.venue = venue
         self.event = Event.objects.create(
             title=self.title,
+            category=self.category,
             venue=venue,
             starts_at=self.starts_at,
+            ends_at=self.ends_at,
             description=self.description,
             price=self.price,
             ticket_url=self.ticket_url,

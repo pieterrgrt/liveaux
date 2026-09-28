@@ -7,16 +7,27 @@
 
 <article class="event-detail">
   <div class="poster">
-    <span class="poster-day">{{ event.starts_at|date:"d" }}</span>
-    <span class="poster-month">{{ event.starts_at|date:"M" }}</span>
+    {% if event.is_running %}
+      <span class="poster-month">until</span>
+      <span class="poster-day">{{ event.ends_at|date:"d" }}</span>
+      <span class="poster-month">{{ event.ends_at|date:"M" }}</span>
+    {% else %}
+      <span class="poster-day">{{ event.starts_at|date:"d" }}</span>
+      <span class="poster-month">{{ event.starts_at|date:"M" }}</span>
+    {% endif %}
   </div>
 
   <div class="event-body">
+    <a class="tag tag-{{ event.category.slug }}" href="{% url 'events:event_list' %}?category={{ event.category.slug }}">{{ event.category.name }}</a>
     <h1>{{ event.title }}</h1>
     <dl class="facts">
-      <div><dt>When</dt><dd>{{ event.starts_at|date:"l j F Y" }}, {{ event.starts_at|time:"H:i" }}</dd></div>
+      {% if event.is_multi_day %}
+        <div><dt>When</dt><dd>{{ event.starts_at|date:"j F Y" }} – {{ event.ends_at|date:"j F Y" }}{% if event.is_running %}<br><span class="muted">On now</span>{% endif %}</dd></div>
+      {% else %}
+        <div><dt>When</dt><dd>{{ event.starts_at|date:"l j F Y" }}, {{ event.starts_at|time:"H:i" }}{% if event.ends_at %} – {{ event.ends_at|time:"H:i" }}{% endif %}</dd></div>
+      {% endif %}
       <div><dt>Where</dt><dd><a href="{{ event.venue.get_absolute_url }}">{{ event.venue.name }}</a><br><span class="muted">{% if event.venue.address %}{{ event.venue.address }}, {% endif %}{% if event.venue.district %}{{ event.venue.district }}, {% endif %}{{ event.venue.city }}</span></dd></div>
-      {% if artists %}<div><dt>Artists</dt><dd>{% for artist in artists %}<a href="{{ artist.get_absolute_url }}">{{ artist.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</dd></div>{% endif %}
+      {% if artists %}<div><dt>With</dt><dd>{% for artist in artists %}<a href="{{ artist.get_absolute_url }}">{{ artist.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</dd></div>{% endif %}
       {% if event.promoter %}<div><dt>By</dt><dd><a href="{{ event.promoter.get_absolute_url }}">{{ event.promoter.name }}</a></dd></div>{% endif %}
       {% if event.price is not None %}<div><dt>Price</dt><dd>€{{ event.price|floatformat:"-2" }}</dd></div>{% endif %}
     </dl>
@@ -25,7 +36,9 @@
 
     <div class="actions">
       {% if event.ticket_url %}<a class="button" href="{{ event.ticket_url }}" rel="noopener">Get tickets</a>{% endif %}
-      {% if event.has_started %}{% include "logbook/_attended_button.html" %}{% else %}{% include "events/_save_button.html" %}{% endif %}
+      {% if event.has_started %}{% include "logbook/_attended_button.html" %}{% endif %}
+      {# Save until it's over: an exhibition that is on now can still be saved for later. #}
+      {% if not event.has_started or event.is_running %}{% include "events/_save_button.html" %}{% endif %}
       {% if can_edit %}<a class="link-button" href="{% url 'events:edit_event' event.pk %}">Edit event</a>{% endif %}
     </div>
   </div>

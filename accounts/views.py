@@ -16,7 +16,7 @@ from .forms import DeleteAccountForm, ProfileForm
 @login_required
 def dashboard(request):
     user = request.user
-    upcoming = Event.objects.filter(starts_at__gte=timezone.now()).select_related("venue")
+    upcoming = Event.objects.on_now_or_later().select_related("venue", "category")
 
     saved = upcoming.filter(saved_by=user)
     from_follows = (
@@ -26,9 +26,10 @@ def dashboard(request):
         .exclude(saved_by=user)
         .distinct()[:20]
     )
-    # Saved shows that have happened but aren't in the log yet: "were you there?"
+    # Saved events that have started but aren't in the log yet: "were you there?"
     to_log = (
-        Event.objects.filter(saved_by=user, starts_at__lt=timezone.now())
+        Event.objects.started()
+        .filter(saved_by=user)
         .exclude(log_entries__user=user)
         .select_related("venue")
         .order_by("-starts_at")[:5]
@@ -50,7 +51,7 @@ def dashboard(request):
             "saved": saved,
             "from_follows": from_follows,
             "to_log": to_log,
-            "recent_log": user.log_entries.select_related("event__venue__city")[:5],
+            "recent_log": user.log_entries.select_related("event__venue__city", "event__category")[:5],
             "log_count": user.log_entries.count(),
             "pages": pages,
             "following": following,
@@ -105,13 +106,14 @@ def export_data(request):
         "log": [
             {
                 "event": e.event.title,
+                "category": e.event.category.name,
                 "venue": e.event.venue.name,
                 "date": _local(e.event.starts_at),
                 "rating": e.rating,
                 "note": e.note,
                 "logged_at": _local(e.created_at),
             }
-            for e in user.log_entries.select_related("event__venue")
+            for e in user.log_entries.select_related("event__venue", "event__category")
         ],
         "saved_events": [
             {"event": e.title, "venue": e.venue.name, "date": _local(e.starts_at)}

@@ -74,6 +74,61 @@
     }
   },
   {
+    "model": "events.venue",
+    "pk": 107,
+    "fields": {
+      "name": "Hamburger Kunsthalle",
+      "address": "Glockengießerwall 5",
+      "district": "Altstadt",
+      "city": 2,
+      "website": "https://www.hamburger-kunsthalle.de"
+    }
+  },
+  {
+    "model": "events.venue",
+    "pk": 108,
+    "fields": {
+      "name": "Deichtorhallen",
+      "address": "Deichtorstraße 1–2",
+      "district": "Altstadt",
+      "city": 2,
+      "website": "https://www.deichtorhallen.de"
+    }
+  },
+  {
+    "model": "events.venue",
+    "pk": 109,
+    "fields": {
+      "name": "Abaton",
+      "address": "Allendeplatz 3",
+      "district": "Rotherbaum",
+      "city": 2,
+      "website": "https://www.abaton.de"
+    }
+  },
+  {
+    "model": "events.venue",
+    "pk": 110,
+    "fields": {
+      "name": "Thalia Theater",
+      "address": "Alstertor 1",
+      "district": "Altstadt",
+      "city": 2,
+      "website": "https://www.thalia-theater.de"
+    }
+  },
+  {
+    "model": "events.venue",
+    "pk": 111,
+    "fields": {
+      "name": "Schmidts Tivoli",
+      "address": "Spielbudenplatz 27–28",
+      "district": "St. Pauli",
+      "city": 2,
+      "website": "https://www.tivoli.de"
+    }
+  },
+  {
     "model": "events.event",
     "pk": 101,
     "fields": {
@@ -82,7 +137,10 @@
       "starts_at": "2026-10-01T21:00:00+02:00",
       "description": "",
       "price": "14.00",
-      "ticket_url": ""
+      "ticket_url": "",
+      "category": [
+        "music"
+      ]
     }
   },
   {
@@ -94,7 +152,10 @@
       "starts_at": "2026-10-03T20:00:00+02:00",
       "description": "",
       "price": "16.00",
-      "ticket_url": ""
+      "ticket_url": "",
+      "category": [
+        "music"
+      ]
     }
   },
   {
@@ -106,7 +167,10 @@
       "starts_at": "2026-10-04T23:00:00+02:00",
       "description": "",
       "price": "20.00",
-      "ticket_url": ""
+      "ticket_url": "",
+      "category": [
+        "club"
+      ]
     }
   },
   {
@@ -118,7 +182,10 @@
       "starts_at": "2026-10-08T20:00:00+02:00",
       "description": "",
       "price": "28.00",
-      "ticket_url": ""
+      "ticket_url": "",
+      "category": [
+        "music"
+      ]
     }
   },
   {
@@ -130,7 +197,10 @@
       "starts_at": "2026-10-11T19:30:00+02:00",
       "description": "",
       "price": "18.00",
-      "ticket_url": ""
+      "ticket_url": "",
+      "category": [
+        "music"
+      ]
     }
   },
   {
@@ -142,7 +212,10 @@
       "starts_at": "2026-10-16T20:00:00+02:00",
       "description": "",
       "price": "22.00",
-      "ticket_url": ""
+      "ticket_url": "",
+      "category": [
+        "music"
+      ]
     }
   },
   {
@@ -154,7 +227,10 @@
       "starts_at": "2026-10-22T20:30:00+02:00",
       "description": "",
       "price": "8.00",
-      "ticket_url": ""
+      "ticket_url": "",
+      "category": [
+        "music"
+      ]
     }
   },
   {
@@ -166,7 +242,10 @@
       "starts_at": "2026-10-30T20:00:00+01:00",
       "description": "",
       "price": "24.00",
-      "ticket_url": ""
+      "ticket_url": "",
+      "category": [
+        "music"
+      ]
     }
   },
   {
@@ -178,7 +257,10 @@
       "starts_at": "2026-11-05T21:00:00+01:00",
       "description": "",
       "price": "12.00",
-      "ticket_url": ""
+      "ticket_url": "",
+      "category": [
+        "music"
+      ]
     }
   },
   {
@@ -190,6 +272,87 @@
       "starts_at": "2026-11-14T22:00:00+01:00",
       "description": "",
       "price": "19.00",
+      "ticket_url": "",
+      "category": [
+        "club"
+      ]
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 111,
+    "fields": {
+      "title": "Nordische Landschaften",
+      "category": [
+        "exhibition"
+      ],
+      "venue": 107,
+      "starts_at": "2026-09-18T10:00:00+02:00",
+      "description": "",
+      "price": "16.00",
+      "ticket_url": "",
+      "ends_at": "2027-01-10T18:00:00+01:00"
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 112,
+    "fields": {
+      "title": "Fotografie jetzt",
+      "category": [
+        "exhibition"
+      ],
+      "venue": 108,
+      "starts_at": "2026-10-02T11:00:00+02:00",
+      "description": "",
+      "price": "15.00",
+      "ticket_url": "",
+      "ends_at": "2027-03-07T18:00:00+01:00"
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 113,
+    "fields": {
+      "title": "Hamburger Filmnächte",
+      "category": [
+        "film"
+      ],
+      "venue": 109,
+      "starts_at": "2026-10-01T19:00:00+02:00",
+      "description": "",
+      "price": "11.00",
+      "ticket_url": "",
+      "ends_at": "2026-10-04T23:00:00+02:00"
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 114,
+    "fields": {
+      "title": "Der Sturm",
+      "category": [
+        "theatre"
+      ],
+      "venue": 110,
+      "starts_at": "2026-10-03T19:30:00+02:00",
+      "description": "",
+      "price": "32.00",
+      "ticket_url": ""
+    }
+  },
+  {
+    "model": "events.event",
+    "pk": 115,
+    "fields": {
+      "title": "Kiez-Comedy Mixed Show",
+      "category": [
+        "comedy"
+      ],
+      "venue": 111,
+      "starts_at": "2026-10-02T20:00:00+02:00",
+      "description": "",
+      "price": "22.00",
       "ticket_url": ""
     }
   }
