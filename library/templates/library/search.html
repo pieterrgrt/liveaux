@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Add to your library — liveaux{% endblock %}
+
+{% block content %}
+<section class="venue-header page-top">
+  <p class="eyebrow">Library</p>
+  <h1>Add something</h1>
+  {% include "library/_subnav.html" %}
+</section>
+
+{% include "events/_chips.html" with chips=type_chips label="Kind" %}
+
+{% if source %}
+  <form class="form form-search" method="get">
+    <input type="hidden" name="type" value="{{ media_type }}">
+    <input type="search" name="q" value="{{ query }}" placeholder="Search {{ media_label }}" aria-label="Search {{ media_label }}" autofocus>
+    <button type="submit" class="button">Search</button>
+  </form>
+  <p class="help">Details from {{ source_label }}. Not there? <a href="{% url 'library:add_manual' %}?type={{ media_type }}&q={{ query|urlencode }}">Add it by hand</a>.</p>
+{% else %}
+  <p class="empty">liveaux has no source to search {{ media_label }} on this server yet{% if media_type == "movie" or media_type == "tv" %} (it needs a TMDB key){% elif media_type == "game" %} (it needs IGDB access){% endif %}. You can add them by hand.</p>
+  <div class="actions"><a class="button" href="{% url 'library:add_manual' %}?type={{ media_type }}">Add by hand</a></div>
+{% endif %}
+
+{% if error %}<p class="form-errors">{{ error }}</p>{% endif %}
+
+{% if results %}
+<section class="month">
+  <h2 class="month-heading">Results <span class="muted">press one to add it to your planning</span></h2>
+  <ul class="shelf">
+    {% for r in results %}{% include "library/_result_card.html" %}{% endfor %}
+  </ul>
+</section>
+{% elif query and source and not error %}
+  <p class="empty">Nothing found for “{{ query }}”.</p>
+{% endif %}
+{% endblock %}

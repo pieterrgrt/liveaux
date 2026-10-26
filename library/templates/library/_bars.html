@@ -1,0 +1,9 @@
+{# A bar chart. Needs `bars`: dicts with label, count and percent. #}
+<ol class="months-chart bars" style="--cols: {{ bars|length }}">
+  {% for bar in bars %}
+    <li>
+      <span class="bar" style="--size: {{ bar.percent }}%"><span class="bar-count">{% if bar.count %}{{ bar.count }}{% endif %}</span></span>
+      <span class="bar-label">{{ bar.label }}</span>
+    </li>
+  {% endfor %}
+</ol>

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Discover — liveaux{% endblock %}
+
+{% block content %}
+<section class="venue-header page-top">
+  <p class="eyebrow">Discover</p>
+  <h1>What next?</h1>
+  {% include "library/_subnav.html" %}
+</section>
+
+{% for row in rows %}
+<section class="month">
+  <h2 class="month-heading">{{ row.title }}</h2>
+  <ul class="shelf">
+    {% for r in row.results %}{% include "library/_result_card.html" %}{% endfor %}
+  </ul>
+</section>
+{% endfor %}
+
+{% if not rows %}
+  <p class="help">{% if tmdb %}Give a film or series a 7 or higher and recommendations show up here.{% else %}Recommendations need a TMDB key on this server.{% endif %}</p>
+{% endif %}
+
+{% if popular %}
+<section class="month">
+  <h2 class="month-heading">Popular on liveaux</h2>
+  <ul class="shelf">
+    {% for item in popular %}{% include "library/_card.html" with caption=item.get_media_type_display %}{% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+{% if planning %}
+<section class="month">
+  <h2 class="month-heading">From your planning</h2>
+  <ul class="shelf">
+    {% for entry in planning %}{% include "library/_card.html" with item=entry.item %}{% endfor %}
+  </ul>
+</section>
+{% endif %}
+{% endblock %}

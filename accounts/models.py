@@ -1,3 +1,5 @@
+import secrets
+
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 
@@ -37,8 +39,15 @@ class User(AbstractUser):
     log_is_public = models.BooleanField(
         "public log",
         default=False,
-        help_text="Let anyone with the link see the shows you went to, with your name, ratings and notes.",
+        help_text="Let anyone with the link see the events you went to, with your name, ratings and notes.",
     )
+    library_is_public = models.BooleanField(
+        "public library",
+        default=False,
+        help_text="Let anyone with the link see what you watch, read, play and listen to, with your scores.",
+    )
+    # A secret for the calendar feed, media server webhooks and the API. Made on first use.
+    api_token = models.CharField(max_length=64, blank=True, db_index=True, editable=False)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
@@ -52,6 +61,15 @@ class User(AbstractUser):
     def public_name(self):
         """Name shown on a public log. Never the email address."""
         return self.display_name or "A liveaux fan"
+
+    def get_api_token(self):
+        if not self.api_token:
+            self.reset_api_token()
+        return self.api_token
+
+    def reset_api_token(self):
+        self.api_token = secrets.token_urlsafe(32)
+        self.save(update_fields=["api_token"])
 
     def get_full_name(self):
         return str(self)

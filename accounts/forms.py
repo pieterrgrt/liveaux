@@ -6,9 +6,9 @@ from .models import User
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ["display_name", "log_is_public"]
+        fields = ["display_name", "log_is_public", "library_is_public"]
         labels = {"display_name": "Name"}
-        help_texts = {"display_name": "Shown to people you manage pages with, and on your log if you make it public."}
+        help_texts = {"display_name": "Shown to people you manage pages with, and on your log, library and lists if you make them public."}
 
 
 class DeleteAccountForm(forms.Form):

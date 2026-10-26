@@ -1,0 +1,24 @@
+{# Calendar days: a list of (date, rows) from services.calendar. #}
+<ul class="days">
+  {% for day, rows in days %}
+    <li class="day-group">
+      <div class="date-block">
+        <span class="day">{{ day|date:"d" }}</span>
+        <span class="weekday">{{ day|date:"D M" }}</span>
+      </div>
+      <ul class="day-rows">
+        {% for row in rows %}
+          <li>
+            <a href="{{ row.url }}">
+              <span class="tag tag-{{ row.kind }}">{{ row.label }}</span>
+              <strong>{{ row.title }}</strong>
+              <span class="muted">{{ row.detail }}</span>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </li>
+  {% empty %}
+    <li class="empty">{{ empty|default:"Nothing coming up." }}</li>
+  {% endfor %}
+</ul>

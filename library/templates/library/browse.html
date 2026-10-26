@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}{{ heading }} — Library — liveaux{% endblock %}
+
+{% block content %}
+<section class="venue-header page-top">
+  <p class="eyebrow">Library</p>
+  <h1>{{ heading }}</h1>
+  {% include "library/_subnav.html" %}
+</section>
+
+<form class="form form-search" method="get">
+  {% for key, value in request.GET.items %}{% if key != "q" %}<input type="hidden" name="{{ key }}" value="{{ value }}">{% endif %}{% endfor %}
+  <input type="search" name="q" value="{{ query }}" placeholder="Find in your library" aria-label="Find in your library">
+  <button type="submit" class="button">Find</button>
+</form>
+
+{% include "events/_chips.html" with chips=type_chips label="Kind" %}
+{% include "events/_chips.html" with chips=status_chips label="Status" %}
+{% include "events/_chips.html" with chips=sort_chips label="Sort" %}
+
+<ul class="shelf">
+  {% for entry in entries %}{% include "library/_card.html" with item=entry.item caption=entry.get_status_display %}
+  {% empty %}<li class="empty">Nothing here.{% if query %} <a href="{% url 'library:search' %}?q={{ query|urlencode }}">Search for “{{ query }}” to add it.</a>{% endif %}</li>{% endfor %}
+</ul>
+{% endblock %}

@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}{{ item.title }} — liveaux{% endblock %}
+
+{% block content %}
+<a class="back" href="{% url 'library:browse' %}?type={{ item.media_type }}">← {{ item.info.plural }}</a>
+
+<article class="event-detail item-detail">
+  <div class="item-cover">
+    <span class="card-placeholder"><span class="tag">{{ item.get_media_type_display }}</span><span class="card-placeholder-title">{{ item.title }}</span></span>
+    {% if item.cover_src %}<img src="{{ item.cover_src }}" alt="Cover of {{ item.title }}" onerror="this.remove()">{% endif %}
+  </div>
+
+  <div class="event-body">
+    <a class="tag" href="{% url 'library:browse' %}?type={{ item.media_type }}">{{ item.get_media_type_display }}</a>
+    <h1>{{ item.title }}</h1>
+    {% if item.original_title %}<p class="muted original-title">{{ item.original_title }}</p>{% endif %}
+
+    <dl class="facts">
+      {% if item.year %}<div><dt>Year</dt><dd>{{ item.year }}</dd></div>{% endif %}
+      {% if item.creator %}<div><dt>By</dt><dd>{{ item.creator }}</dd></div>{% endif %}
+      {% if item.genres %}<div><dt>Genres</dt><dd>{{ item.genres|join:", " }}</dd></div>{% endif %}
+      {% if item.length_text %}<div><dt>Length</dt><dd>{{ item.length_text }}</dd></div>{% endif %}
+      {% if item.status_text %}<div><dt>Status</dt><dd>{{ item.status_text }}{% if item.has_episodes and item.release_date and item.release_date >= today %} · next episode {{ item.release_date|date:"j M Y" }}{% endif %}</dd></div>{% endif %}
+      {% if item.release_date and not item.has_episodes %}<div><dt>Release</dt><dd>{{ item.release_date|date:"j F Y" }}</dd></div>{% endif %}
+      <div><dt>Source</dt><dd>{% if item.is_manual %}Added by hand{% if can_edit %} · <a href="{% url 'library:edit_manual' item.pk %}">Edit</a>{% endif %} · <a href="{% url 'library:link' item.pk %}">Find details</a>{% else %}<a href="{{ item.url }}" rel="noopener noreferrer">{{ item.get_source_display }}</a>{% endif %}</dd></div>
+      {% if others %}<div><dt>Also</dt><dd class="muted">{{ others }} other{{ others|pluralize }} on liveaux track{{ others|pluralize:"s," }} this</dd></div>{% endif %}
+    </dl>
+
+    {% if item.description %}<div class="description">{{ item.description|linebreaks|truncatewords_html:120 }}</div>{% endif %}
+
+    <div class="actions">
+      {% if item.has_episodes %}
+        {% if next_episode %}
+          <form method="post" action="{% url 'library:check_in' item.pk %}">
+            {% csrf_token %}
+            <input type="hidden" name="episode" value="{{ next_episode.pk }}">
+            <button type="submit" class="button">Watched {{ next_episode.code }}</button>
+          </form>
+        {% endif %}
+      {% else %}
+        <form method="post" action="{% url 'library:check_in' item.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="button">{{ item.check_in_label }}</button>
+        </form>
+      {% endif %}
+      {% if not entry %}
+        <form method="post" action="{% url 'library:entry_update' item.pk %}">
+          {% csrf_token %}
+          <input type="hidden" name="status" value="planning">
+          <input type="hidden" name="repeats" value="0">
+          <input type="hidden" name="progress" value="0">
+          <button type="submit" class="button button-ghost">Add to planning</button>
+        </form>
+      {% endif %}
+      {% if not item.is_manual %}
+        <form method="post" action="{% url 'library:refresh' item.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="link-button">Refresh details</button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+</article>
+
+{% if entry or play_count %}
+<section class="month">
+  <h2 class="month-heading">You and {{ item.title }}
+    {% if entry %}<span class="muted">{{ entry.get_status_display }}{% if entry.score %} · {{ entry.score }}/10{% endif %}{% if item.total and entry.progress %} · {{ entry.progress }} of {{ item.total }}{% endif %}{% if entry.repeats %} · {{ entry.repeats }}× again{% endif %}</span>{% endif %}
+  </h2>
+  {% if entry.percent is not None and entry.status == "in_progress" %}<span class="meter meter-large" style="--size: {{ entry.percent }}%"></span>{% endif %}
+  <div class="two-columns">
+    <form class="form" method="post" action="{% url 'library:entry_update' item.pk %}">
+      {% csrf_token %}
+      {% with form=entry_form %}{% include "_form_fields.html" %}{% endwith %}
+      <div class="form-actions"><button type="submit" class="button">Save</button></div>
+    </form>
+
+    <div>
+      {% if not item.has_episodes %}
+      <details class="disclosure">
+        <summary>Check in with a date or a note</summary>
+        <form class="form" method="post" action="{% url 'library:check_in' item.pk %}">
+          {% csrf_token %}
+          {% with form=check_in_form %}{% include "_form_fields.html" %}{% endwith %}
+          <div class="form-actions"><button type="submit" class="button button-ghost">Check in</button></div>
+        </form>
+      </details>
+      {% endif %}
+
+      <h3 class="side-heading">History <span class="muted">{{ play_count }}</span></h3>
+      <ul class="diary diary-compact">
+        {% for play in plays %}{% include "library/_play_row.html" with is_own=True %}
+        {% empty %}<li class="empty">No check-ins yet.</li>{% endfor %}
+      </ul>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if seasons %}
+<section class="month">
+  <h2 class="month-heading">Episodes</h2>
+  {% for season in seasons %}
+    <details class="season" id="season-{{ season.number }}"{% if not season.complete and season.aired %} open{% endif %}>
+      <summary>
+        <span>Season {{ season.number }}</span>
+        <span class="muted">{{ season.seen }} of {{ season.episodes|length }} seen</span>
+        <span class="meter" style="--size: {% widthratio season.seen season.episodes|length 100 %}%"></span>
+      </summary>
+      {% if season.aired and not season.complete %}
+        <form method="post" action="{% url 'library:check_in_season' item.pk season.number %}" class="season-all">
+          {% csrf_token %}
+          <button type="submit" class="link-button">Mark season {{ season.number }} as watched</button>
+        </form>
+      {% endif %}
+      <ol class="episodes">
+        {% for episode in season.episodes %}
+          <li class="{% if episode.times %}is-seen{% endif %}{% if not episode.aired %} is-future{% endif %}">
+            <span class="episode-number">{{ episode.number }}</span>
+            <span class="episode-title">{{ episode.title|default:"Episode" }}</span>
+            <span class="muted">{% if episode.air_date %}{{ episode.air_date|date:"j M Y" }}{% endif %}</span>
+            {% if episode.aired %}
+              <form method="post" action="{% url 'library:check_in' item.pk %}">
+                {% csrf_token %}
+                <input type="hidden" name="episode" value="{{ episode.pk }}">
+                <input type="hidden" name="next" value="{{ request.path }}#season-{{ season.number }}">
+                <button type="submit" class="check{% if episode.times %} checked{% endif %}" title="{% if episode.times %}Seen {{ episode.times }}×. Watch again{% else %}Mark as watched{% endif %}">{% if episode.times %}✓{% if episode.times > 1 %}{{ episode.times }}{% endif %}{% else %}+{% endif %}</button>
+              </form>
+            {% else %}
+              <span class="muted">soon</span>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ol>
+    </details>
+  {% endfor %}
+</section>
+{% endif %}
+
+<div class="two-columns">
+  <section class="month">
+    <h2 class="month-heading">Lists</h2>
+    <ul class="manage-list">
+      {% for row in lists %}
+        <li>
+          <span class="manage-date">{% if row.on %}On it{% else %}&nbsp;{% endif %}</span>
+          <a href="{{ row.list.get_absolute_url }}">{{ row.list.name }}</a>
+          <span></span>
+          <form method="post" action="{% url 'library:list_toggle_item' row.list.pk item.pk %}">
+            {% csrf_token %}
+            <button type="submit" class="link-button">{% if row.on %}Take off{% else %}Put on{% endif %}</button>
+          </form>
+        </li>
+      {% empty %}
+        <li class="empty">You have no lists yet.</li>
+      {% endfor %}
+    </ul>
+    <div class="actions"><a class="link-button" href="{% url 'library:list_create' %}">New list</a></div>
+  </section>
+
+  <section class="month">
+    <h2 class="month-heading">In your collection</h2>
+    <ul class="manage-list">
+      {% for copy in copies %}
+        <li>
+          <span class="manage-date">{{ copy.get_format_display }}</span>
+          <span>{% if copy.resolution %}{{ copy.get_resolution_display }} {% endif %}{{ copy.note }}</span>
+          <span class="muted">{% if copy.acquired_on %}{{ copy.acquired_on|date:"M Y" }}{% endif %}</span>
+          <form method="post" action="{% url 'library:copy_delete' copy.pk %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.path }}">
+            <button type="submit" class="link-button danger">Remove</button>
+          </form>
+        </li>
+      {% empty %}
+        <li class="empty">You don't own a copy.</li>
+      {% endfor %}
+    </ul>
+    <details class="disclosure">
+      <summary>Add a copy</summary>
+      <form class="form" method="post" action="{% url 'library:copy_add' item.pk %}">
+        {% csrf_token %}
+        {% with form=copy_form %}{% include "_form_fields.html" %}{% endwith %}
+        <div class="form-actions"><button type="submit" class="button button-ghost">Add to collection</button></div>
+      </form>
+    </details>
+  </section>
+</div>
+
+{% if entry %}
+<form method="post" action="{% url 'library:entry_remove' item.pk %}" class="danger-zone">
+  {% csrf_token %}
+  <button type="submit" class="link-button danger">Remove from my library, with its history</button>
+</form>
+{% endif %}
+{% endblock %}

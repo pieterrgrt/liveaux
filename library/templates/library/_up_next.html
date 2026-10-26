@@ -1,0 +1,18 @@
+{# One series with its next episode and a button to check it in. Needs `row`. #}
+<li class="up-next">
+  <a class="up-next-cover" href="{{ row.item.get_absolute_url }}" tabindex="-1" aria-hidden="true">
+    <span class="card-placeholder"><span class="card-placeholder-title">{{ row.item.title }}</span></span>
+    {% if row.item.cover_src %}<img src="{{ row.item.cover_src }}" alt="" loading="lazy" onerror="this.remove()">{% endif %}
+  </a>
+  <div class="up-next-info">
+    <a href="{{ row.item.get_absolute_url }}"><h3>{{ row.item.title }}</h3></a>
+    <p><strong>{{ row.episode.code }}</strong>{% if row.episode.title %} · {{ row.episode.title }}{% endif %}</p>
+    <p class="muted">{{ row.left }} episode{{ row.left|pluralize }} to go{% if row.minutes %} · {% widthratio row.minutes 60 1 %} h left{% endif %}</p>
+  </div>
+  <form method="post" action="{% url 'library:check_in' row.item.pk %}">
+    {% csrf_token %}
+    <input type="hidden" name="episode" value="{{ row.episode.pk }}">
+    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+    <button type="submit" class="button button-ghost button-small">Watched</button>
+  </form>
+</li>

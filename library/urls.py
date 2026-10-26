@@ -1,0 +1,48 @@
+from django.urls import path
+
+from . import views, views_api
+
+app_name = "library"
+
+urlpatterns = [
+    path("library/", views.index, name="index"),
+    path("library/all/", views.browse, name="browse"),
+    path("library/search/", views.search, name="search"),
+    path("library/add/", views.add, name="add"),
+    path("library/new/", views.add_manual, name="add_manual"),
+    path("library/items/<int:pk>/", views.item_detail, name="item"),
+    path("library/items/<int:pk>/edit/", views.edit_manual, name="edit_manual"),
+    path("library/items/<int:pk>/entry/", views.entry_update, name="entry_update"),
+    path("library/items/<int:pk>/remove/", views.entry_remove, name="entry_remove"),
+    path("library/items/<int:pk>/check-in/", views.check_in, name="check_in"),
+    path("library/items/<int:pk>/seasons/<int:season>/check-in/", views.check_in_season, name="check_in_season"),
+    path("library/items/<int:pk>/refresh/", views.refresh, name="refresh"),
+    path("library/items/<int:pk>/link/", views.link, name="link"),
+    path("library/items/<int:pk>/cover/", views.cover, name="cover"),
+    path("library/items/<int:pk>/copies/", views.copy_add, name="copy_add"),
+    path("library/cover/", views.cover_proxy, name="cover_proxy"),
+    path("library/plays/<int:pk>/delete/", views.play_delete, name="play_delete"),
+    path("library/calendar/", views.calendar_view, name="calendar"),
+    path("library/calendar/<str:token>.ics", views.calendar_ics, name="calendar_ics"),
+    path("library/stats/", views.stats_view, name="stats"),
+    path("library/discover/", views.discover, name="discover"),
+    path("library/collection/", views.collection, name="collection"),
+    path("library/collection/<int:pk>/delete/", views.copy_delete, name="copy_delete"),
+    path("library/import/", views.import_view, name="import"),
+    path("library/export.csv", views.export_csv, name="export_csv"),
+    path("library/connect/", views.connect, name="connect"),
+    path("library/connect/reset/", views.reset_token, name="reset_token"),
+    path("library/hooks/<str:token>/<str:service>/", views_api.webhook, name="webhook"),
+    path("lists/", views.list_index, name="lists"),
+    path("lists/new/", views.list_create, name="list_create"),
+    path("lists/<int:pk>/", views.list_detail, name="list_detail"),
+    path("lists/<int:pk>/edit/", views.list_edit, name="list_edit"),
+    path("lists/<int:pk>/delete/", views.list_delete, name="list_delete"),
+    path("lists/<int:pk>/feed/", views_api.list_feed, name="list_feed"),
+    path("lists/<int:pk>/items/<int:item_pk>/", views.list_toggle_item, name="list_toggle_item"),
+    path("me/diary/", views.diary, name="diary"),
+    path("people/<int:pk>/library/", views.public_library, name="public"),
+    path("api/v1/entries/", views_api.api_entries, name="api_entries"),
+    path("api/v1/plays/", views_api.api_plays, name="api_plays"),
+    path("api/v1/calendar/", views_api.api_calendar, name="api_calendar"),
+]

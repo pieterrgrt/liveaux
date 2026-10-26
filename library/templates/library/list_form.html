@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}{% if media_list %}Edit {{ media_list.name }}{% else %}New list{% endif %} — liveaux{% endblock %}
+{% block main_class %}narrow{% endblock %}
+
+{% block content %}
+<a class="back" href="{% if media_list %}{{ media_list.get_absolute_url }}{% else %}{% url 'library:lists' %}{% endif %}">← {% if media_list %}{{ media_list.name }}{% else %}Lists{% endif %}</a>
+<h1>{% if media_list %}Edit list{% else %}New list{% endif %}</h1>
+
+<form class="form" method="post">
+  {% csrf_token %}
+  {% for field in form %}
+    {% if field.name == "media_type" %}<h2>Rules for a smart list</h2><p class="help">Only used when <em>Smart list</em> is on. Everything in your library that matches is on the list.</p>{% endif %}
+    {% include "_form_field.html" %}
+  {% endfor %}
+  <div class="form-actions"><button type="submit" class="button">Save</button></div>
+</form>
+
+{% if media_list %}
+<form method="post" action="{% url 'library:list_delete' media_list.pk %}" class="danger-zone">
+  {% csrf_token %}
+  <button type="submit" class="link-button danger">Delete this list</button>
+</form>
+{% endif %}
+{% endblock %}

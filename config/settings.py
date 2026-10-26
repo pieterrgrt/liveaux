@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "accounts",
     "events",
     "logbook",
+    "library",
 ]
 
 MIDDLEWARE = [
@@ -189,6 +190,13 @@ CONTACT_EMAIL = os.environ.get("LIVEAUX_CONTACT_EMAIL", "privacy@liveaux.eu")
 
 # Who gets an email when a venue submits an event. Comma-separated addresses.
 ADMINS = [("liveaux", a.strip()) for a in os.environ.get("DJANGO_ADMIN_EMAILS", "").split(",") if a.strip()]
+
+# The library: where details about films, series, books, games and music come from.
+# Without TMDB_API_KEY films and series can only be added by hand; same for games without IGDB.
+# Anime, manga, books, albums and podcasts need no key.
+TMDB_API_KEY = os.environ.get("TMDB_API_KEY", "")
+IGDB_CLIENT_ID = os.environ.get("IGDB_CLIENT_ID", "")
+IGDB_CLIENT_SECRET = os.environ.get("IGDB_CLIENT_SECRET", "")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

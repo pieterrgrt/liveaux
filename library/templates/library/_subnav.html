@@ -1,0 +1,13 @@
+<nav class="subnav" aria-label="Library">
+  {% with name=request.resolver_match.url_name %}
+  <a href="{% url 'library:index' %}"{% if name == "index" %} aria-current="page"{% endif %}>Overview</a>
+  <a href="{% url 'library:browse' %}"{% if name == "browse" %} aria-current="page"{% endif %}>Everything</a>
+  <a href="{% url 'library:search' %}"{% if name == "search" %} aria-current="page"{% endif %}>Add</a>
+  <a href="{% url 'library:calendar' %}"{% if name == "calendar" %} aria-current="page"{% endif %}>Calendar</a>
+  <a href="{% url 'library:diary' %}"{% if name == "diary" %} aria-current="page"{% endif %}>Diary</a>
+  <a href="{% url 'library:stats' %}"{% if name == "stats" %} aria-current="page"{% endif %}>Stats</a>
+  <a href="{% url 'library:lists' %}"{% if name == "lists" %} aria-current="page"{% endif %}>Lists</a>
+  <a href="{% url 'library:collection' %}"{% if name == "collection" %} aria-current="page"{% endif %}>Collection</a>
+  <a href="{% url 'library:discover' %}"{% if name == "discover" %} aria-current="page"{% endif %}>Discover</a>
+  {% endwith %}
+</nav>
