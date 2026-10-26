@@ -28,7 +28,7 @@
       <span class="nav-group"><span class="nav-label">Out</span><a href="{% url 'events:this_week' %}">This week</a><a href="{% url 'events:event_list' %}">What's on</a></span>
       <span class="nav-group"><span class="nav-label">In</span><a href="{% url 'library:index' %}">Library</a>{% if user.is_authenticated %}<a href="{% url 'library:calendar' %}">Calendar</a>{% endif %}</span>
     </nav>
-    <a class="wordmark" href="{% url 'home' %}">liveaux</a>
+    <a class="wordmark" href="{% url 'home' %}">{% include "_logo.html" %}</a>
     <nav class="account-nav" aria-label="Account">
       {% if user.is_authenticated %}
         <a href="{% url 'library:diary' %}">Diary</a>
@@ -63,7 +63,7 @@
       <a href="{% url 'events:submit_event' %}">Submit an event</a>
       <a href="{% url 'privacy' %}">Privacy</a>
     </nav>
-    <p class="footer-mark" aria-hidden="true">liveaux</p>
+    <div class="footer-mark">{% include "_logo.html" with decorative=True %}</div>
   </footer>
 </body>
 </html>
