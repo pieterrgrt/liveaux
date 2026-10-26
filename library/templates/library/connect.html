@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Connect — liveaux{% endblock %}
+{% block main_class %}narrow{% endblock %}
+
+{% block content %}
+<a class="back" href="{% url 'library:index' %}">← Library</a>
+<h1>Connect</h1>
+<p class="muted">These addresses contain your secret token. Keep them to yourself.</p>
+
+<h2>Calendar</h2>
+<p>New episodes, releases and saved events, in your calendar app.</p>
+<input class="copy-field" type="text" readonly value="{{ calendar_url }}" aria-label="Calendar address" onclick="this.select()">
+
+<h2>Plex</h2>
+<p>In Plex: <em>Settings → Webhooks → Add webhook</em>, and paste this address. Every film or episode you finish is checked in. Needs Plex Pass.</p>
+<input class="copy-field" type="text" readonly value="{{ plex_url }}" aria-label="Plex webhook" onclick="this.select()">
+
+<h2>Jellyfin</h2>
+<p>Install the <em>Webhook</em> plugin, add a <em>Generic</em> destination with this address, tick <em>Playback Stop</em> and <em>Send All Properties</em>. Films and episodes you finish are checked in.</p>
+<input class="copy-field" type="text" readonly value="{{ jellyfin_url }}" aria-label="Jellyfin webhook" onclick="this.select()">
+
+<h2>API</h2>
+<p>For your own scripts. Send <code>Authorization: Bearer &lt;token&gt;</code>.</p>
+<dl class="facts">
+  <div><dt>Token</dt><dd><input class="copy-field" type="text" readonly value="{{ token }}" aria-label="API token" onclick="this.select()"></dd></div>
+  <div><dt>GET</dt><dd><code>{{ api_url }}</code> your library. Filter with <code>?type=</code> and <code>?status=</code>.</dd></div>
+  <div><dt>GET</dt><dd><code>/api/v1/plays/</code> your check-ins. <code>?since=2026-01-01T00:00</code></dd></div>
+  <div><dt>POST</dt><dd><code>/api/v1/plays/</code> check something in: JSON with <code>item</code> (an id), or <code>media_type</code> + <code>source</code> + <code>source_id</code>, or <code>media_type</code> + <code>title</code>. Optional: <code>season</code>, <code>episode</code>, <code>played_at</code>, <code>minutes</code>.</dd></div>
+  <div><dt>GET</dt><dd><code>/api/v1/calendar/</code> the next 60 days.</dd></div>
+</dl>
+
+<h2>New secret</h2>
+<p>Made a mistake and shared one of these? Make a new token. The old addresses stop working at once.</p>
+<form method="post" action="{% url 'library:reset_token' %}">
+  {% csrf_token %}
+  <button type="submit" class="button button-ghost">Make a new token</button>
+</form>
+
+<h2>Sources on this server</h2>
+<dl class="facts">
+  <div><dt>Films, series</dt><dd>{% if tmdb %}TMDB{% else %}By hand (no TMDB key){% endif %}</dd></div>
+  <div><dt>Anime, manga</dt><dd>AniList</dd></div>
+  <div><dt>Books</dt><dd>Open Library</dd></div>
+  <div><dt>Albums</dt><dd>MusicBrainz</dd></div>
+  <div><dt>Podcasts</dt><dd>Apple Podcasts directory</dd></div>
+  <div><dt>Games</dt><dd>{% if igdb %}IGDB{% else %}By hand (no IGDB access){% endif %}</dd></div>
+  <div><dt>Comics, board games</dt><dd>By hand</dd></div>
+</dl>
+{% endblock %}

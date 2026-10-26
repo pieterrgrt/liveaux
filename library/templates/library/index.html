@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Library — liveaux{% endblock %}
+
+{% block content %}
+<section class="venue-header page-top">
+  <p class="eyebrow">Library</p>
+  <h1>Staying in</h1>
+  <p class="muted">{{ total }} title{{ total|pluralize }}</p>
+  {% include "library/_subnav.html" %}
+</section>
+
+{% if not total %}
+<section class="month">
+  <h2 class="month-heading">Start your library</h2>
+  <p class="empty">Search for a film, series, book, game, album or podcast and add it. Or bring your history along from Letterboxd, Goodreads or IMDb.</p>
+  <div class="actions">
+    <a class="button" href="{% url 'library:search' %}">Add something</a>
+    <a class="button button-ghost" href="{% url 'library:import' %}">Import</a>
+  </div>
+</section>
+{% endif %}
+
+{% if up_next %}
+<section class="month">
+  <h2 class="month-heading">Up next</h2>
+  <ul class="up-next-list up-next-grid">
+    {% for row in up_next %}{% include "library/_up_next.html" %}{% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+{% if in_progress %}
+<section class="month">
+  <h2 class="month-heading">In progress</h2>
+  <ul class="shelf">
+    {% for entry in in_progress %}{% include "library/_card.html" with item=entry.item %}{% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+{% if coming %}
+<section class="month">
+  <h2 class="month-heading">Coming up</h2>
+  {% include "library/_days.html" with days=coming %}
+  <p class="week-link"><a href="{% url 'library:calendar' %}">The whole calendar →</a></p>
+</section>
+{% endif %}
+
+{% if planning %}
+<section class="month">
+  <h2 class="month-heading">Planning <a class="muted" href="{% url 'library:browse' %}?status=planning">see all</a></h2>
+  <ul class="shelf">
+    {% for entry in planning %}{% include "library/_card.html" with item=entry.item %}{% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+{% if recently_finished %}
+<section class="month">
+  <h2 class="month-heading">Recently finished <a class="muted" href="{% url 'library:browse' %}?status=completed">see all</a></h2>
+  <ul class="shelf">
+    {% for entry in recently_finished %}{% include "library/_card.html" with item=entry.item %}{% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+{% if total %}
+<section class="month">
+  <h2 class="month-heading">By kind</h2>
+  <div class="filters">
+    {% for chip in type_chips %}<a class="chip" href="{{ chip.href }}">{{ chip.label }}</a>{% endfor %}
+  </div>
+  <p class="help"><a href="{% url 'library:import' %}">Import</a> · <a href="{% url 'library:export_csv' %}">Export as CSV</a> · <a href="{% url 'library:connect' %}">Connect Plex, Jellyfin and your calendar</a></p>
+</section>
+{% endif %}
+{% endblock %}

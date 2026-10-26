@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Find details for {{ item.title }} — liveaux{% endblock %}
+
+{% block content %}
+<a class="back" href="{{ item.get_absolute_url }}">← {{ item.title }}</a>
+<section class="venue-header">
+  <p class="eyebrow">Find details</p>
+  <h1>{{ item.title }}</h1>
+  <p class="muted">Pick the right one. Your status, score, notes, history, lists and copies move along with it.</p>
+</section>
+
+{% if source %}
+  <form class="form form-search" method="get">
+    <input type="search" name="q" value="{{ query }}" aria-label="Search">
+    <button type="submit" class="button">Search</button>
+  </form>
+  {% if error %}<p class="form-errors">{{ error }}</p>{% endif %}
+  <ul class="shelf">
+    {% for r in results %}
+      <li class="card">
+        <form method="post">
+          {% csrf_token %}
+          <input type="hidden" name="source_id" value="{{ r.source_id }}">
+          <button type="submit" class="card-button">
+            <div class="card-cover">
+              <span class="card-placeholder"><span class="card-placeholder-title">{{ r.title }}</span></span>
+              {% if r.cover %}<img src="{{ r.cover }}" alt="" loading="lazy" onerror="this.remove()">{% endif %}
+              <span class="card-action">This one</span>
+            </div>
+            <h3>{{ r.title }}</h3>
+            <p>{% if r.year %}{{ r.year }}{% endif %}{% if r.year and r.creator %} · {% endif %}{{ r.creator }}</p>
+          </button>
+        </form>
+      </li>
+    {% empty %}
+      {% if not error %}<li class="empty">Nothing found. Try another title.</li>{% endif %}
+    {% endfor %}
+  </ul>
+{% else %}
+  <p class="empty">liveaux has no source for {{ item.info.plural|lower }} on this server.</p>
+{% endif %}
+{% endblock %}

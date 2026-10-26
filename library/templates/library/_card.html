@@ -1,0 +1,13 @@
+{# A cover with a title under it. Needs `item`; `entry`, `caption` and `nolink` are optional. #}
+<li class="card" id="item-{{ item.pk }}">
+  {% if nolink %}<div class="card-static">{% else %}<a href="{{ item.get_absolute_url }}">{% endif %}
+    <div class="card-cover">
+      <span class="card-placeholder"><span class="tag">{{ item.get_media_type_display }}</span><span class="card-placeholder-title">{{ item.title }}</span></span>
+      {% if item.cover_src %}<img src="{{ item.cover_src }}" alt="" loading="lazy" onerror="this.remove()">{% endif %}
+      {% if entry.score %}<span class="card-score">{{ entry.score }}</span>{% endif %}
+    </div>
+    {% if entry.percent is not None and entry.status == "in_progress" %}<span class="meter" style="--size: {{ entry.percent }}%"></span>{% endif %}
+    <h3>{{ item.title }}</h3>
+    <p>{% if caption %}{{ caption }}{% else %}{{ item.get_media_type_display }}{% if item.year %} · {{ item.year }}{% endif %}{% endif %}</p>
+  {% if nolink %}</div>{% else %}</a>{% endif %}
+</li>

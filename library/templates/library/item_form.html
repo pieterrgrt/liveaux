@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}{% if item %}Edit {{ item.title }}{% else %}Add by hand{% endif %} — liveaux{% endblock %}
+{% block main_class %}narrow{% endblock %}
+
+{% block content %}
+<a class="back" href="{% if item %}{{ item.get_absolute_url }}{% else %}{% url 'library:search' %}{% endif %}">← {% if item %}{{ item.title }}{% else %}Search{% endif %}</a>
+<h1>{% if item %}Edit {{ item.title }}{% else %}Add by hand{% endif %}</h1>
+<p class="muted">For things liveaux can't find. Only you see what you add here.</p>
+
+<form class="form" method="post">
+  {% csrf_token %}
+  {% include "_form_fields.html" %}
+  <div class="form-actions"><button type="submit" class="button">{% if item %}Save{% else %}Add to my library{% endif %}</button></div>
+</form>
+{% endblock %}

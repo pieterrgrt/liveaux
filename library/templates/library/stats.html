@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Stats — liveaux{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <p class="eyebrow">Your stats</p>
+  <h1>{% if stats.year %}{{ stats.year }}{% else %}All time{% endif %} <em>in {{ stats.hours }} hours and {{ stats.events }} night{{ stats.events|pluralize }} out.</em></h1>
+  {% include "library/_subnav.html" %}
+  {% if year_chips|length > 1 %}{% include "events/_chips.html" with chips=year_chips label="Year" %}{% endif %}
+</section>
+
+<div class="stats stats-wide">
+  <div class="stat"><span class="stat-number">{{ stats.hours }}</span><span class="stat-label">hours in</span></div>
+  <div class="stat"><span class="stat-number">{{ stats.play_count }}</span><span class="stat-label">check-ins</span></div>
+  <div class="stat"><span class="stat-number">{{ stats.completed }}</span><span class="stat-label">finished</span></div>
+  <div class="stat"><span class="stat-number">{{ stats.events }}</span><span class="stat-label">event{{ stats.events|pluralize }} out</span></div>
+  <div class="stat"><span class="stat-number">{{ stats.current_streak }}</span><span class="stat-label">day streak · best {{ stats.longest_streak }}</span></div>
+</div>
+
+{% if stats.play_count or stats.events %}
+
+{% if stats.by_type %}
+<section class="month">
+  <h2 class="month-heading">By kind</h2>
+  <ul class="hbars">
+    {% for row in stats.by_type %}
+      <li>
+        <span class="hbar-label">{{ row.label }}</span>
+        <span class="hbar"><span style="--size: {{ row.percent }}%"></span></span>
+        <span class="hbar-value">{% if row.hours %}{{ row.hours }} h · {% endif %}{{ row.plays }}×</span>
+      </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+{% if stats.months %}
+<section class="month">
+  <h2 class="month-heading">Month by month</h2>
+  {% include "library/_bars.html" with bars=stats.months %}
+</section>
+{% endif %}
+
+<div class="two-columns">
+  <section class="month">
+    <h2 class="month-heading">Day of the week</h2>
+    {% include "library/_bars.html" with bars=stats.weekdays %}
+  </section>
+  <section class="month">
+    <h2 class="month-heading">Time of day</h2>
+    {% include "library/_bars.html" with bars=stats.hours_of_day %}
+  </section>
+</div>
+
+<div class="two-columns">
+  <section class="month">
+    <h2 class="month-heading">Genres</h2>
+    <ol class="ranking">
+      {% for genre, count in stats.top_genres %}<li><span>{{ genre }}</span><span class="muted">{{ count }}×</span></li>
+      {% empty %}<li class="empty">No genres yet.</li>{% endfor %}
+    </ol>
+  </section>
+  <section class="month">
+    <h2 class="month-heading">Makers</h2>
+    <ol class="ranking">
+      {% for name, count in stats.top_creators %}<li><span>{{ name }}</span><span class="muted">{{ count }}×</span></li>
+      {% empty %}<li class="empty">Nobody yet.</li>{% endfor %}
+    </ol>
+  </section>
+</div>
+
+{% if stats.out_categories %}
+<section class="month">
+  <h2 class="month-heading">Out <span class="muted">{{ stats.venues }} venue{{ stats.venues|pluralize }}</span></h2>
+  <div class="filters">
+    {% for name, count in stats.out_categories %}<span class="chip">{{ name }} <strong>{{ count }}</strong></span>{% endfor %}
+  </div>
+  <p class="help">More in <a href="{% if stats.year %}{% url 'logbook:my_year' stats.year %}{% else %}{% url 'logbook:mine' %}{% endif %}">your log of events</a>.</p>
+</section>
+{% endif %}
+
+{% if stats.best %}
+<section class="month">
+  <h2 class="month-heading">Best {% if stats.year %}of {{ stats.year }}{% else %}ever{% endif %}</h2>
+  <ul class="shelf">
+    {% for entry in stats.best %}{% include "library/_card.html" with item=entry.item %}{% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+{% if not stats.year and stats.per_year|length > 1 %}
+<section class="month">
+  <h2 class="month-heading">Year on year</h2>
+  <ul class="manage-list">
+    {% for row in stats.per_year %}
+      <li>
+        <a href="?year={{ row.year }}">{{ row.year }}</a>
+        <span>{{ row.hours }} h · {{ row.plays }} check-in{{ row.plays|pluralize }}</span>
+        <span class="muted">{{ row.events }} event{{ row.events|pluralize }}</span>
+        <span></span>
+      </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+{% else %}
+  <p class="empty">Nothing to count yet. Check in what you watch, read, play or listen to, or log an event you went to.</p>
+{% endif %}
+{% endblock %}

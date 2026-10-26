@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Import — liveaux{% endblock %}
+{% block main_class %}narrow{% endblock %}
+
+{% block content %}
+<a class="back" href="{% url 'library:index' %}">← Library</a>
+<h1>Import</h1>
+<p class="muted">Bring your history along. Importing twice is fine: nothing is added twice, and nothing you finished goes back to planning.</p>
+
+<form class="form" method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {% include "_form_fields.html" %}
+  <div class="form-actions"><button type="submit" class="button">Import</button></div>
+</form>
+
+<dl class="facts">
+  <div><dt>Letterboxd</dt><dd>Settings → Data → Export your data. Upload <code>diary.csv</code> (with dates), <code>watched.csv</code> or <code>ratings.csv</code>.</dd></div>
+  <div><dt>Goodreads</dt><dd>My Books → Import and export → Export library.</dd></div>
+  <div><dt>IMDb</dt><dd>Your ratings → ⋯ → Export. Lists work too.</dd></div>
+  <div><dt>liveaux</dt><dd>A CSV you <a href="{% url 'library:export_csv' %}">exported</a> before.</dd></div>
+</dl>
+<p class="help">Imported titles are matched with what liveaux already knows. The rest are added by hand: open one and press <em>Find details</em> to link it to its source.</p>
+{% endblock %}

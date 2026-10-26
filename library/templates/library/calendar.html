@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Calendar — liveaux{% endblock %}
+
+{% block content %}
+<section class="venue-header page-top">
+  <p class="eyebrow">Calendar</p>
+  <h1>Coming up</h1>
+  <p class="muted">New episodes and releases of what you follow, and the events you saved. The next {{ weeks }} weeks.</p>
+  {% include "library/_subnav.html" %}
+</section>
+
+{% include "library/_days.html" with empty="Nothing coming up. Add series and upcoming releases to your library, or save events, and they show up here." %}
+
+<div class="actions">
+  {% if weeks < 26 %}<a class="button button-ghost" href="?weeks={% if weeks < 12 %}12{% else %}26{% endif %}">Look further ahead</a>{% endif %}
+</div>
+
+<section class="month calendar-feed">
+  <h2 class="month-heading">On your phone</h2>
+  <p class="help">Subscribe to this address in your calendar app (Apple Calendar, Google Calendar, Outlook…). It's secret: anyone who has it can see what's in it.</p>
+  <input class="copy-field" type="text" readonly value="{{ feed_url }}" aria-label="Calendar address" onclick="this.select()">
+  <p class="help"><a href="{% url 'library:connect' %}">Make a new address</a> if you shared it by mistake.</p>
+</section>
+{% endblock %}

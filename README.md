@@ -1,6 +1,15 @@
 # liveaux
 
-Django-project voor alles wat er te doen is in de stad (Berlijn en Hamburg): concerten, clubavonden, tentoonstellingen, films, theater, dans, comedy, lezingen en meer. Met een persoonlijk logboek van waar je bent geweest.
+liveaux heeft twee helften:
+
+- **Out** – alles wat er te doen is in de stad (Berlijn en Hamburg): concerten, clubavonden, tentoonstellingen,
+  films, theater, dans, comedy, lezingen en meer. Met een persoonlijk logboek van waar je bent geweest.
+- **In** – een persoonlijke bibliotheek van wat je thuis kijkt, leest, speelt en luistert: films, series, anime,
+  boeken, comics, manga, games, bordspellen, albums en podcasts. Een eigen versie van
+  [Floppy](https://github.com/dannyvfilms/Floppy) (een eigen Trakt, Letterboxd en Goodreads), ingebouwd in liveaux.
+
+De voorpagina (`/`) brengt beide samen: je week in de stad naast je volgende aflevering, wat je bezig bent en
+wat er uitkomt.
 
 ## Starten
 
@@ -16,8 +25,10 @@ uv run python manage.py runserver
 
 Daarna:
 
-- <http://127.0.0.1:8000/> – de website (frontend)
+- <http://127.0.0.1:8000/> – de voorpagina (Out en In)
+- <http://127.0.0.1:8000/whats-on/> – de hele agenda
 - <http://127.0.0.1:8000/week/> – deze week, per stad
+- <http://127.0.0.1:8000/library/> – je bibliotheek
 - <http://127.0.0.1:8000/admin/> – beheer (backend)
 
 Tests draaien: `uv run python manage.py test`
@@ -61,6 +72,57 @@ Privacy:
   (standaard `privacy@liveaux.eu`; zorg dat dat adres bestaat of stel een ander in).
 - Lettertypes worden vanaf liveaux zelf geserveerd, niet via Google Fonts.
 
+## Bibliotheek (In)
+
+Zoeken en toevoegen via `/library/search/`. De gegevens komen van:
+
+| Soort | Bron | Sleutel nodig |
+|---|---|---|
+| Films, series (met seizoenen en afleveringen) | TMDB | `TMDB_API_KEY` (v3-sleutel of v4-token) |
+| Anime, manga | AniList | nee |
+| Boeken | Open Library | nee |
+| Albums | MusicBrainz | nee |
+| Podcasts | Apple Podcasts-directory | nee |
+| Games | IGDB | `IGDB_CLIENT_ID` + `IGDB_CLIENT_SECRET` (Twitch-app) |
+| Comics, bordspellen | met de hand | – |
+
+Zonder sleutel kun je die soorten nog steeds met de hand toevoegen; later koppel je ze met *Find details*.
+Alle verzoeken gaan via de server, en covers worden door liveaux zelf opgeslagen en geserveerd: de browser
+van bezoekers praat nooit met die diensten.
+
+Wat er in zit:
+
+- **Status, score, voortgang, data en notities** per titel; per soort telt voortgang anders
+  (afleveringen, pagina's, hoofdstukken, sessies).
+- **Inchecken** (*Watched it*, *Read a chapter*, *Log a session*…), met datum, minuten en notitie. Per aflevering of
+  een heel seizoen tegelijk. Opnieuw kijken telt als herhaling. *Undo* draait een check-in terug.
+- **Up next**: van elke serie die je kijkt de volgende aflevering en hoeveel tijd je nog hebt.
+- **Diary** (`/me/diary/`): alle check-ins én de evenementen uit je logboek, op volgorde.
+- **Kalender** (`/library/calendar/`): nieuwe afleveringen, releases en je opgeslagen evenementen, ook als
+  iCal-feed voor je telefoon.
+- **Stats** (`/library/stats/`): uren per soort, check-ins per dag en uur, streaks, genres, makers, beste
+  titels en jaar-op-jaar. Inclusief je avonden uit.
+- **Lijsten** (`/lists/`): privé of openbaar (met RSS), of *smart*: ze vullen zich met regels
+  (soort, status, minimale score, genre, jaren).
+- **Collectie**: welke exemplaren je hebt (Blu-ray, vinyl, paperback…).
+- **Discover**: aanbevelingen op basis van wat je hoog scoorde (TMDB), wat populair is op liveaux, en je planning.
+- **Import/export** (`/library/import/`): CSV van Letterboxd, Goodreads, IMDb of liveaux zelf; export als CSV.
+  Alles staat ook in de JSON-download onder *Account settings*.
+- **Koppelen** (`/library/connect/`): webhooks voor Plex en Jellyfin (bekeken films en afleveringen worden
+  automatisch ingecheckt), en een kleine JSON-API onder `/api/v1/` (`entries/`, `plays/`, `calendar/`) met
+  `Authorization: Bearer <token>`. Het token is ook het geheim in de kalender- en webhook-adressen; je maakt
+  zelf een nieuw aan als het uitlekt.
+- **Privacy**: de bibliotheek is standaard privé. Met *Public library* in de instellingen staat hij op
+  `/people/<id>/library/`.
+
+Nieuwe afleveringen en releasedata ophalen (dagelijks):
+
+```bash
+uv run python manage.py refresh_library
+```
+
+Met docker-compose gebeurt dat vanzelf (service `refresh`).
+
 ## Steden
 
 Steden beheer je in de admin (*Cities*). Elke zaal hoort bij een stad. De weekpagina's staan op
@@ -83,6 +145,10 @@ gemaild worden, zet dan `DJANGO_ADMIN_EMAILS`.
 - `accounts/` – eigen User-model (inloggen met e-mail), *My liveaux* en instellingen
 - `events/` – steden, zalen, organisatoren (in de code: Promoter), artiesten, evenementen, inzendingen, en de beheerpagina's (`views_manage.py`)
 - `logbook/` – het logboek (*Ik was erbij*), openbare logboeken en jaaroverzichten
+- `library/` – de bibliotheek: modellen (`Item`, `Episode`, `Entry`, `Play`, `MediaList`, `Copy`), bronnen
+  (`providers.py`), inchecken en kalender (`services.py`), stats, import/export, Plex/Jellyfin (`scrobble.py`)
+  en de API (`views_api.py`)
+- `config/views.py` – de voorpagina
 - `templates/` – gedeelde layout en de opgemaakte inlogpagina's van allauth
 - `events/fixtures/` – voorbeelddata: echte zalen in Berlijn en Hamburg, verzonnen programma
 
@@ -101,6 +167,8 @@ Stel deze omgevingsvariabelen in bij je hostingplatform (zie `.env.example`):
 | `DATABASE_URL` | wordt meestal door het platform zelf ingevuld |
 | `LIVEAUX_CONTACT_EMAIL` | adres voor privacyvragen, staat in de privacyverklaring |
 | `DJANGO_ADMIN_EMAILS` | wie een mail krijgt bij een nieuwe inzending (optioneel) |
+| `TMDB_API_KEY` | films en series zoeken (optioneel) |
+| `IGDB_CLIENT_ID`, `IGDB_CLIENT_SECRET` | games zoeken (optioneel) |
 
 Een secret key maken:
 

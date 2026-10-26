@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}{{ media_list.name }} — liveaux{% endblock %}
+
+{% block extra_head %}{% if media_list.is_public %}<link rel="alternate" type="application/rss+xml" title="{{ media_list.name }}" href="{% url 'library:list_feed' media_list.pk %}">{% endif %}{% endblock %}
+
+{% block content %}
+{% if is_own %}<a class="back" href="{% url 'library:lists' %}">← Lists</a>{% endif %}
+<section class="venue-header{% if not is_own %} page-top{% endif %}">
+  <p class="eyebrow">{% if media_list.is_smart %}Smart list{% else %}List{% endif %} by {% if is_own %}you{% else %}{{ media_list.user.public_name }}{% endif %}</p>
+  <h1>{{ media_list.name }}</h1>
+  {% if media_list.description %}<div class="description">{{ media_list.description|linebreaks }}</div>{% endif %}
+  <p class="muted">{{ items|length }} item{{ items|length|pluralize }}{% if media_list.is_public %} · <a href="{% url 'library:list_feed' media_list.pk %}">RSS</a>{% endif %}</p>
+  {% if is_own %}
+    <p class="privacy-note">{% if media_list.is_public %}Public: anyone with the link can see it.{% else %}Only you can see this list.{% endif %} <a href="{% url 'library:list_edit' media_list.pk %}">Edit</a></p>
+  {% endif %}
+</section>
+
+<ul class="shelf">
+  {% for item in items %}
+    {% include "library/_card.html" with nolink=is_own|yesno:",1" %}
+  {% empty %}
+    <li class="empty">{% if media_list.is_smart %}Nothing in your library matches the rules.{% else %}Nothing on it yet. Open something in your library and put it on this list.{% endif %}</li>
+  {% endfor %}
+</ul>
+{% endblock %}

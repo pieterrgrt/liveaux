@@ -5,7 +5,7 @@ from . import views, views_manage
 app_name = "events"
 
 urlpatterns = [
-    path("", views.event_list, name="event_list"),
+    path("whats-on/", views.event_list, name="event_list"),
     path("week/", views.this_week, name="this_week"),
     path("week/<slug:slug>/", views.city_week, name="city_week"),
     path("submit/", views.submit_event, name="submit_event"),

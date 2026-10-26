@@ -53,6 +53,8 @@ def dashboard(request):
             "to_log": to_log,
             "recent_log": user.log_entries.select_related("event__venue__city", "event__category")[:5],
             "log_count": user.log_entries.count(),
+            "library_count": user.library_entries.count(),
+            "play_count": user.plays.count(),
             "pages": pages,
             "following": following,
             "submissions": user.event_submissions.select_related("venue", "event")[:10],
@@ -78,7 +80,7 @@ def delete_account(request):
         logout(request)
         user.delete()  # cascades to log entries, memberships, submissions, email addresses
         messages.success(request, "Your account and everything in it is deleted. Take care.")
-        return redirect("events:event_list")
+        return redirect("home")
     return render(request, "accounts/delete.html", {"form": form})
 
 
@@ -96,6 +98,7 @@ def export_data(request):
             "email": user.email,
             "name": user.display_name,
             "log_is_public": user.log_is_public,
+            "library_is_public": user.library_is_public,
             "joined": _local(user.date_joined),
             "last_login": _local(user.last_login),
             "email_addresses": [
@@ -129,6 +132,49 @@ def export_data(request):
             "promoters": [p.name for p in user.managed_promoters.all()],
             "artists": [p.name for p in user.managed_artists.all()],
         },
+        "library": [
+            {
+                "title": e.item.title,
+                "kind": e.item.media_type,
+                "year": e.item.year,
+                "source": e.item.source,
+                "source_id": e.item.source_id,
+                "status": e.status,
+                "score": e.score,
+                "progress": e.progress,
+                "repeats": e.repeats,
+                "started_on": e.started_on.isoformat() if e.started_on else None,
+                "finished_on": e.finished_on.isoformat() if e.finished_on else None,
+                "notes": e.notes,
+            }
+            for e in user.library_entries.select_related("item")
+        ],
+        "check_ins": [
+            {
+                "title": p.item.title,
+                "kind": p.item.media_type,
+                "episode": p.episode.code if p.episode else None,
+                "at": _local(p.played_at),
+                "minutes": p.minutes,
+                "via": p.via,
+                "note": p.note,
+            }
+            for p in user.plays.select_related("item", "episode")
+        ],
+        "lists": [
+            {
+                "name": lst.name,
+                "description": lst.description,
+                "public": lst.is_public,
+                "smart_rules": lst.rules if lst.is_smart else None,
+                "items": [str(i) for i in lst.get_items()],
+            }
+            for lst in user.media_lists.all()
+        ],
+        "collection": [
+            {"title": str(c.item), "format": c.format, "resolution": c.resolution, "note": c.note}
+            for c in user.copies.select_related("item")
+        ],
         "event_submissions": [
             {"title": s.title, "venue": s.venue_name, "date": _local(s.starts_at), "status": s.status}
             for s in user.event_submissions.select_related("venue")

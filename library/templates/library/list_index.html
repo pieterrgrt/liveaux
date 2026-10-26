@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Lists — liveaux{% endblock %}
+
+{% block content %}
+<section class="venue-header page-top">
+  <p class="eyebrow">Lists</p>
+  <h1>Your lists</h1>
+  {% include "library/_subnav.html" %}
+</section>
+
+<ul class="manage-list">
+  {% for media_list in lists %}
+    <li>
+      <span class="manage-date">{% if media_list.is_smart %}Smart{% else %}{{ media_list.count }} item{{ media_list.count|pluralize }}{% endif %}</span>
+      <a href="{{ media_list.get_absolute_url }}">{{ media_list.name }}</a>
+      <span class="status{% if media_list.is_public %} status-approved{% endif %}">{% if media_list.is_public %}Public{% else %}Private{% endif %}</span>
+      <a class="link-button" href="{% url 'library:list_edit' media_list.pk %}">Edit</a>
+    </li>
+  {% empty %}
+    <li class="empty">No lists yet. Make one for your favourites, a watchlist for the holidays, or a smart list that fills itself.</li>
+  {% endfor %}
+</ul>
+<div class="actions"><a class="button" href="{% url 'library:list_create' %}">New list</a></div>
+{% endblock %}

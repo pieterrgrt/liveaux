@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Diary — liveaux{% endblock %}
+
+{% block content %}
+<section class="venue-header page-top">
+  <p class="eyebrow">Diary</p>
+  <h1>Everything, as it happened</h1>
+  <p class="muted">What you watched, read, played and listened to, and where you went.</p>
+  {% include "library/_subnav.html" %}
+</section>
+
+{% for month, rows in months %}
+  <section class="month">
+    <h2 class="month-heading">{{ month }}</h2>
+    <ul class="diary">
+      {% for row in rows %}
+        {% if row.kind == "play" %}
+          {% include "library/_play_row.html" with play=row.play %}
+        {% else %}
+          <li class="diary-row diary-out">
+            <span class="diary-date">{{ row.entry.event.starts_at|date:"D j M" }}<br><span class="muted">{{ row.entry.event.starts_at|time:"H:i" }}</span></span>
+            <span class="diary-what">
+              <span class="tag">Out · {{ row.entry.event.category.name }}</span>
+              <a href="{{ row.entry.event.get_absolute_url }}">{{ row.entry.event.title }}</a>
+              <span class="muted">{{ row.entry.event.venue.name }}</span>
+              {% if row.entry.note %}<span class="log-note">{{ row.entry.note }}</span>{% endif %}
+            </span>
+            <span class="rating">{% if row.entry.rating %}{{ row.entry.rating }}<span>/10</span>{% endif %}</span>
+            <a class="link-button" href="{{ row.entry.get_edit_url }}">Edit</a>
+          </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </section>
+{% empty %}
+  <p class="empty">Nothing yet. Check something in from your <a href="{% url 'library:index' %}">library</a>, or press <strong>I was there</strong> on an event.</p>
+{% endfor %}
+{% endblock %}

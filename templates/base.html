@@ -4,15 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
-  <title>{% block title %}liveaux — what's on, and where you've been{% endblock %}</title>
+  <title>{% block title %}liveaux — out in the city, in at home{% endblock %}</title>
   <link rel="stylesheet" href="{% static 'events/style.css' %}">
+  {% block extra_head %}{% endblock %}
 </head>
 <body>
   <div class="ticker" aria-label="What's on liveaux">
     <div class="ticker-track">
       {% for copy in "12" %}
         <p{% if not forloop.first %} aria-hidden="true"{% endif %}>
-          <span>Concerts</span><span>Exhibitions</span><span>Film</span><span>Theatre</span><span>Club nights</span><span>Dance</span><span>Comedy</span><span>Talks</span><span>Festivals</span><span>Berlin</span><span>Hamburg</span>
+          <span>Concerts</span><span>Exhibitions</span><span>Theatre</span><span>Club nights</span><span>Films</span><span>Series</span><span>Books</span><span>Games</span><span>Albums</span><span>Podcasts</span><span>Comedy</span><span>Anime</span><span>Berlin</span><span>Hamburg</span>
         </p>
       {% endfor %}
     </div>
@@ -20,13 +21,13 @@
 
   <header class="site-header">
     <nav class="main-nav" aria-label="Main">
-      <a href="{% url 'events:this_week' %}">This week</a>
-      <a href="{% url 'events:event_list' %}">Everything</a>
+      <span class="nav-group"><span class="nav-label">Out</span><a href="{% url 'events:this_week' %}">This week</a><a href="{% url 'events:event_list' %}">What's on</a></span>
+      <span class="nav-group"><span class="nav-label">In</span><a href="{% url 'library:index' %}">Library</a>{% if user.is_authenticated %}<a href="{% url 'library:calendar' %}">Calendar</a>{% endif %}</span>
     </nav>
-    <a class="wordmark" href="{% url 'events:event_list' %}">liveaux</a>
+    <a class="wordmark" href="{% url 'home' %}">liveaux</a>
     <nav class="account-nav" aria-label="Account">
       {% if user.is_authenticated %}
-        <a href="{% url 'logbook:mine' %}">My log</a>
+        <a href="{% url 'library:diary' %}">Diary</a>
         <a href="{% url 'accounts:dashboard' %}">Account</a>
         <form method="post" action="{% url 'account_logout' %}">
           {% csrf_token %}
@@ -51,7 +52,10 @@
   <footer class="site-footer">
     <nav class="footer-links" aria-label="Footer">
       <a href="{% url 'events:this_week' %}">This week</a>
-      <a href="{% url 'events:event_list' %}">Everything</a>
+      <a href="{% url 'events:event_list' %}">What's on</a>
+      <a href="{% url 'library:index' %}">Library</a>
+      <a href="{% url 'library:stats' %}">Stats</a>
+      <a href="{% url 'library:lists' %}">Lists</a>
       <a href="{% url 'events:submit_event' %}">Submit an event</a>
       <a href="{% url 'privacy' %}">Privacy</a>
     </nav>

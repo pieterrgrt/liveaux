@@ -1,0 +1,21 @@
+{# A search result or recommendation that isn't necessarily in liveaux yet. Needs `r`. #}
+<li class="card">
+  {% if r.in_library %}
+    <a href="{{ r.item.get_absolute_url }}">
+  {% else %}
+    <form method="post" action="{% url 'library:add' %}">
+      {% csrf_token %}
+      <input type="hidden" name="source" value="{{ r.source }}">
+      <input type="hidden" name="media_type" value="{{ r.media_type }}">
+      <input type="hidden" name="source_id" value="{{ r.source_id }}">
+      <button type="submit" class="card-button" title="Add {{ r.title }} to your library">
+  {% endif %}
+    <div class="card-cover">
+      <span class="card-placeholder"><span class="card-placeholder-title">{{ r.title }}</span></span>
+      {% if r.cover %}<img src="{{ r.cover }}" alt="" loading="lazy" onerror="this.remove()">{% endif %}
+      <span class="card-action">{% if r.in_library %}In your library ✓{% else %}+ Add{% endif %}</span>
+    </div>
+    <h3>{{ r.title }}</h3>
+    <p>{% if r.year %}{{ r.year }}{% endif %}{% if r.year and r.creator %} · {% endif %}{{ r.creator }}</p>
+  {% if r.in_library %}</a>{% else %}</button></form>{% endif %}
+</li>

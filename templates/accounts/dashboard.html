@@ -8,6 +8,18 @@
   <h1>My liveaux</h1>
   <div class="actions">
     <a class="link-button" href="{% url 'accounts:settings' %}">Account settings</a>
+    <a class="link-button" href="{% url 'library:connect' %}">Connect apps</a>
+  </div>
+</section>
+
+<section class="month">
+  <h2 class="month-heading">Library <span class="muted">{{ library_count }} title{{ library_count|pluralize }} · {{ play_count }} check-in{{ play_count|pluralize }}</span></h2>
+  <div class="actions">
+    <a class="button button-ghost" href="{% url 'library:index' %}">Library</a>
+    <a class="button button-ghost" href="{% url 'library:diary' %}">Diary</a>
+    <a class="button button-ghost" href="{% url 'library:stats' %}">Stats</a>
+    <a class="button button-ghost" href="{% url 'library:lists' %}">Lists</a>
+    <a class="button button-ghost" href="{% url 'library:collection' %}">Collection</a>
   </div>
 </section>
 
