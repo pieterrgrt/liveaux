@@ -24,5 +24,10 @@ class RouteTests(TestCase):
     def test_home(self):
         self.assertEqual(self.client.get("/").status_code, 200)
 
+    def test_home_links_icons(self):
+        response = self.client.get("/")
+        self.assertContains(response, 'rel="apple-touch-icon"')
+        self.assertContains(response, "events/icons/icon.svg")
+
     def test_privacy(self):
         self.assertEqual(self.client.get("/privacy/").status_code, 200)
