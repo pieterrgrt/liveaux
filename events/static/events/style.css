@@ -257,10 +257,35 @@ h3 {
 }
 
 .wordmark {
-  font-size: 22px;
-  font-weight: 800;
-  letter-spacing: -0.04em;
-  line-height: 1;
+  display: block;
+  line-height: 0;
+}
+
+.wordmark .logo {
+  height: 34px;
+  width: auto;
+}
+
+/* The logo: the e teeters on the edge of the field, and wobbles when you point at it. */
+.logo-e {
+  transform-box: view-box;
+  transform-origin: 140px 100px;
+  transform: rotate(16deg);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .wordmark:hover .logo-e,
+  .wordmark:focus-visible .logo-e {
+    animation: teeter 1.2s var(--ease);
+  }
+}
+
+@keyframes teeter {
+  0%   { transform: rotate(16deg); }
+  25%  { transform: rotate(27deg); }
+  55%  { transform: rotate(9deg); }
+  80%  { transform: rotate(19deg); }
+  100% { transform: rotate(16deg); }
 }
 
 .main-nav,
@@ -887,13 +912,13 @@ a.tag:hover {
 }
 
 .footer-mark {
-  margin: 40px 0 -0.1em;
-  margin-left: -0.04em;
-  font-size: clamp(5rem, 27vw, 23rem);
-  font-weight: 800;
-  line-height: 0.8;
-  letter-spacing: -0.07em;
-  white-space: nowrap;
+  margin: 40px 0 24px;
+  line-height: 0;
+}
+
+.footer-mark .logo {
+  width: 100%;
+  height: auto;
 }
 
 /* Narrow pages: forms, log in, sign up */
