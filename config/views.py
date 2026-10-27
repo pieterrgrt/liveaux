@@ -6,34 +6,59 @@ from django.utils import timezone
 
 from events.models import Event
 from library import services
+from library import views as library_views
 from library.models import Status
 
 
-def home(request):
-    """The front page: out in the city, and in at home. Personal when you're logged in."""
+def _week():
     now = timezone.now()
-    week = Event.objects.overlapping(now, now + timedelta(days=7)).select_related("venue__city", "category")
-    if not request.user.is_authenticated:
-        return render(request, "home.html", {"events": week.filter(starts_at__gte=now)[:8], "event_count": week.count()})
+    return Event.objects.overlapping(now, now + timedelta(days=7)).select_related("venue__city", "category")
 
-    user = request.user
-    today = timezone.localdate()
-    mine = week.filter(Q(saved_by=user) | Q(venue__followers=user) | Q(promoter__followers=user) | Q(artists__followers=user)).distinct()
-    entries = user.library_entries.select_related("item")
-    return render(
-        request,
-        "home.html",
-        {
-            "my_week": mine[:8],
-            "events": week.filter(starts_at__gte=now).exclude(pk__in=mine.values("pk"))[:6],
-            "up_next": services.up_next(user)[:6],
-            "in_progress": entries.filter(status=Status.IN_PROGRESS).exclude(item__media_type="tv")[:8],
-            "coming": services.calendar(user, today, today + timedelta(days=7))[:5],
-            "recent_plays": user.plays.select_related("item", "episode")[:5],
-            "library_count": entries.count(),
-            "to_log": Event.objects.started()
+
+def _mine(week, user):
+    return week.filter(
+        Q(saved_by=user) | Q(venue__followers=user) | Q(promoter__followers=user) | Q(artists__followers=user)
+    ).distinct()
+
+
+def home(request):
+    """The front page: the logo, big. You choose live (out in the city) or aux (at home)."""
+    week = _week()
+    context = {"event_count": week.count()}
+    if request.user.is_authenticated:
+        user = request.user
+        context["saved_count"] = _mine(week, user).count()
+        next_up = services.up_next(user)[:1]
+        context["next_up"] = next_up[0] if next_up else None
+        context["in_progress_count"] = user.library_entries.filter(status=Status.IN_PROGRESS).count()
+    return render(request, "home.html", context)
+
+
+def live(request):
+    """Live: out in the city. Your week first when you're logged in, then everything else on."""
+    now = timezone.now()
+    week = _week()
+    upcoming = week.filter(Q(starts_at__gte=now) | Q(ends_at__gte=now))
+    context = {"event_count": week.count()}
+    if request.user.is_authenticated:
+        user = request.user
+        mine = _mine(upcoming, user)
+        context.update(
+            my_week=mine[:12],
+            events=upcoming.exclude(pk__in=mine.values("pk"))[:12],
+            to_log=Event.objects.started()
             .filter(saved_by=user, starts_at__gte=now - timedelta(days=14))
             .exclude(log_entries__user=user)
             .select_related("venue")[:3],
-        },
-    )
+            recent_log=user.log_entries.select_related("event__venue__city", "event__category")[:4],
+        )
+    else:
+        context["events"] = upcoming[:20]
+    return render(request, "live.html", context)
+
+
+def aux(request):
+    """Aux: at home. Your library; without an account, what it is and how to start one."""
+    if request.user.is_authenticated:
+        return library_views.index(request)
+    return render(request, "aux.html")

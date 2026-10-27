@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Live — liveaux{% endblock %}
+
+{% block content %}
+<header class="page-head">
+  <p class="eyebrow">{% now "l j F" %}</p>
+  <h1>Out this week</h1>
+  <p class="page-meta">{{ event_count }} event{{ event_count|pluralize }} in Berlin and Hamburg</p>
+</header>
+
+{% if to_log %}
+<section class="month">
+  <h2 class="month-heading">Were you there?</h2>
+  <ul class="manage-list">
+    {% for event in to_log %}
+      <li>
+        <span class="manage-date">{{ event.starts_at|date:"j M" }}</span>
+        <a href="{{ event.get_absolute_url }}">{{ event.title }}</a>
+        <span class="muted">{{ event.venue.name }}</span>
+        <form method="post" action="{% url 'logbook:attended' event.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="link-button">I was there</button>
+        </form>
+      </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+{% if user.is_authenticated %}
+<section class="month">
+  <h2 class="month-heading">Your week</h2>
+  <ul class="event-list">
+    {% for event in my_week %}{% include "events/_event_row.html" %}
+    {% empty %}<li class="empty">Nothing saved this week. Save an event, or follow a venue or artist, and it shows up here.</li>{% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+<section class="month">
+  <h2 class="month-heading">{% if user.is_authenticated %}Also on{% else %}On this week{% endif %}</h2>
+  <ul class="event-list">
+    {% for event in events %}{% include "events/_event_row.html" %}
+    {% empty %}<li class="empty">Nothing else on this week.</li>{% endfor %}
+  </ul>
+  <p class="week-link"><a href="{% url 'events:this_week' %}">Day by day →</a></p>
+</section>
+
+{% if recent_log %}
+<section class="month">
+  <h2 class="month-heading">Lately</h2>
+  <ul class="event-list">
+    {% for entry in recent_log %}{% include "logbook/_entry_row.html" %}{% endfor %}
+  </ul>
+  <p class="week-link"><a href="{% url 'logbook:mine' %}">Your log →</a></p>
+</section>
+{% endif %}
+{% endblock %}

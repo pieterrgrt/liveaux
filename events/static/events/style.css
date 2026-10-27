@@ -23,6 +23,10 @@
 
 /* Tokens */
 
+/* Two sides, two colours. Live is out in the city: signal orange, the colour of posters, street signs
+   and stage light. Aux is at home: ultramarine, the light of a screen in a dark room. Everything else
+   stays black on white. A page on one side takes that side's colour as its accent; pages that belong
+   to neither (your account, log in) stay black. Orange carries black text; ultramarine carries white. */
 :root {
   color-scheme: light;
   --bg: #ffffff;
@@ -34,11 +38,28 @@
   --danger: #c4231b;
   --field-border: #8a8a8a;
 
+  --live: #ff4f00;
+  --live-ink: #0a0a0a;
+  --live-text: #c23d00;
+  --live-soft: #fff1ea;
+  --aux: #3b2cf6;
+  --aux-ink: #ffffff;
+  --aux-text: #3b2cf6;
+  --aux-soft: #efeefe;
+
+  --accent: var(--text);
+  --accent-ink: var(--inverse);
+  --accent-text: var(--text);
+  --accent-soft: var(--surface);
+
   --font: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --ease: cubic-bezier(0.2, 0.7, 0.1, 1);
+  --swift: cubic-bezier(0.7, 0, 0.2, 1);
   --fast: 0.2s;
   --slow: 0.6s;
-  --header-h: 70px;
+  --header-h: 64px;
+  --sidenav-h: 0px;
+  --sticky-top: calc(var(--header-h) + var(--sidenav-h));
 }
 
 @media (prefers-color-scheme: dark) {
@@ -52,7 +73,29 @@
     --inverse: #0a0a0a;
     --danger: #ff6b61;
     --field-border: #6f6f6f;
+
+    --live-text: #ff7a3d;
+    --live-soft: #2a1406;
+    --aux: #4a3cff;
+    --aux-text: #9d94ff;
+    --aux-soft: #16133d;
   }
+}
+
+:root[data-side="live"] {
+  --accent: var(--live);
+  --accent-ink: var(--live-ink);
+  --accent-text: var(--live-text);
+  --accent-soft: var(--live-soft);
+  --sidenav-h: 44px;
+}
+
+:root[data-side="aux"] {
+  --accent: var(--aux);
+  --accent-ink: var(--aux-ink);
+  --accent-text: var(--aux-text);
+  --accent-soft: var(--aux-soft);
+  --sidenav-h: 44px;
 }
 
 *,
@@ -73,8 +116,8 @@ body {
 }
 
 ::selection {
-  background: var(--text);
-  color: var(--inverse);
+  background: var(--accent);
+  color: var(--accent-ink);
 }
 
 a {
@@ -91,8 +134,7 @@ a {
 .narrow p a,
 .narrow li a,
 .site-footer a,
-.main-nav a,
-.account-nav a:not(.nav-cta) {
+.account-nav a:not(.nav-cta):not(.account-link) {
   background: linear-gradient(currentColor, currentColor) no-repeat left bottom / 0 1px;
   transition: background-size var(--fast) var(--ease);
 }
@@ -119,8 +161,7 @@ a {
 }
 
 .site-footer a:hover,
-.main-nav a:hover,
-.account-nav a:not(.nav-cta):hover {
+.account-nav a:not(.nav-cta):not(.account-link):hover {
   background-size: 100% 1px;
 }
 
@@ -157,12 +198,6 @@ h3 {
   }
 }
 
-@keyframes ticker {
-  to {
-    transform: translateX(-50%);
-  }
-}
-
 .hero,
 .venue-header,
 .event-detail,
@@ -196,56 +231,12 @@ h3 {
   }
 }
 
-/* Ticker */
-
-.ticker {
-  overflow: hidden;
-  background: var(--text);
-  color: var(--inverse);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.ticker-track {
-  display: flex;
-  width: max-content;
-  animation: ticker 40s linear infinite;
-}
-
-.ticker:hover .ticker-track {
-  animation-play-state: paused;
-}
-
-.ticker p {
-  display: flex;
-  margin: 0;
-  padding: 9px 0;
-}
-
-.ticker span {
-  padding: 0 22px;
-}
-
-.ticker span::after {
-  content: "";
-  display: inline-block;
-  width: 4px;
-  height: 4px;
-  margin-left: 44px;
-  vertical-align: middle;
-  background: currentColor;
-  transform: translateX(-24px) rotate(45deg);
-}
-
-/* Header */
+/* Header: the logo, the switch between live and aux, and your account. */
 
 .site-header {
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 20;
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
@@ -258,19 +249,45 @@ h3 {
 
 .wordmark {
   display: block;
+  justify-self: start;
   line-height: 0;
 }
 
 .wordmark .logo {
-  height: 34px;
+  height: 30px;
   width: auto;
 }
 
-/* The logo: the e teeters on the edge of the field, and wobbles when you point at it. */
+/* The logo in three parts. Each part takes its colour from `color`; strokes follow it. */
+.logo {
+  overflow: visible;
+}
+
+.logo-live,
+.logo-e,
+.logo-aux {
+  fill: currentColor;
+  transition: color 0.4s var(--ease), opacity 0.4s var(--ease), transform 0.6s var(--ease);
+}
+
+.logo [stroke-width] {
+  stroke: currentColor;
+}
+
+/* The e teeters on the edge of the field. */
 .logo-e {
   transform-box: view-box;
   transform-origin: 140px 100px;
   transform: rotate(16deg);
+}
+
+/* The side you're on lights up in the logo. */
+[data-side="live"] .wordmark .logo-live {
+  color: var(--live);
+}
+
+[data-side="aux"] .wordmark .logo-aux {
+  color: var(--aux);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -288,23 +305,106 @@ h3 {
   100% { transform: rotate(16deg); }
 }
 
-.main-nav,
+/* Live or aux: two tabs, the one you're on filled with its colour. */
+.side-switch {
+  display: flex;
+  border: 1px solid var(--text);
+}
+
+.side-switch a {
+  position: relative;
+  padding: 7px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  isolation: isolate;
+  overflow: hidden;
+  transition: color var(--fast) var(--ease);
+}
+
+.side-switch a + a {
+  border-left: 1px solid var(--text);
+}
+
+.side-switch a::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform 0.3s var(--ease);
+}
+
+.side-live::before {
+  background: var(--live);
+}
+
+.side-aux::before {
+  background: var(--aux);
+}
+
+.side-live:hover,
+.side-live[aria-current] {
+  color: var(--live-ink);
+}
+
+.side-aux:hover,
+.side-aux[aria-current] {
+  color: var(--aux-ink);
+}
+
+.side-switch a:hover::before,
+.side-switch a[aria-current]::before {
+  transform: none;
+}
+
 .account-nav {
   display: flex;
   align-items: center;
-  gap: 22px;
+  justify-content: flex-end;
+  gap: 20px;
   font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
-.account-nav {
-  justify-content: flex-end;
-}
-
 .account-nav form {
   margin: 0;
+}
+
+.account-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.account-name {
+  max-width: 18ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.avatar {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  background: var(--text);
+  color: var(--inverse);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0;
+  transition: background var(--fast), color var(--fast);
+}
+
+.account-link:hover .avatar,
+.account-link[aria-current] .avatar {
+  background: var(--accent);
+  color: var(--accent-ink);
 }
 
 .nav-button {
@@ -331,6 +431,402 @@ h3 {
 
 .nav-cta:hover {
   opacity: 0.8;
+}
+
+/* Under the header: the pages of the side you're on. One row, swipeable on a phone. */
+.side-nav {
+  position: sticky;
+  top: var(--header-h);
+  z-index: 19;
+  height: var(--sidenav-h);
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+}
+
+.side-nav-track {
+  display: flex;
+  gap: 26px;
+  max-width: 1200px;
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 24px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.side-nav-track::-webkit-scrollbar {
+  display: none;
+}
+
+.side-nav a {
+  position: relative;
+  display: flex;
+  flex: none;
+  align-items: center;
+  color: var(--muted);
+  transition: color var(--fast);
+}
+
+.side-nav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 3px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s var(--ease);
+}
+
+.side-nav a:hover,
+.side-nav a[aria-current] {
+  color: var(--text);
+}
+
+.side-nav a:hover::after,
+.side-nav a[aria-current]::after {
+  transform: none;
+}
+
+/* Page heads: the same on both sides. A small line in the side's colour, a big title, a line of facts. */
+.page-head {
+  padding: 48px 0 32px;
+  animation: rise var(--slow) var(--ease) both;
+}
+
+.page-head .eyebrow {
+  color: var(--accent-text);
+}
+
+.page-head h1 {
+  max-width: 16ch;
+  margin: 0;
+  font-size: clamp(2.5rem, 8vw, 5.5rem);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.055em;
+}
+
+.page-meta {
+  max-width: 60ch;
+  margin: 18px 0 0;
+  color: var(--muted);
+}
+
+/* Coming in through the e: the colour of the side you chose closes in on the logo in the header. */
+:root[data-arrive] body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  background: var(--live);
+  clip-path: circle(0 at var(--arrive-x, 40px) var(--arrive-y, 32px));
+  animation: arrive 0.9s var(--swift) both;
+}
+
+:root[data-arrive="aux"] body::after {
+  background: var(--aux);
+}
+
+@keyframes arrive {
+  from {
+    clip-path: circle(150vmax at var(--arrive-x, 40px) var(--arrive-y, 32px));
+  }
+}
+
+/* The front page: choose live or aux. */
+
+.choose-page main {
+  max-width: none;
+  padding: 0;
+}
+
+.choose {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100vh;
+  min-height: 100svh;
+  overflow: hidden;
+}
+
+.choose-account {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 20px;
+  padding: 16px 24px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.choose-logo {
+  position: relative;
+  align-self: center;
+  justify-self: center;
+  width: min(100% - 48px, 1100px);
+  margin: 0;
+  padding: 6vh 0;
+  line-height: 0;
+}
+
+.choose-logo .logo {
+  width: 100%;
+  height: auto;
+  transform-origin: 50% 50%;
+}
+
+.choose-logo .logo-live {
+  color: var(--live);
+}
+
+.choose-logo .logo-aux {
+  color: var(--aux);
+}
+
+/* The halves of the logo you can tap: live up to the end of its field, aux from its letters down. */
+.choose-hit {
+  position: absolute;
+}
+
+.choose-hit-live {
+  left: 0;
+  top: 6vh;
+  width: 39%;
+  height: calc((100% - 12vh) * 0.78);
+}
+
+.choose-hit-aux {
+  right: 0;
+  bottom: 6vh;
+  width: 61%;
+  height: calc((100% - 12vh) * 0.53);
+}
+
+/* Pointing at a side: the e leans its way, and the other side steps back. */
+[data-hover="live"] .choose-logo .logo-e {
+  transform: rotate(0deg);
+}
+
+[data-hover="aux"] .choose-logo .logo-e {
+  transform: rotate(40deg);
+}
+
+[data-hover="live"] .choose-logo .logo-aux,
+[data-hover="aux"] .choose-logo .logo-live {
+  opacity: 0.2;
+}
+
+/* Live sits higher than aux, as in the logo: its panel stands one step taller. */
+.choose-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: end;
+}
+
+.choose-option {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 6px;
+  min-height: 34vh;
+  min-height: 34svh;
+  padding: 24px;
+  background: var(--live);
+  color: var(--live-ink);
+  transition: min-height 0.5s var(--ease);
+}
+
+.choose-option[data-choose="aux"] {
+  min-height: 28vh;
+  min-height: 28svh;
+  background: var(--aux);
+  color: var(--aux-ink);
+}
+
+.choose-option:hover,
+.choose-option:focus-visible {
+  min-height: 38svh;
+}
+
+.choose-option[data-choose="aux"]:hover,
+.choose-option[data-choose="aux"]:focus-visible {
+  min-height: 32svh;
+}
+
+.choose-option:focus-visible {
+  outline-offset: -6px;
+  outline-color: currentColor;
+}
+
+.choose-name {
+  font-size: clamp(2.75rem, 10vw, 7rem);
+  font-weight: 800;
+  line-height: 0.85;
+  letter-spacing: -0.06em;
+}
+
+.choose-what {
+  margin-top: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.choose-now {
+  max-width: 36ch;
+  font-size: 13px;
+  line-height: 1.4;
+  opacity: 0.85;
+}
+
+.choose-arrow {
+  position: absolute;
+  top: 20px;
+  right: 22px;
+  font-size: 26px;
+  line-height: 1;
+  transition: transform 0.4s var(--ease);
+}
+
+.choose-option:hover .choose-arrow {
+  transform: translate(4px, -4px) scale(1.2);
+}
+
+.choose-option[data-choose="aux"]:hover .choose-arrow {
+  transform: translate(4px, 4px) scale(1.2);
+}
+
+/* Tapping a side zooms into the e, which takes that side's colour until it fills the screen. */
+.choose.is-zooming .choose-logo .logo {
+  transform: scale(80);
+  transition: transform 0.85s var(--swift);
+}
+
+.choose.is-zooming .logo-live,
+.choose.is-zooming .logo-aux {
+  opacity: 0;
+  transition-duration: 0.25s;
+}
+
+.choose.is-zooming[data-chosen="live"] .logo-e {
+  color: var(--live);
+}
+
+.choose.is-zooming[data-chosen="aux"] .logo-e {
+  color: var(--aux);
+}
+
+.choose.is-zooming .choose-options,
+.choose.is-zooming .choose-account {
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+
+.choose::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.choose.is-zooming::after {
+  opacity: 1;
+  transition: opacity 0.2s 0.6s;
+}
+
+.choose[data-chosen="live"]::after {
+  background: var(--live);
+}
+
+.choose[data-chosen="aux"]::after {
+  background: var(--aux);
+}
+
+/* Arriving on the front page: the field draws, live stands up on it, the e drops onto the edge
+   and teeters, aux comes up a step lower, and the two ways in rise from the bottom. */
+@media (prefers-reduced-motion: no-preference) {
+  .choose-logo .logo-live > :not(.logo-field) {
+    animation: letter-up 0.7s var(--ease) both;
+  }
+
+  .choose-logo .logo-live > :nth-child(2) { animation-delay: 60ms; }
+  .choose-logo .logo-live > :nth-child(3) { animation-delay: 90ms; }
+  .choose-logo .logo-live > :nth-child(4) { animation-delay: 140ms; }
+
+  .choose-logo .logo-field,
+  .choose-logo .logo-floor {
+    transform-box: fill-box;
+    transform-origin: left;
+    animation: draw 0.7s var(--ease) both;
+  }
+
+  .choose-logo .logo-floor {
+    animation-delay: 0.95s;
+  }
+
+  .choose-logo .logo-e {
+    animation: e-drop 1.3s both;
+    animation-delay: 0.35s;
+  }
+
+  .choose-logo .logo-aux > :not(.logo-floor) {
+    animation: letter-up 0.7s var(--ease) both;
+    animation-delay: 0.85s;
+  }
+
+  .choose-logo .logo-aux > :nth-child(n + 3) { animation-delay: 0.9s; }
+  .choose-logo .logo-aux > :nth-child(n + 5) { animation-delay: 0.95s; }
+
+  .choose-option {
+    animation: panel-up 0.8s var(--ease) both;
+    animation-delay: 1.05s;
+  }
+
+  .choose-option[data-choose="aux"] {
+    animation-delay: 1.15s;
+  }
+}
+
+@keyframes letter-up {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+}
+
+@keyframes draw {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes panel-up {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes e-drop {
+  0%   { transform: translateY(-160px) rotate(0deg); opacity: 0; animation-timing-function: cubic-bezier(0.5, 0, 1, 0.6); }
+  10%  { opacity: 1; }
+  38%  { transform: translateY(0) rotate(0deg); animation-timing-function: cubic-bezier(0.3, 0, 0.6, 1); }
+  58%  { transform: rotate(28deg); }
+  74%  { transform: rotate(10deg); }
+  88%  { transform: rotate(19deg); }
+  100% { transform: rotate(16deg); }
 }
 
 /* Hero */
@@ -402,7 +898,7 @@ h3 {
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: var(--text);
+  background: var(--accent);
   transform: scaleY(0);
   transform-origin: bottom;
   transition: transform var(--fast) var(--ease);
@@ -410,8 +906,8 @@ h3 {
 
 .chip:hover,
 .chip.active {
-  border-color: var(--text);
-  color: var(--inverse);
+  border-color: var(--accent);
+  color: var(--accent-ink);
 }
 
 .chip:hover::before,
@@ -462,7 +958,7 @@ span.chip:hover::before {
 
 .month-heading {
   position: sticky;
-  top: var(--header-h);
+  top: var(--sticky-top);
   z-index: 2;
   display: flex;
   align-items: baseline;
@@ -522,14 +1018,14 @@ span.chip:hover::before {
   position: absolute;
   inset: 0 -12px;
   z-index: -1;
-  background: var(--text);
+  background: var(--accent);
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 0.35s var(--ease);
 }
 
 .event-row:hover {
-  color: var(--inverse);
+  color: var(--accent-ink);
   padding-left: 12px;
 }
 
@@ -753,9 +1249,9 @@ a.tag:hover {
   align-items: center;
   justify-content: center;
   padding: 15px 28px;
-  border: 1px solid var(--text);
-  background: var(--text);
-  color: var(--inverse);
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
   font: inherit;
   font-size: 12px;
   font-weight: 600;
@@ -788,16 +1284,18 @@ a.tag:hover {
 }
 
 .button-ghost {
+  border-color: var(--text);
   background: transparent;
   color: var(--text);
 }
 
 .button-ghost::before {
-  background: var(--text);
+  background: var(--accent);
 }
 
 .button-ghost:hover {
-  color: var(--inverse);
+  border-color: var(--accent);
+  color: var(--accent-ink);
 }
 
 .button-danger {
@@ -911,9 +1409,29 @@ a.tag:hover {
   text-transform: uppercase;
 }
 
+.footer-links form {
+  margin: 0;
+}
+
+/* The whole logo, in both colours: live out, aux in. */
 .footer-mark {
+  display: block;
   margin: 40px 0 24px;
   line-height: 0;
+}
+
+.footer-mark .logo-live {
+  color: var(--live);
+}
+
+.footer-mark .logo-aux {
+  color: var(--aux);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .footer-mark:hover .logo-e {
+    animation: teeter 1.2s var(--ease);
+  }
 }
 
 .footer-mark .logo {
@@ -1306,25 +1824,7 @@ main.narrow {
   padding-left: 6px;
 }
 
-/* Navigation groups: Out (the city) and In (the library) */
-
-.nav-group {
-  display: inline-flex;
-  align-items: center;
-  gap: 18px;
-}
-
-.nav-group + .nav-group {
-  padding-left: 22px;
-  border-left: 1px solid var(--line);
-}
-
-.nav-label {
-  color: var(--muted);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-}
+/* Subnavigation inside a page (tabs) */
 
 .subnav {
   display: flex;
@@ -1966,27 +2466,8 @@ code {
 /* Tablets and phones */
 
 @media (max-width: 800px) {
-  :root {
-    --header-h: 100px;
-  }
-
-  .site-header {
-    grid-template-columns: auto 1fr;
-    grid-template-areas: "mark account" "nav nav";
-    align-content: center;
-    row-gap: 14px;
-  }
-
-  .wordmark {
-    grid-area: mark;
-  }
-
-  .account-nav {
-    grid-area: account;
-  }
-
-  .main-nav {
-    grid-area: nav;
+  .account-name {
+    display: none;
   }
 
   .split {
@@ -1997,6 +2478,10 @@ code {
 }
 
 @media (max-width: 600px) {
+  :root {
+    --header-h: 56px;
+  }
+
   main,
   .site-header,
   .site-footer {
@@ -2004,10 +2489,52 @@ code {
     padding-right: 16px;
   }
 
-  .main-nav,
+  .site-header {
+    grid-template-columns: auto 1fr auto;
+    gap: 12px;
+  }
+
+  .side-switch {
+    justify-self: center;
+  }
+
+  .side-switch a {
+    padding: 6px 12px;
+  }
+
+  .wordmark .logo {
+    height: 24px;
+  }
+
   .account-nav {
-    gap: 16px;
+    gap: 12px;
     font-size: 11px;
+  }
+
+  .side-nav-track {
+    gap: 22px;
+    padding: 0 16px;
+  }
+
+  .page-head {
+    padding: 32px 0 24px;
+  }
+
+  .choose-account {
+    padding: 12px 16px;
+  }
+
+  .choose-logo {
+    width: calc(100% - 32px);
+  }
+
+  .choose-option {
+    padding: 16px;
+  }
+
+  .choose-arrow {
+    top: 14px;
+    right: 14px;
   }
 
   /* One swipeable row per filter group instead of a wall of chips. */
@@ -2092,20 +2619,6 @@ code {
 
   .months-chart {
     gap: 3px;
-  }
-
-  .main-nav {
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-
-  .nav-group {
-    flex: none;
-    gap: 14px;
-  }
-
-  .nav-group + .nav-group {
-    padding-left: 14px;
   }
 
   .shelf {

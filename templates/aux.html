@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Aux — liveaux{% endblock %}
+
+{% block content %}
+<header class="page-head">
+  <p class="eyebrow">At home</p>
+  <h1>Your library</h1>
+  <p class="page-meta">Films, series, anime, books, comics, manga, games, board games, albums and podcasts: what you're on, what's next, and what you thought of it. Private unless you say otherwise.</p>
+</header>
+
+<div class="actions">
+  <a class="button" href="{% url 'account_signup' %}">Sign up</a>
+  <a class="button button-ghost" href="{% url 'account_login' %}?next={% url 'aux' %}">Log in</a>
+</div>
+{% endblock %}

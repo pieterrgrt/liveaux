@@ -463,7 +463,8 @@ class PagesTests(LibraryTestCase):
     def test_home_for_visitors(self):
         self.client.logout()
         response = self.client.get(reverse("home"))
-        self.assertContains(response, "Everything you stay in for")
+        self.assertContains(response, "At home")
+        self.assertContains(self.client.get(reverse("aux")), "Your library")
         self.assertEqual(self.client.get(reverse("library:index")).status_code, 302)
 
     def test_public_library(self):
