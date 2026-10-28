@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "events",
     "logbook",
     "library",
+    "social",
 ]
 
 MIDDLEWARE = [

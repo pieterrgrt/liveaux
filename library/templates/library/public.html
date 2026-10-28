@@ -7,6 +7,7 @@
   <p class="eyebrow">Library</p>
   <h1>{{ owner.public_name }}</h1>
   {% if owner.log_is_public %}<p class="muted"><a href="{% url 'logbook:public' owner.pk %}">Events {{ owner.public_name }} went to</a></p>{% endif %}
+  <p class="muted"><a href="{% url 'social:person' owner.pk %}">Reviews by {{ owner.public_name }}</a> {% include "social/_share.html" with title=owner.public_name|add:"'s library" %}</p>
 </section>
 
 {% include "events/_chips.html" with chips=type_chips label="Kind" %}

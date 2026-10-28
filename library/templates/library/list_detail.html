@@ -11,6 +11,7 @@
   <h1>{{ media_list.name }}</h1>
   {% if media_list.description %}<div class="description">{{ media_list.description|linebreaks }}</div>{% endif %}
   <p class="muted">{{ items|length }} item{{ items|length|pluralize }}{% if media_list.is_public %} · <a href="{% url 'library:list_feed' media_list.pk %}">RSS</a>{% endif %}</p>
+  {% if media_list.is_public %}{% include "social/_share.html" with title=media_list.name %}{% endif %}
   {% if is_own %}
     <p class="privacy-note">{% if media_list.is_public %}Public: anyone with the link can see it.{% else %}Only you can see this list.{% endif %} <a href="{% url 'library:list_edit' media_list.pk %}">Edit</a></p>
   {% endif %}

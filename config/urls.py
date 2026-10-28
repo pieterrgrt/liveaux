@@ -13,6 +13,7 @@ urlpatterns = [
     path("account/", include("allauth.urls")),
     path("", include("logbook.urls")),
     path("", include("library.urls")),
+    path("", include("social.urls")),
     path("me/", include("accounts.urls")),
     path(
         "privacy/",

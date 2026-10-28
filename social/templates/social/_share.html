@@ -1,0 +1,6 @@
+{% load social %}{% absolute url|default:request.path as share_url %}
+{# Share this page: {% include "social/_share.html" with title=event.title %}. Shown once the script runs. #}
+<span class="share" data-share data-share-url="{{ share_url }}" data-share-title="{{ title|default:'liveaux' }}" hidden>
+  <button type="button" class="link-button share-button">Share</button>
+  <span class="share-status" role="status" aria-live="polite"></span>
+</span>

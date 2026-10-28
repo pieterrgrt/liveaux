@@ -1,0 +1,10 @@
+{% load social %}{% latest_reviews kind as latest %}
+{# The newest reviews: {% include "social/_latest.html" with kind="event" %} on Live, kind="item" on Aux. #}
+{% if latest %}
+<section class="month social">
+  <h2 class="month-heading">Latest reviews</h2>
+  <div class="review-list">
+    {% for review in latest %}{% include "social/_review.html" with show_target=True compact=True %}{% endfor %}
+  </div>
+</section>
+{% endif %}

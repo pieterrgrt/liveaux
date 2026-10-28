@@ -78,7 +78,7 @@ def delete_account(request):
     if request.method == "POST" and form.is_valid():
         user = request.user
         logout(request)
-        user.delete()  # cascades to log entries, memberships, submissions, email addresses
+        user.delete()  # cascades to log entries, memberships, submissions, email addresses, reviews, comments, likes
         messages.success(request, "Your account and everything in it is deleted. Take care.")
         return redirect("home")
     return render(request, "accounts/delete.html", {"form": form})
@@ -174,6 +174,42 @@ def export_data(request):
         "collection": [
             {"title": str(c.item), "format": c.format, "resolution": c.resolution, "note": c.note}
             for c in user.copies.select_related("item")
+        ],
+        "reviews": [
+            {
+                "on": str(r.target),
+                "kind": r.item.media_type if r.item_id else "event",
+                "score": r.score,
+                "review": r.body,
+                "contains_spoilers": r.contains_spoilers,
+                "hidden_by_moderator": r.is_hidden,
+                "written_at": _local(r.created_at),
+                "updated_at": _local(r.updated_at),
+            }
+            for r in user.reviews.with_numbers()
+        ],
+        "comments": [
+            {
+                "on": str(c.target),
+                "on_review_by": c.review.user.public_name if c.review_id else None,
+                "comment": c.body,
+                "hidden_by_moderator": c.is_hidden,
+                "at": _local(c.created_at),
+            }
+            for c in user.comments.select_related("review__user", "review__item", "review__event", "item", "event")
+        ],
+        "liked_reviews": [
+            {"review": str(like.review), "at": _local(like.created_at)}
+            for like in user.review_likes.select_related("review__user", "review__item", "review__event")
+        ],
+        "reports": [
+            {
+                "about": "review" if r.review_id else "comment",
+                "reason": r.reason,
+                "status": r.status,
+                "at": _local(r.created_at),
+            }
+            for r in user.reports.all()
         ],
         "event_submissions": [
             {"title": s.title, "venue": s.venue_name, "date": _local(s.starts_at), "status": s.status}

@@ -53,7 +53,8 @@ def side_of(match):
 
 def sides(request):
     match = getattr(request, "resolver_match", None)
-    side = side_of(match)
+    # A view can say which side it is on, e.g. a review takes the side of what it reviews.
+    side = getattr(request, "liveaux_side", None) or side_of(match)
     current = PARENT.get(match.view_name, match.view_name) if match else ""
     nav = [
         {"href": reverse(name), "label": label, "current": name == current}

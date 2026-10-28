@@ -1,0 +1,17 @@
+{# A flat comment thread with its form. Needs `comments`, `count`, `comment_form`, `action` and `empty`. #}
+<section class="month social" id="comments">
+  <h2 class="month-heading">Comments{% if count %} <span class="muted">{{ count }}</span>{% endif %}</h2>
+  <ul class="comment-list">
+    {% for comment in comments %}{% include "social/_comment.html" %}
+    {% empty %}<li class="empty">{{ empty }}</li>{% endfor %}
+  </ul>
+  {% if comment_form %}
+    <form class="form comment-form" method="post" action="{{ action }}">
+      {% csrf_token %}
+      {% with form=comment_form %}{% include "_form_fields.html" %}{% endwith %}
+      <div class="form-actions"><button type="submit" class="button button-ghost">Post comment</button></div>
+    </form>
+  {% else %}
+    <p class="help"><a href="{% url 'account_login' %}?next={{ request.get_full_path|urlencode }}">Log in</a> to join in.</p>
+  {% endif %}
+</section>

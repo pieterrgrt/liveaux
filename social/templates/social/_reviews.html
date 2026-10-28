@@ -1,0 +1,60 @@
+{% load social %}{% reviews_for target as s %}
+{# Reviews and comments for one item or event: {% include "social/_reviews.html" with target=item %} #}
+<section class="month social" id="reviews">
+  <h2 class="month-heading">Reviews{% if s.review_count %} <span class="muted">{{ s.review_count }}</span>{% endif %}</h2>
+
+  {% if s.average %}
+    <p class="review-summary"><span class="review-average">{{ s.average }}</span><span class="muted">/10 on liveaux · {{ s.score_count }} scored review{{ s.score_count|pluralize }}</span></p>
+  {% endif %}
+
+  {% if user.is_authenticated %}
+    {% if s.mine %}
+      <div class="review-mine">
+        <p class="eyebrow">Your review</p>
+        {% if s.mine.is_hidden %}
+          <p class="help">A moderator hid your review: nobody else can see it.</p>
+        {% else %}
+          {% include "social/_review.html" with review=s.mine %}
+          <details class="disclosure">
+            <summary>Edit your review</summary>
+            {% include "social/_review_form.html" with form=s.review_form kind=s.kind button="Save review" %}
+            <form method="post" action="{% url 'social:delete_review' s.mine.pk %}">
+              {% csrf_token %}
+              <button type="submit" class="link-button danger">Delete review</button>
+            </form>
+          </details>
+        {% endif %}
+      </div>
+    {% elif s.review_form %}
+      <details class="disclosure review-write"{% if not s.reviews %} open{% endif %}>
+        <summary>Write a review</summary>
+        {% include "social/_review_form.html" with form=s.review_form kind=s.kind button="Post review" %}
+      </details>
+    {% elif not s.can_review %}
+      <p class="help">Reviews open once it has started.</p>
+    {% endif %}
+  {% else %}
+    <p class="help"><a href="{% url 'account_login' %}?next={{ request.get_full_path|urlencode }}">Log in</a> to write a review.</p>
+  {% endif %}
+
+  {% if s.reviews %}
+    {% if s.reviews|length > 1 %}
+    <div class="filters review-sort">
+      <a class="chip{% if s.sort == 'new' %} active{% endif %}" href="?reviews=new#reviews">Newest</a>
+      <a class="chip{% if s.sort == 'liked' %} active{% endif %}" href="?reviews=liked#reviews">Most liked</a>
+    </div>
+    {% endif %}
+    <div class="review-list">
+      {% for review in s.reviews %}{% include "social/_review.html" %}{% endfor %}
+    </div>
+  {% elif not s.mine %}
+    <p class="empty">No reviews yet.</p>
+  {% endif %}
+</section>
+
+{% url 'social:add_comment' s.kind target.pk as comment_action %}
+{% if s.kind == "event" %}
+  {% include "social/_comments.html" with comments=s.comments count=s.comment_count comment_form=s.comment_form action=comment_action empty="Nothing yet. Going? Say hello." %}
+{% else %}
+  {% include "social/_comments.html" with comments=s.comments count=s.comment_count comment_form=s.comment_form action=comment_action empty="Nothing yet." %}
+{% endif %}

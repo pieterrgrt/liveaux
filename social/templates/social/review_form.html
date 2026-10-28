@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Review {{ target.title }} — liveaux{% endblock %}
+{% block main_class %}narrow{% endblock %}
+
+{% block content %}
+<a class="back" href="{{ target.get_absolute_url }}">← {{ target.title }}</a>
+<header class="page-head">
+  <p class="eyebrow">{% if review %}Edit your review{% else %}Write a review{% endif %}</p>
+  <h1>{{ target.title }}</h1>
+  <p class="page-meta">Public, with your name. The score goes into your {% if kind == "item" %}library{% else %}log{% endif %} too.</p>
+</header>
+{% include "social/_review_form.html" with button="Save review" %}
+{% endblock %}

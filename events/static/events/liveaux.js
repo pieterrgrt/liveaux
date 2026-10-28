@@ -60,9 +60,65 @@
     });
   }
 
+  // --- Social: share buttons -------------------------------------------------------------
+  // The phone's share sheet where there is one; otherwise the link goes to the clipboard.
+  // The button stays hidden without the script, so nothing on the page is broken without it.
+  function setUpShare() {
+    var canShare = typeof navigator.share === "function";
+
+    function writeText(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(text);
+      return new Promise(function (resolve, reject) {
+        var field = document.createElement("textarea");
+        field.value = text;
+        field.setAttribute("readonly", "");
+        field.style.position = "fixed";
+        field.style.opacity = "0";
+        document.body.appendChild(field);
+        field.select();
+        var ok = false;
+        try { ok = document.execCommand("copy"); } catch (e) {}
+        field.remove();
+        (ok ? resolve : reject)();
+      });
+    }
+
+    document.querySelectorAll("[data-share]").forEach(function (box) {
+      var button = box.querySelector("button");
+      var status = box.querySelector(".share-status");
+      var url = box.dataset.shareUrl || window.location.href;
+      var title = box.dataset.shareTitle || document.title;
+      var timer;
+      box.hidden = false;
+
+      function say(text) {
+        status.textContent = text;
+        clearTimeout(timer);
+        timer = setTimeout(function () { status.textContent = ""; }, 2500);
+      }
+
+      function copy() {
+        writeText(url).then(
+          function () { say("Link copied"); },
+          function () { say("Couldn't copy the link"); }
+        );
+      }
+
+      button.addEventListener("click", function () {
+        if (!canShare) return copy();
+        navigator.share({ title: title, url: url }).catch(function (error) {
+          // Closing the share sheet is not an error; anything else falls back to copying.
+          if (error && error.name !== "AbortError") copy();
+        });
+      });
+    });
+  }
+  // --- end social ---------------------------------------------------------------------------
+
   function ready() {
     placeArrival();
     setUpChoice();
+    setUpShare();
   }
 
   if (document.readyState === "loading") {

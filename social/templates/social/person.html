@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Reviews by {{ owner.public_name }} — liveaux{% endblock %}
+
+{% block extra_head %}{% include "social/_meta.html" with title="Reviews by "|add:owner.public_name description="What "|add:owner.public_name|add:" thought of what they saw, read, played and went to." %}{% endblock %}
+
+{% block content %}
+<header class="page-head">
+  <p class="eyebrow">Reviews</p>
+  <h1>{{ owner.public_name }}</h1>
+  <p class="page-meta">{{ review_count }} review{{ review_count|pluralize }}</p>
+  <div class="actions">
+    {% include "social/_share.html" with title="Reviews by "|add:owner.public_name %}
+    {% if owner.log_is_public %}<a class="link-button" href="{% url 'logbook:public' owner.pk %}">Log</a>{% endif %}
+    {% if owner.library_is_public %}<a class="link-button" href="{% url 'library:public' owner.pk %}">Library</a>{% endif %}
+    {% if is_own and not user.display_name %}<a class="link-button" href="{% url 'accounts:settings' %}">Choose a name</a>{% endif %}
+  </div>
+</header>
+
+<section class="month social">
+  <h2 class="month-heading">Newest first</h2>
+  <div class="review-list">
+    {% for review in reviews %}{% include "social/_review.html" with show_target=True %}
+    {% empty %}<p class="empty">{% if is_own %}You haven't reviewed anything yet. Open an event you went to, or something in your library, and write a few words.{% else %}No reviews yet.{% endif %}</p>{% endfor %}
+  </div>
+</section>
+{% endblock %}

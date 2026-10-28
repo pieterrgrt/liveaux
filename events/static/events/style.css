@@ -2697,3 +2697,314 @@ code {
     font-size: 8px;
   }
 }
+
+/* Social: reviews, comments, sharing */
+
+/* On an item page the reviews follow the remove link: give them room. */
+.danger-zone + #reviews {
+  margin-top: 56px;
+}
+
+.review-summary {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin: 20px 0 8px;
+}
+
+.review-average {
+  font-size: 44px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  font-variant-numeric: tabular-nums;
+}
+
+.review-summary .muted {
+  font-size: 13px;
+}
+
+.review-mine {
+  margin: 20px 0 8px;
+  padding: 16px 16px 4px;
+  background: var(--accent-soft);
+}
+
+.review-mine .eyebrow {
+  margin: 0;
+  color: var(--accent-text);
+}
+
+.review-mine .review {
+  border-bottom: 0;
+}
+
+.review-mine .disclosure {
+  margin-bottom: 12px;
+  border-bottom: 0;
+}
+
+.review-mine .disclosure > form:last-child {
+  margin: -8px 0 16px;
+}
+
+.review-write {
+  margin: 16px 0 8px;
+}
+
+.review-sort {
+  margin: 20px 0 0;
+}
+
+.review {
+  padding: 20px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.review-list .review:last-child {
+  border-bottom: 0;
+}
+
+.review.is-hidden,
+.comment.is-hidden {
+  opacity: 0.5;
+}
+
+.review-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.review-score {
+  flex: none;
+  min-width: 2ch;
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.review-score span {
+  margin-left: 1px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.review-by {
+  min-width: 0;
+}
+
+.review-on {
+  margin: 0 0 2px;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+}
+
+.review-on .tag {
+  display: block;
+  margin-bottom: 2px;
+}
+
+.review-meta {
+  margin: 0;
+  font-size: 13px;
+}
+
+.review-author {
+  font-weight: 600;
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--fast), color var(--fast);
+}
+
+.review-author:hover {
+  color: var(--accent-text);
+  border-bottom-color: currentColor;
+}
+
+.review-body {
+  max-width: 62ch;
+  margin-top: 10px;
+  overflow-wrap: anywhere;
+}
+
+.review-body p {
+  margin: 0 0 10px;
+}
+
+.review-body p:last-child {
+  margin-bottom: 0;
+}
+
+.review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 20px;
+  margin-top: 12px;
+}
+
+.review-actions:empty {
+  display: none;
+}
+
+.review-actions form {
+  margin: 0;
+}
+
+.review-count {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.link-button.like.is-on {
+  color: var(--accent-text);
+}
+
+/* Spoilers: blurred until you ask. Works without a script. */
+.spoiler {
+  position: relative;
+  margin-top: 10px;
+}
+
+.spoiler-toggle {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.spoiler-label {
+  display: inline-block;
+  color: var(--accent-text);
+}
+
+.spoiler-toggle:focus-visible + .spoiler-label {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.spoiler-toggle:checked + .spoiler-label {
+  display: none;
+}
+
+.spoiler .review-body {
+  transition: filter var(--slow) var(--ease);
+}
+
+.spoiler-toggle:not(:checked) ~ .review-body {
+  filter: blur(6px);
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Comments: flat, small, one after the other. */
+.comment-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.comment {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.comment-body {
+  max-width: 62ch;
+  margin-top: 4px;
+  overflow-wrap: anywhere;
+}
+
+.comment .review-actions {
+  margin-top: 6px;
+}
+
+.comment-form {
+  margin: 20px 0 0;
+}
+
+.comment-form textarea {
+  min-height: 90px;
+}
+
+/* The review page: the cover beside the title. */
+.review-target.has-cover {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  align-items: end;
+  gap: 16px;
+}
+
+.review-cover {
+  display: block;
+  width: 72px;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  background: var(--surface);
+}
+
+.review-target h1 {
+  font-size: clamp(2rem, 7vw, 4rem);
+}
+
+.review-target h1 a:hover {
+  color: var(--accent-text);
+}
+
+.report-quote {
+  margin: 0 0 8px;
+  padding: 12px 16px;
+  border-left: 2px solid var(--accent);
+  background: var(--surface);
+}
+
+.report-quote p:last-child {
+  margin-bottom: 0;
+}
+
+/* Share: the phone's share sheet, or the link on the clipboard. */
+.share:not([hidden]) {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.share-status {
+  color: var(--accent-text);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.share-status:not(:empty) {
+  animation: rise var(--fast) var(--ease) both;
+}
+
+@media (min-width: 720px) {
+  .review-target.has-cover {
+    grid-template-columns: 112px 1fr;
+    gap: 24px;
+  }
+
+  .review-cover {
+    width: 112px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spoiler .review-body,
+  .share-status:not(:empty) {
+    transition: none;
+    animation: none;
+  }
+}

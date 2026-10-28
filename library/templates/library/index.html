@@ -74,4 +74,6 @@
   <p class="help"><a href="{% url 'library:import' %}">Import</a> · <a href="{% url 'library:export_csv' %}">Export as CSV</a> · <a href="{% url 'library:connect' %}">Connect Plex, Jellyfin and your calendar</a></p>
 </section>
 {% endif %}
+
+{% include "social/_latest.html" with kind="item" %}
 {% endblock %}

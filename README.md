@@ -123,6 +123,38 @@ uv run python manage.py refresh_library
 
 Met docker-compose gebeurt dat vanzelf (service `refresh`).
 
+## Recensies, reacties en delen
+
+Op elke evenement- en titelpagina staan onderaan **recensies** en **reacties**.
+
+- **Recensie:** één per persoon per evenement of titel, met tekst en eventueel een spoilervlag (dan is de
+  tekst wazig tot je op *Spoilers · show* tikt). Het cijfer wordt niet dubbel opgeslagen: bij een titel is het
+  je score in de bibliotheek, bij een evenement je cijfer in het logboek. Wie een recensie schrijft zonder
+  dat de titel in de bibliotheek staat, krijgt hem erbij (als *Completed*); bij een evenement komt er een
+  logboekregel bij. Evenementen recenseer je pas als ze begonnen zijn, net als bij *Ik was erbij*.
+  Het gemiddelde op de pagina telt alleen cijfers uit recensies, want die zijn openbaar.
+- **Reacties:** plat, zonder draadjes: op een recensie (`/reviews/<id>/`) of direct op een evenement of titel
+  ("gaat er nog iemand?"). Je eigen reacties en recensies verwijder je zelf.
+- **Likes** op recensies: één per persoon, nog een keer tikken haalt hem weg. Je eigen recensie kun je niet liken.
+- **Namen:** overal staat `public_name`, nooit het e-mailadres. Heb je nog geen naam, dan vraagt het formulier
+  er eerst om (*Your name, as others see it*).
+- **Openbaar:** recensies en reacties zijn openbaar, ook als logboek en bibliotheek privé zijn. Iemands recensies
+  staan op `/people/<id>/reviews/`. Uitzondering: over met de hand toegevoegde titels ziet alleen wie ze
+  heeft of maakte iets.
+- **Nieuwste recensies** staan onderaan *Live* (evenementen) en de bibliotheek (titels).
+- **Delen:** de knop *Share* opent op de telefoon het deelmenu (Web Share API) en kopieert elders de link.
+  Pagina's hebben Open Graph- en Twitter-tags (titel, beschrijving, cover), zodat gedeelde links een voorbeeld tonen.
+
+Moderatie:
+
+- Alleen ingelogde gebruikers schrijven, liken en melden. Er is een limiet per gebruiker (standaard 5 reacties
+  per minuut, 5 nieuwe recensies per 10 minuten, 10 meldingen per uur), geteld in de database. Aan te passen met
+  `SOCIAL_LIMITS` in de settings, bijvoorbeeld `{"comment": (5, 60)}`.
+- Een gemelde recensie of reactie staat in de admin onder *Reports*. Kies *Hide* (weg voor iedereen behalve
+  staff; alle open meldingen erover worden afgesloten) of *Dismiss*. Staff kan ook direct op de pagina
+  op *Hide* drukken, en in de admin onder *Reviews* en *Comments* verbergen of weer tonen.
+- Bij het verwijderen van een account gaan recensies, reacties, likes en meldingen mee; ze staan ook in de JSON-export.
+
 ## Steden
 
 Steden beheer je in de admin (*Cities*). Elke zaal hoort bij een stad. De weekpagina's staan op
@@ -145,6 +177,8 @@ gemaild worden, zet dan `DJANGO_ADMIN_EMAILS`.
 - `accounts/` – eigen User-model (inloggen met e-mail), *My liveaux* en instellingen
 - `events/` – steden, zalen, organisatoren (in de code: Promoter), artiesten, evenementen, inzendingen, en de beheerpagina's (`views_manage.py`)
 - `logbook/` – het logboek (*Ik was erbij*), openbare logboeken en jaaroverzichten
+- `social/` – recensies, reacties, likes en meldingen; de blokken voor andere pagina's staan in
+  `social/templates/social/_*.html` (één `{% include %}` per pagina)
 - `library/` – de bibliotheek: modellen (`Item`, `Episode`, `Entry`, `Play`, `MediaList`, `Copy`), bronnen
   (`providers.py`), inchecken en kalender (`services.py`), stats, import/export, Plex/Jellyfin (`scrobble.py`)
   en de API (`views_api.py`)

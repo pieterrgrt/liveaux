@@ -1,0 +1,14 @@
+{% load social static %}{% absolute request.path as page_url %}{% static 'events/icons/apple-touch-icon.png' as icon %}{% absolute image|default:icon as image_url %}
+{# Link previews: {% include "social/_meta.html" with title=... description=... image=item.cover_src %} #}
+<meta property="og:site_name" content="liveaux">
+<meta property="og:type" content="{{ type|default:'website' }}">
+<meta property="og:title" content="{{ title }}">
+<meta property="og:url" content="{{ page_url }}">
+<meta property="og:image" content="{{ image_url }}">
+<meta name="twitter:card" content="{% if image %}summary_large_image{% else %}summary{% endif %}">
+<meta name="twitter:title" content="{{ title }}">
+{% if description %}{% with text=description|striptags|truncatewords:40 %}
+<meta name="description" content="{{ text }}">
+<meta property="og:description" content="{{ text }}">
+<meta name="twitter:description" content="{{ text }}">
+{% endwith %}{% endif %}

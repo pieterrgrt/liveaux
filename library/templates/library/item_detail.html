@@ -2,6 +2,8 @@
 
 {% block title %}{{ item.title }} — liveaux{% endblock %}
 
+{% block extra_head %}{% include "social/_meta.html" with title=item.title description=item.description image=item.cover_src %}{% endblock %}
+
 {% block content %}
 <a class="back" href="{% url 'library:browse' %}?type={{ item.media_type }}">← {{ item.info.plural }}</a>
 
@@ -59,6 +61,7 @@
           <button type="submit" class="link-button">Refresh details</button>
         </form>
       {% endif %}
+      {% include "social/_share.html" with title=item.title %}
     </div>
   </div>
 </article>
@@ -194,4 +197,6 @@
   <button type="submit" class="link-button danger">Remove from my library, with its history</button>
 </form>
 {% endif %}
+
+{% include "social/_reviews.html" with target=item %}
 {% endblock %}

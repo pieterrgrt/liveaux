@@ -56,4 +56,6 @@
   <p class="week-link"><a href="{% url 'logbook:mine' %}">Your log →</a></p>
 </section>
 {% endif %}
+
+{% include "social/_latest.html" with kind="event" %}
 {% endblock %}

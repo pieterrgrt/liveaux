@@ -7,6 +7,7 @@
   <p class="eyebrow">{% if is_own %}My log{% else %}Log{% endif %}</p>
   <h1>{% if is_own %}Where I've been{% else %}{{ owner.public_name }}{% endif %}</h1>
   <p class="muted">{{ entries|length }} event{{ entries|length|pluralize }}</p>
+  <p class="muted"><a href="{% url 'social:person' owner.pk %}">Reviews{% if not is_own %} by {{ owner.public_name }}{% endif %}</a>{% if not is_own %} {% include "social/_share.html" with title=owner.public_name|add:"'s log" %}{% endif %}</p>
   {% if is_own %}
     <p class="privacy-note">
       {% if user.log_is_public %}

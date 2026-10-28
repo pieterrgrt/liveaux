@@ -2,6 +2,8 @@
 
 {% block title %}{{ event.title }} — liveaux{% endblock %}
 
+{% block extra_head %}{% include "social/_meta.html" with title=event.title description=event.description|default:event.venue.name %}{% endblock %}
+
 {% block content %}
 <a class="back" href="{{ event.venue.city.get_absolute_url }}">← This week in {{ event.venue.city }}</a>
 
@@ -40,6 +42,7 @@
       {# Save until it's over: an exhibition that is on now can still be saved for later. #}
       {% if not event.has_started or event.is_running %}{% include "events/_save_button.html" %}{% endif %}
       {% if can_edit %}<a class="link-button" href="{% url 'events:edit_event' event.pk %}">Edit event</a>{% endif %}
+      {% include "social/_share.html" with title=event.title %}
     </div>
   </div>
 </article>
@@ -52,4 +55,6 @@
   </ul>
 </section>
 {% endif %}
+
+{% include "social/_reviews.html" with target=event %}
 {% endblock %}
