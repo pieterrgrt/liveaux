@@ -3,12 +3,12 @@
 {% block title %}Find details for {{ item.title }} — liveaux{% endblock %}
 
 {% block content %}
-<a class="back" href="{{ item.get_absolute_url }}">← {{ item.title }}</a>
-<section class="venue-header">
+<a class="back" href="{{ item.get_absolute_url }}">{{ item.title }}</a>
+<header class="page-head">
   <p class="eyebrow">Find details</p>
   <h1>{{ item.title }}</h1>
-  <p class="muted">Pick the right one. Your status, score, notes, history, lists and copies move along with it.</p>
-</section>
+  <p class="page-meta">Pick the right one. Your status, score, notes, history, lists and copies move along with it.</p>
+</header>
 
 {% if source %}
   <form class="form form-search" method="get">

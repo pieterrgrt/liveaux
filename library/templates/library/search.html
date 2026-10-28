@@ -3,11 +3,10 @@
 {% block title %}Add to your library — liveaux{% endblock %}
 
 {% block content %}
-<section class="venue-header page-top">
-  <p class="eyebrow">Library</p>
-  <h1>Add something</h1>
-  {% include "library/_subnav.html" %}
-</section>
+<header class="page-head">
+  <p class="eyebrow">Add to your library</p>
+  <h1>Find something</h1>
+</header>
 
 {% include "events/_chips.html" with chips=type_chips label="Kind" %}
 

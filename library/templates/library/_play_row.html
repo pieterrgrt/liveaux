@@ -1,18 +1,22 @@
-{# A check-in in a diary or history. Needs `play`; `is_own` shows the delete button. #}
-<li class="diary-row">
-  <span class="diary-date">{{ play.played_at|date:"D j M" }}<br><span class="muted">{{ play.played_at|time:"H:i" }}</span></span>
-  <span class="diary-what">
+{# A check-in in a diary or history. Needs `play`; `is_own` shows the undo button. #}
+<li class="row">
+  <div class="row-date">
+    <span class="day">{{ play.played_at|date:"d" }}</span>
+    <span class="weekday">{{ play.played_at|date:"M" }}</span>
+  </div>
+  <div class="row-main">
     <span class="tag">{{ play.item.info.verb }} · {{ play.item.get_media_type_display }}</span>
-    {% if is_own %}<a href="{{ play.item.get_absolute_url }}">{{ play.item.title }}</a>{% else %}<span>{{ play.item.title }}</span>{% endif %}
-    {% if play.episode %}<span class="muted">{{ play.episode.code }}{% if play.episode.title %} · {{ play.episode.title }}{% endif %}</span>{% endif %}
-    {% if play.note %}<span class="log-note">{{ play.note }}</span>{% endif %}
-  </span>
-  <span class="muted diary-meta">{% if play.minutes %}{{ play.minutes }} min{% endif %}{% if play.via != "manual" %} · {{ play.get_via_display }}{% endif %}</span>
-  {% if is_own %}
-    <form method="post" action="{% url 'library:play_delete' play.pk %}">
-      {% csrf_token %}
-      <input type="hidden" name="next" value="{{ request.get_full_path }}">
-      <button type="submit" class="link-button danger" title="Delete this check-in">Undo</button>
-    </form>
-  {% endif %}
+    <h3 class="row-title">{% if is_own %}<a href="{{ play.item.get_absolute_url }}">{{ play.item.title }}</a>{% else %}{{ play.item.title }}{% endif %}</h3>
+    <p class="row-sub">{% if play.episode %}{{ play.episode.code }}{% if play.episode.title %} · {{ play.episode.title }}{% endif %} · {% endif %}{{ play.played_at|date:"D" }} {{ play.played_at|time:"H:i" }}{% if play.minutes %} · {{ play.minutes }} min{% endif %}{% if play.via != "manual" %} · {{ play.get_via_display }}{% endif %}</p>
+    {% if play.note %}<p class="row-note">{{ play.note }}</p>{% endif %}
+  </div>
+  <div class="row-end">
+    {% if is_own %}
+      <form method="post" action="{% url 'library:play_delete' play.pk %}">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+        <button type="submit" class="link-button danger" title="Delete this check-in">Undo</button>
+      </form>
+    {% endif %}
+  </div>
 </li>

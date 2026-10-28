@@ -4,8 +4,11 @@
 {% block main_class %}narrow{% endblock %}
 
 {% block content %}
-<a class="back" href="{% url 'accounts:settings' %}">← Account settings</a>
-<h1>Delete your account</h1>
+<a class="back" href="{% url 'accounts:settings' %}">Account settings</a>
+<header class="page-head">
+  <p class="eyebrow">Account</p>
+  <h1>Delete your account</h1>
+</header>
 <p>This removes, straight away and for good:</p>
 <ul>
   <li>your account and email address,</li>

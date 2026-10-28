@@ -3,18 +3,20 @@
 {% block title %}{{ item.title }} — liveaux{% endblock %}
 
 {% block content %}
-<a class="back" href="{% url 'library:browse' %}?type={{ item.media_type }}">← {{ item.info.plural }}</a>
+<a class="back" href="{% url 'library:browse' %}?type={{ item.media_type }}">{{ item.info.plural }}</a>
 
-<article class="event-detail item-detail">
-  <div class="item-cover">
+<article class="detail">
+  <div class="cover">
     <span class="card-placeholder"><span class="tag">{{ item.get_media_type_display }}</span><span class="card-placeholder-title">{{ item.title }}</span></span>
     {% if item.cover_src %}<img src="{{ item.cover_src }}" alt="Cover of {{ item.title }}" onerror="this.remove()">{% endif %}
   </div>
 
-  <div class="event-body">
-    <a class="tag" href="{% url 'library:browse' %}?type={{ item.media_type }}">{{ item.get_media_type_display }}</a>
-    <h1>{{ item.title }}</h1>
-    {% if item.original_title %}<p class="muted original-title">{{ item.original_title }}</p>{% endif %}
+  <div class="detail-body">
+    <header class="page-head">
+      <p class="eyebrow"><a href="{% url 'library:browse' %}?type={{ item.media_type }}">{{ item.get_media_type_display }}</a></p>
+      <h1>{{ item.title }}</h1>
+      {% if item.original_title %}<p class="page-meta">{{ item.original_title }}</p>{% endif %}
+    </header>
 
     <dl class="facts">
       {% if item.year %}<div><dt>Year</dt><dd>{{ item.year }}</dd></div>{% endif %}
@@ -26,8 +28,6 @@
       <div><dt>Source</dt><dd>{% if item.is_manual %}Added by hand{% if can_edit %} · <a href="{% url 'library:edit_manual' item.pk %}">Edit</a>{% endif %} · <a href="{% url 'library:link' item.pk %}">Find details</a>{% else %}<a href="{{ item.url }}" rel="noopener noreferrer">{{ item.get_source_display }}</a>{% endif %}</dd></div>
       {% if others %}<div><dt>Also</dt><dd class="muted">{{ others }} other{{ others|pluralize }} on liveaux track{{ others|pluralize:"s," }} this</dd></div>{% endif %}
     </dl>
-
-    {% if item.description %}<div class="description">{{ item.description|linebreaks|truncatewords_html:120 }}</div>{% endif %}
 
     <div class="actions">
       {% if item.has_episodes %}
@@ -60,6 +60,8 @@
         </form>
       {% endif %}
     </div>
+
+    {% if item.description %}<div class="description">{{ item.description|linebreaks|truncatewords_html:120 }}</div>{% endif %}
   </div>
 </article>
 
@@ -89,7 +91,7 @@
       {% endif %}
 
       <h3 class="side-heading">History <span class="muted">{{ play_count }}</span></h3>
-      <ul class="diary diary-compact">
+      <ul class="rows">
         {% for play in plays %}{% include "library/_play_row.html" with is_own=True %}
         {% empty %}<li class="empty">No check-ins yet.</li>{% endfor %}
       </ul>
@@ -141,37 +143,43 @@
 <div class="two-columns">
   <section class="month">
     <h2 class="month-heading">Lists</h2>
-    <ul class="manage-list">
+    <ul class="rows">
       {% for row in lists %}
-        <li>
-          <span class="manage-date">{% if row.on %}On it{% else %}&nbsp;{% endif %}</span>
-          <a href="{{ row.list.get_absolute_url }}">{{ row.list.name }}</a>
-          <span></span>
-          <form method="post" action="{% url 'library:list_toggle_item' row.list.pk item.pk %}">
-            {% csrf_token %}
-            <button type="submit" class="link-button">{% if row.on %}Take off{% else %}Put on{% endif %}</button>
-          </form>
+        <li class="row row-plain">
+          <div class="row-main">
+            {% if row.on %}<span class="tag">On it</span>{% endif %}
+            <h3 class="row-title"><a href="{{ row.list.get_absolute_url }}">{{ row.list.name }}</a></h3>
+          </div>
+          <div class="row-end">
+            <form method="post" action="{% url 'library:list_toggle_item' row.list.pk item.pk %}">
+              {% csrf_token %}
+              <button type="submit" class="link-button">{% if row.on %}Take off{% else %}Put on{% endif %}</button>
+            </form>
+          </div>
         </li>
       {% empty %}
         <li class="empty">You have no lists yet.</li>
       {% endfor %}
     </ul>
-    <div class="actions"><a class="link-button" href="{% url 'library:list_create' %}">New list</a></div>
+    <div class="actions"><a class="button button-ghost button-small" href="{% url 'library:list_create' %}">New list</a></div>
   </section>
 
   <section class="month">
     <h2 class="month-heading">In your collection</h2>
-    <ul class="manage-list">
+    <ul class="rows">
       {% for copy in copies %}
-        <li>
-          <span class="manage-date">{{ copy.get_format_display }}</span>
-          <span>{% if copy.resolution %}{{ copy.get_resolution_display }} {% endif %}{{ copy.note }}</span>
-          <span class="muted">{% if copy.acquired_on %}{{ copy.acquired_on|date:"M Y" }}{% endif %}</span>
-          <form method="post" action="{% url 'library:copy_delete' copy.pk %}">
-            {% csrf_token %}
-            <input type="hidden" name="next" value="{{ request.path }}">
-            <button type="submit" class="link-button danger">Remove</button>
-          </form>
+        <li class="row row-plain">
+          <div class="row-main">
+            <h3 class="row-title">{{ copy.get_format_display }}</h3>
+            {% if copy.resolution or copy.note or copy.acquired_on %}<p class="row-sub">{% if copy.resolution %}{{ copy.get_resolution_display }} {% endif %}{{ copy.note }}{% if copy.acquired_on %} · {{ copy.acquired_on|date:"M Y" }}{% endif %}</p>{% endif %}
+          </div>
+          <div class="row-end">
+            <form method="post" action="{% url 'library:copy_delete' copy.pk %}">
+              {% csrf_token %}
+              <input type="hidden" name="next" value="{{ request.path }}">
+              <button type="submit" class="link-button danger">Remove</button>
+            </form>
+          </div>
         </li>
       {% empty %}
         <li class="empty">You don't own a copy.</li>

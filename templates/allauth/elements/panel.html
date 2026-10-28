@@ -1,0 +1,8 @@
+{% load allauth %}
+<section class="month">
+  <h2 class="month-heading">{% slot title %}{% endslot %}</h2>
+  {% slot body %}{% endslot %}
+  {% if slots.actions %}
+    <div class="actions">{% for action in slots.actions %}{{ action }}{% endfor %}</div>
+  {% endif %}
+</section>

@@ -4,9 +4,11 @@
 {% block main_class %}narrow{% endblock %}
 
 {% block content %}
-<a class="back" href="{% if page %}{{ page.get_manage_url }}{% else %}{{ event.get_absolute_url }}{% endif %}">← Back</a>
-<h1>{% if event %}Edit event{% else %}New event{% endif %}</h1>
-{% if page %}<p class="muted">For {{ page.name }}</p>{% endif %}
+<a class="back" href="{% if page %}{{ page.get_manage_url }}{% else %}{{ event.get_absolute_url }}{% endif %}">{% if page %}{{ page.name }}{% else %}{{ event.title }}{% endif %}</a>
+<header class="page-head">
+  <p class="eyebrow">{% if page %}For {{ page.name }}{% else %}Event{% endif %}</p>
+  <h1>{% if event %}Edit event{% else %}New event{% endif %}</h1>
+</header>
 <form class="form" method="post">
   {% csrf_token %}
   {% include "_form_fields.html" %}

@@ -1,21 +1,22 @@
 {% extends "base.html" %}
 
+{% block title %}What's on — liveaux{% endblock %}
+
 {% block content %}
-<section class="hero">
-  <h1>Concerts, exhibitions, films <em>and everything in between.</em></h1>
-  <p class="hero-count">{{ events|length }} upcoming{% if on_now %} · {{ on_now|length }} on now{% endif %}</p>
-</section>
+<header class="page-head">
+  <p class="eyebrow">{% if current_district %}{{ current_district }}, {% endif %}{% if current_city %}{{ current_city.name }}{% else %}Berlin and Hamburg{% endif %}</p>
+  <h1>What's on</h1>
+  <p class="page-meta">{{ events|length }} coming up{% if on_now %} · {{ on_now|length }} on now{% endif %}</p>
+</header>
 
 {% include "events/_chips.html" with chips=category_chips label="Filter by kind of event" %}
 {% if city_chips %}{% include "events/_chips.html" with chips=city_chips label="Filter by city" %}{% endif %}
 {% if current_city %}{% include "events/_chips.html" with chips=district_chips label="Filter by district" %}{% endif %}
 
-<p class="week-link"><a href="{% if current_city %}{{ current_city.get_absolute_url }}{% else %}{% url 'events:this_week' %}{% endif %}{% if current_category %}?category={{ current_category.slug }}{% endif %}">Just this week{% if current_city %} in {{ current_city.name }}{% endif %} →</a></p>
-
 {% if on_now %}
 <section class="month">
   <h2 class="month-heading">On now</h2>
-  <ul class="event-list">
+  <ul class="rows">
     {% for event in on_now %}{% include "events/_event_row.html" %}{% endfor %}
   </ul>
 </section>
@@ -24,11 +25,9 @@
 {% regroup events by month as months %}
 {% for group in months %}
   <section class="month">
-    <h2 class="month-heading">{{ group.list.0.starts_at|date:"F Y" }}</h2>
-    <ul class="event-list">
-      {% for event in group.list %}
-        {% include "events/_event_row.html" %}
-      {% endfor %}
+    <h2 class="month-heading">{{ group.list.0.starts_at|date:"F Y" }}{% if forloop.first %}<a class="more" href="{% if current_city %}{{ current_city.get_absolute_url }}{% else %}{% url 'events:this_week' %}{% endif %}{% if current_category %}?category={{ current_category.slug }}{% endif %}">Day by day</a>{% endif %}</h2>
+    <ul class="rows">
+      {% for event in group.list %}{% include "events/_event_row.html" %}{% endfor %}
     </ul>
   </section>
 {% empty %}

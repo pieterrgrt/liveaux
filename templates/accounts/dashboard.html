@@ -3,93 +3,82 @@
 {% block title %}My liveaux{% endblock %}
 
 {% block content %}
-<section class="venue-header page-top">
-  <p class="eyebrow">Hi {{ user }}</p>
+<header class="page-head">
+  <p class="eyebrow">Account</p>
   <h1>My liveaux</h1>
-  <div class="actions">
-    <a class="link-button" href="{% url 'accounts:settings' %}">Account settings</a>
-    <a class="link-button" href="{% url 'library:connect' %}">Connect apps</a>
-  </div>
-</section>
-
-<section class="month">
-  <h2 class="month-heading">Library <span class="muted">{{ library_count }} title{{ library_count|pluralize }} · {{ play_count }} check-in{{ play_count|pluralize }}</span></h2>
-  <div class="actions">
-    <a class="button button-ghost" href="{% url 'library:index' %}">Library</a>
-    <a class="button button-ghost" href="{% url 'library:diary' %}">Diary</a>
-    <a class="button button-ghost" href="{% url 'library:stats' %}">Stats</a>
-    <a class="button button-ghost" href="{% url 'library:lists' %}">Lists</a>
-    <a class="button button-ghost" href="{% url 'library:collection' %}">Collection</a>
-  </div>
-</section>
+  <p class="page-meta">{{ user.email }} · <a href="{% url 'accounts:settings' %}">Settings</a> · <a href="{% url 'accounts:export' %}">Download your data</a></p>
+</header>
 
 {% if to_log %}
-<section class="month">
+<section class="month month-live">
   <h2 class="month-heading">Were you there?</h2>
-  <ul class="manage-list">
-    {% for event in to_log %}
-      <li>
-        <span class="manage-date">{{ event.starts_at|date:"j M Y" }}</span>
-        <a href="{{ event.get_absolute_url }}">{{ event.title }}</a>
-        <span class="muted">{{ event.venue.name }}</span>
-        <form method="post" action="{% url 'logbook:attended' event.pk %}">
-          {% csrf_token %}
-          <button type="submit" class="link-button">I was there</button>
-        </form>
-      </li>
-    {% endfor %}
+  <ul class="rows">
+    {% for event in to_log %}{% include "logbook/_to_log_row.html" %}{% endfor %}
   </ul>
 </section>
 {% endif %}
 
-<section class="month">
-  <h2 class="month-heading">My log <span class="muted">{{ log_count }} event{{ log_count|pluralize }}</span></h2>
-  <ul class="event-list">
-    {% for entry in recent_log %}{% include "logbook/_entry_row.html" with is_own=True %}
-    {% empty %}<li class="empty">Been to something? Open it and press <strong>I was there</strong> to start your log.</li>{% endfor %}
-  </ul>
-  {% if log_count %}<div class="actions"><a class="button button-ghost" href="{% url 'logbook:mine' %}">Your whole log</a></div>{% endif %}
-</section>
-
-<section class="month">
-  <h2 class="month-heading">Saved events</h2>
-  <ul class="event-list">
+{# Live things first, then Aux; each heading's rule takes its side's colour. #}
+<section class="month month-live">
+  <h2 class="month-heading">Saved <span class="muted">live</span></h2>
+  <ul class="rows">
     {% for event in saved %}{% include "events/_event_row.html" %}
     {% empty %}<li class="empty">Nothing saved yet. Open an event and press Save to keep it here.</li>{% endfor %}
   </ul>
 </section>
 
-<section class="month">
-  <h2 class="month-heading">From who you follow</h2>
-  <ul class="event-list">
+<section class="month month-live">
+  <h2 class="month-heading">From who you follow <span class="muted">live</span></h2>
+  <ul class="rows">
     {% for event in from_follows %}{% include "events/_event_row.html" %}
     {% empty %}<li class="empty">{% if following %}Nothing new from venues, artists or organisers you follow.{% else %}Follow a venue, artist or organiser to see their events here.{% endif %}</li>{% endfor %}
   </ul>
   {% if following %}
     <p class="chips-label">Following</p>
-    <div class="filters">
+    <nav class="filters" aria-label="Following">
       {% for page in following %}<a class="chip" href="{{ page.get_absolute_url }}">{{ page.name }}</a>{% endfor %}
-    </div>
+    </nav>
   {% endif %}
+</section>
+
+<section class="month month-live">
+  <h2 class="month-heading">Your log <span class="muted">{{ log_count }} event{{ log_count|pluralize }}</span>{% if log_count %}<a class="more" href="{% url 'logbook:mine' %}">All of it</a>{% endif %}</h2>
+  <ul class="rows">
+    {% for entry in recent_log %}{% include "logbook/_entry_row.html" with is_own=True %}
+    {% empty %}<li class="empty">Been to something? Open it and press <strong>I was there</strong> to start your log.</li>{% endfor %}
+  </ul>
+</section>
+
+<section class="month month-aux">
+  <h2 class="month-heading">Your library <span class="muted">aux</span></h2>
+  <ul class="rows">
+    <li class="row row-plain"><div class="row-main"><h3 class="row-title"><a href="{% url 'library:index' %}">Library</a></h3><p class="row-sub">{{ library_count }} title{{ library_count|pluralize }}</p></div><div class="row-end"><span class="arrow" aria-hidden="true">→</span></div></li>
+    <li class="row row-plain"><div class="row-main"><h3 class="row-title"><a href="{% url 'library:diary' %}">Diary</a></h3><p class="row-sub">{{ play_count }} check-in{{ play_count|pluralize }}</p></div><div class="row-end"><span class="arrow" aria-hidden="true">→</span></div></li>
+    <li class="row row-plain"><div class="row-main"><h3 class="row-title"><a href="{% url 'library:stats' %}">Stats</a></h3></div><div class="row-end"><span class="arrow" aria-hidden="true">→</span></div></li>
+    <li class="row row-plain"><div class="row-main"><h3 class="row-title"><a href="{% url 'library:lists' %}">Lists</a></h3></div><div class="row-end"><span class="arrow" aria-hidden="true">→</span></div></li>
+    <li class="row row-plain"><div class="row-main"><h3 class="row-title"><a href="{% url 'library:collection' %}">Collection</a></h3></div><div class="row-end"><span class="arrow" aria-hidden="true">→</span></div></li>
+    <li class="row row-plain"><div class="row-main"><h3 class="row-title"><a href="{% url 'library:connect' %}">Connect apps</a></h3><p class="row-sub">Calendar feed, Plex, Jellyfin and the API</p></div><div class="row-end"><span class="arrow" aria-hidden="true">→</span></div></li>
+  </ul>
 </section>
 
 <section class="month">
   <h2 class="month-heading">Pages you manage</h2>
-  <ul class="manage-list">
+  <ul class="rows">
     {% for page in pages %}
-      <li>
-        <span class="manage-date">{{ page.kind_label|capfirst }}</span>
-        <a href="{{ page.get_manage_url }}">{{ page.name }}</a>
-        <span></span>
-        <a class="link-button" href="{{ page.get_manage_url }}">Manage</a>
+      <li class="row row-plain">
+        <div class="row-main">
+          <span class="tag">{{ page.kind_label|capfirst }}</span>
+          <h3 class="row-title"><a href="{{ page.get_manage_url }}">{{ page.name }}</a></h3>
+        </div>
+        <div class="row-end"><span class="arrow" aria-hidden="true">→</span></div>
       </li>
     {% empty %}
       <li class="empty">You don't manage any pages yet.</li>
     {% endfor %}
   </ul>
   <div class="actions">
-    <a class="button button-ghost" href="{% url 'events:create_page' 'artist' %}">Create an artist page</a>
-    <a class="button button-ghost" href="{% url 'events:create_page' 'promoter' %}">Create an organiser page</a>
+    <a class="button button-ghost" href="{% url 'events:create_page' 'artist' %}">New artist page</a>
+    <a class="button button-ghost" href="{% url 'events:create_page' 'promoter' %}">New organiser page</a>
   </div>
   <p class="help">Run a venue, museum or cinema? <a href="{% url 'events:submit_event' %}">Submit your events</a>, or get in touch and we'll give your account access to its page.</p>
 </section>
@@ -97,13 +86,15 @@
 {% if submissions %}
 <section class="month">
   <h2 class="month-heading">Events you submitted</h2>
-  <ul class="manage-list">
+  <ul class="rows">
     {% for submission in submissions %}
-      <li>
-        <span class="manage-date">{{ submission.starts_at|date:"j M Y" }}</span>
-        {% if submission.event %}<a href="{{ submission.event.get_absolute_url }}">{{ submission.title }}</a>{% else %}<span>{{ submission.title }}</span>{% endif %}
-        <span class="muted">{{ submission.venue_name }}</span>
-        <span class="status status-{{ submission.status }}">{{ submission.get_status_display }}</span>
+      <li class="row">
+        <div class="row-date"><span class="day">{{ submission.starts_at|date:"d" }}</span><span class="weekday">{{ submission.starts_at|date:"M" }}</span></div>
+        <div class="row-main">
+          <h3 class="row-title">{% if submission.event %}<a href="{{ submission.event.get_absolute_url }}">{{ submission.title }}</a>{% else %}{{ submission.title }}{% endif %}</h3>
+          <p class="row-sub">{{ submission.venue_name }}</p>
+        </div>
+        <div class="row-end"><span class="status status-{{ submission.status }}">{{ submission.get_status_display }}</span></div>
       </li>
     {% endfor %}
   </ul>

@@ -3,11 +3,11 @@
 {% block title %}{{ owner.public_name }}'s library — liveaux{% endblock %}
 
 {% block content %}
-<section class="venue-header page-top">
+<header class="page-head">
   <p class="eyebrow">Library</p>
   <h1>{{ owner.public_name }}</h1>
-  {% if owner.log_is_public %}<p class="muted"><a href="{% url 'logbook:public' owner.pk %}">Events {{ owner.public_name }} went to</a></p>{% endif %}
-</section>
+  {% if owner.log_is_public %}<p class="page-meta"><a href="{% url 'logbook:public' owner.pk %}">Events {{ owner.public_name }} went to</a></p>{% endif %}
+</header>
 
 {% include "events/_chips.html" with chips=type_chips label="Kind" %}
 
@@ -31,8 +31,16 @@
 {% if lists %}
 <section class="month">
   <h2 class="month-heading">Lists</h2>
-  <ul class="manage-list">
-    {% for media_list in lists %}<li><a href="{{ media_list.get_absolute_url }}">{{ media_list.name }}</a><span class="muted">{{ media_list.description|truncatewords:12 }}</span><span></span><span></span></li>{% endfor %}
+  <ul class="rows">
+    {% for media_list in lists %}
+      <li class="row row-plain">
+        <div class="row-main">
+          <h3 class="row-title"><a href="{{ media_list.get_absolute_url }}">{{ media_list.name }}</a></h3>
+          {% if media_list.description %}<p class="row-sub">{{ media_list.description|truncatewords:12 }}</p>{% endif %}
+        </div>
+        <div class="row-end"><span class="arrow" aria-hidden="true">→</span></div>
+      </li>
+    {% endfor %}
   </ul>
 </section>
 {% endif %}

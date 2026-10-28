@@ -3,12 +3,13 @@
 {% block title %}Stats — liveaux{% endblock %}
 
 {% block content %}
-<section class="hero">
-  <p class="eyebrow">Your stats</p>
-  <h1>{% if stats.year %}{{ stats.year }}{% else %}All time{% endif %} <em>in {{ stats.hours }} hours and {{ stats.events }} night{{ stats.events|pluralize }} out.</em></h1>
-  {% include "library/_subnav.html" %}
-  {% if year_chips|length > 1 %}{% include "events/_chips.html" with chips=year_chips label="Year" %}{% endif %}
-</section>
+<header class="page-head">
+  <p class="eyebrow">Stats</p>
+  <h1>{% if stats.year %}{{ stats.year }}{% else %}All time{% endif %}</h1>
+  <p class="page-meta">{{ stats.hours }} hours in, {{ stats.events }} night{{ stats.events|pluralize }} out</p>
+</header>
+
+{% if year_chips|length > 1 %}{% include "events/_chips.html" with chips=year_chips label="Year" %}{% endif %}
 
 <div class="stats stats-wide">
   <div class="stat"><span class="stat-number">{{ stats.hours }}</span><span class="stat-label">hours in</span></div>
@@ -92,13 +93,14 @@
 {% if not stats.year and stats.per_year|length > 1 %}
 <section class="month">
   <h2 class="month-heading">Year on year</h2>
-  <ul class="manage-list">
+  <ul class="rows">
     {% for row in stats.per_year %}
-      <li>
-        <a href="?year={{ row.year }}">{{ row.year }}</a>
-        <span>{{ row.hours }} h · {{ row.plays }} check-in{{ row.plays|pluralize }}</span>
-        <span class="muted">{{ row.events }} event{{ row.events|pluralize }}</span>
-        <span></span>
+      <li class="row row-plain">
+        <div class="row-main">
+          <h3 class="row-title"><a href="?year={{ row.year }}">{{ row.year }}</a></h3>
+          <p class="row-sub">{{ row.hours }} h · {{ row.plays }} check-in{{ row.plays|pluralize }} · {{ row.events }} event{{ row.events|pluralize }}</p>
+        </div>
+        <div class="row-end"><span class="arrow" aria-hidden="true">→</span></div>
       </li>
     {% endfor %}
   </ul>

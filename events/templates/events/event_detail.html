@@ -3,23 +3,27 @@
 {% block title %}{{ event.title }} — liveaux{% endblock %}
 
 {% block content %}
-<a class="back" href="{{ event.venue.city.get_absolute_url }}">← This week in {{ event.venue.city }}</a>
+<a class="back" href="{{ event.venue.city.get_absolute_url }}">This week in {{ event.venue.city }}</a>
 
-<article class="event-detail">
+<article class="detail">
   <div class="poster">
     {% if event.is_running %}
-      <span class="poster-month">until</span>
-      <span class="poster-day">{{ event.ends_at|date:"d" }}</span>
-      <span class="poster-month">{{ event.ends_at|date:"M" }}</span>
+      <span class="poster-label">until</span>
+      <span class="poster-big">{{ event.ends_at|date:"d" }}</span>
+      <span class="poster-label">{{ event.ends_at|date:"M" }}</span>
     {% else %}
-      <span class="poster-day">{{ event.starts_at|date:"d" }}</span>
-      <span class="poster-month">{{ event.starts_at|date:"M" }}</span>
+      <span class="poster-label">{{ event.starts_at|date:"D" }}</span>
+      <span class="poster-big">{{ event.starts_at|date:"d" }}</span>
+      <span class="poster-label">{{ event.starts_at|date:"M" }}</span>
     {% endif %}
   </div>
 
-  <div class="event-body">
-    <a class="tag tag-{{ event.category.slug }}" href="{% url 'events:event_list' %}?category={{ event.category.slug }}">{{ event.category.name }}</a>
-    <h1>{{ event.title }}</h1>
+  <div class="detail-body">
+    <header class="page-head">
+      <p class="eyebrow"><a href="{% url 'events:event_list' %}?category={{ event.category.slug }}">{{ event.category.name }}</a></p>
+      <h1>{{ event.title }}</h1>
+    </header>
+
     <dl class="facts">
       {% if event.is_multi_day %}
         <div><dt>When</dt><dd>{{ event.starts_at|date:"j F Y" }} – {{ event.ends_at|date:"j F Y" }}{% if event.is_running %}<br><span class="muted">On now</span>{% endif %}</dd></div>
@@ -32,8 +36,6 @@
       {% if event.price is not None %}<div><dt>Price</dt><dd>€{{ event.price|floatformat:"-2" }}</dd></div>{% endif %}
     </dl>
 
-    {% if event.description %}<div class="description">{{ event.description|linebreaks }}</div>{% endif %}
-
     <div class="actions">
       {% if event.ticket_url %}<a class="button" href="{{ event.ticket_url }}" rel="noopener">Get tickets</a>{% endif %}
       {% if event.has_started %}{% include "logbook/_attended_button.html" %}{% endif %}
@@ -41,13 +43,15 @@
       {% if not event.has_started or event.is_running %}{% include "events/_save_button.html" %}{% endif %}
       {% if can_edit %}<a class="link-button" href="{% url 'events:edit_event' event.pk %}">Edit event</a>{% endif %}
     </div>
+
+    {% if event.description %}<div class="description">{{ event.description|linebreaks }}</div>{% endif %}
   </div>
 </article>
 
 {% if more_at_venue %}
 <section class="month">
   <h2 class="month-heading">More at {{ event.venue.name }}</h2>
-  <ul class="event-list">
+  <ul class="rows">
     {% for event in more_at_venue %}{% include "events/_event_row.html" %}{% endfor %}
   </ul>
 </section>
