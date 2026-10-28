@@ -1,0 +1,17 @@
+{# A saved event that has started but isn't in your log yet. Needs `event`. #}
+<li class="row">
+  <div class="row-date">
+    <span class="day">{{ event.starts_at|date:"d" }}</span>
+    <span class="weekday">{{ event.starts_at|date:"M" }}</span>
+  </div>
+  <div class="row-main">
+    <h3 class="row-title"><a href="{{ event.get_absolute_url }}">{{ event.title }}</a></h3>
+    <p class="row-sub">{{ event.venue.name }}</p>
+  </div>
+  <div class="row-end">
+    <form method="post" action="{% url 'logbook:attended' event.pk %}">
+      {% csrf_token %}
+      <button type="submit" class="button button-small">I was there</button>
+    </form>
+  </div>
+</li>

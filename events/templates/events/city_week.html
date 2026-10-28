@@ -3,11 +3,11 @@
 {% block title %}This week in {{ city.name }} — liveaux{% endblock %}
 
 {% block content %}
-<section class="hero">
+<header class="page-head">
   <p class="eyebrow">{{ today|date:"j M" }} – {{ last_day|date:"j M" }}</p>
-  <h1>This week in <em>{{ city.name }}</em></h1>
-  <p class="hero-count">{{ count }} event{{ count|pluralize }}{% if current_category %} · {{ current_category.name|lower }}{% endif %}</p>
-</section>
+  <h1>This week in {{ city.name }}</h1>
+  <p class="page-meta">{{ count }} event{{ count|pluralize }}{% if current_category %} · {{ current_category.name|lower }}{% endif %}</p>
+</header>
 
 {% if city_links|length > 1 %}{% include "events/_chips.html" with chips=city_links label="Choose a city" %}{% endif %}
 {% include "events/_chips.html" with chips=category_chips label="Filter by kind of event" %}
@@ -15,7 +15,7 @@
 {% if running %}
 <section class="month">
   <h2 class="month-heading">All week <span class="muted">exhibitions, film runs, festivals</span></h2>
-  <ul class="event-list">
+  <ul class="rows">
     {% for event in running %}{% include "events/_event_row.html" %}{% endfor %}
   </ul>
 </section>
@@ -24,7 +24,7 @@
 {% for day in days %}
   <section class="month{% if not day.events %} quiet{% endif %}">
     <h2 class="month-heading">{% if day.date == today %}Today{% else %}{{ day.date|date:"l" }}{% endif %} <span class="muted">{{ day.date|date:"j F" }}</span></h2>
-    <ul class="event-list">
+    <ul class="rows">
       {% for event in day.events %}
         {% include "events/_event_row.html" %}
       {% empty %}
@@ -34,5 +34,5 @@
   </section>
 {% endfor %}
 
-<p class="week-link"><a href="{% url 'events:event_list' %}?city={{ city.slug }}{% if current_category %}&amp;category={{ current_category.slug }}{% endif %}">Everything coming up in {{ city.name }} →</a></p>
+<p class="more-line"><a class="more" href="{% url 'events:event_list' %}?city={{ city.slug }}{% if current_category %}&amp;category={{ current_category.slug }}{% endif %}">Everything coming up in {{ city.name }}</a></p>
 {% endblock %}

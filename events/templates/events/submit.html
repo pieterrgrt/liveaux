@@ -4,9 +4,11 @@
 {% block main_class %}narrow{% endblock %}
 
 {% block content %}
-<a class="back" href="{% url 'events:event_list' %}">← Everything on</a>
-<h1>Submit an event</h1>
-<p class="muted">Run a venue, museum, cinema or theatre, or organise events for one? Send us your concert, exhibition, screening or play. We check every submission by hand and publish it within a few days. You'll see its status on <a href="{% url 'accounts:dashboard' %}">My liveaux</a>.</p>
+<header class="page-head">
+  <p class="eyebrow">For venues and organisers</p>
+  <h1>Submit an event</h1>
+  <p class="page-meta">Concerts, exhibitions, screenings, plays. We check every submission by hand and publish it within a few days. You'll see its status on <a href="{% url 'accounts:dashboard' %}">My liveaux</a>.</p>
+</header>
 
 <form class="form" method="post">
   {% csrf_token %}

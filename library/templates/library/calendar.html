@@ -3,12 +3,11 @@
 {% block title %}Calendar — liveaux{% endblock %}
 
 {% block content %}
-<section class="venue-header page-top">
+<header class="page-head">
   <p class="eyebrow">Calendar</p>
   <h1>Coming up</h1>
-  <p class="muted">New episodes and releases of what you follow, and the events you saved. The next {{ weeks }} weeks.</p>
-  {% include "library/_subnav.html" %}
-</section>
+  <p class="page-meta">New episodes and releases of what you follow, and the events you saved. The next {{ weeks }} weeks.</p>
+</header>
 
 {% include "library/_days.html" with empty="Nothing coming up. Add series and upcoming releases to your library, or save events, and they show up here." %}
 

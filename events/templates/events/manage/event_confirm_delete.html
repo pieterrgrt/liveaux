@@ -4,8 +4,12 @@
 {% block main_class %}narrow{% endblock %}
 
 {% block content %}
-<h1>Delete event?</h1>
-<p><strong>{{ event.title }}</strong>, {{ event.starts_at|date:"l j F Y" }} at {{ event.venue.name }}. This removes it from liveaux for everyone, including people who saved it.</p>
+<a class="back" href="{% url 'events:edit_event' event.pk %}">{{ event.title }}</a>
+<header class="page-head">
+  <p class="eyebrow">Delete</p>
+  <h1>Delete event?</h1>
+  <p class="page-meta"><strong>{{ event.title }}</strong>, {{ event.starts_at|date:"l j F Y" }} at {{ event.venue.name }}. This removes it from liveaux for everyone, including people who saved it.</p>
+</header>
 <form class="form" method="post">
   {% csrf_token %}
   <div class="form-actions">

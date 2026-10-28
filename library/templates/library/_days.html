@@ -1,23 +1,22 @@
-{# Calendar days: a list of (date, rows) from services.calendar. #}
-<ul class="days">
+{# Calendar days: a list of (date, rows) from services.calendar. The date shows once per day. #}
+<ul class="rows">
   {% for day, rows in days %}
-    <li class="day-group">
-      <div class="date-block">
-        <span class="day">{{ day|date:"d" }}</span>
-        <span class="weekday">{{ day|date:"D M" }}</span>
-      </div>
-      <ul class="day-rows">
-        {% for row in rows %}
-          <li>
-            <a href="{{ row.url }}">
-              <span class="tag tag-{{ row.kind }}">{{ row.label }}</span>
-              <strong>{{ row.title }}</strong>
-              <span class="muted">{{ row.detail }}</span>
-            </a>
-          </li>
-        {% endfor %}
-      </ul>
-    </li>
+    {% for row in rows %}
+      <li class="row{% if not forloop.first %} is-same-day{% endif %}">
+        <div class="row-date">
+          {% if forloop.first %}
+            <span class="day">{{ day|date:"d" }}</span>
+            <span class="weekday">{{ day|date:"D M" }}</span>
+          {% endif %}
+        </div>
+        <div class="row-main">
+          <span class="tag">{{ row.label }}</span>
+          <h3 class="row-title"><a href="{{ row.url }}">{{ row.title }}</a></h3>
+          {% if row.detail %}<p class="row-sub">{{ row.detail }}</p>{% endif %}
+        </div>
+        <div class="row-end"><span class="arrow" aria-hidden="true">→</span></div>
+      </li>
+    {% endfor %}
   {% empty %}
     <li class="empty">{{ empty|default:"Nothing coming up." }}</li>
   {% endfor %}

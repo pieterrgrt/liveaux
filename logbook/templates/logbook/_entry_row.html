@@ -1,17 +1,16 @@
-<li class="log-entry">
-  <a class="event-row" href="{{ entry.event.get_absolute_url }}">
-    <div class="date-block">
-      <span class="day">{{ entry.event.starts_at|date:"d" }}</span>
-      <span class="weekday">{{ entry.event.starts_at|date:"M" }}</span>
-    </div>
-    <div class="event-info">
-      <span class="tag tag-{{ entry.event.category.slug }}">{{ entry.event.category.name }}</span>
-      <h3>{{ entry.event.title }}</h3>
-      <p>{{ entry.event.venue.name }} · {{ entry.event.venue.city }}</p>
-      {% if entry.note %}<p class="log-note">{{ entry.note }}</p>{% endif %}
-    </div>
-    <div class="rating">{% if entry.rating %}{{ entry.rating }}<span>/10</span>{% endif %}</div>
-    <span class="arrow" aria-hidden="true">→</span>
-  </a>
-  {% if is_own %}<a class="link-button log-edit" href="{{ entry.get_edit_url }}">Edit</a>{% endif %}
+<li class="row">
+  <div class="row-date">
+    <span class="day">{{ entry.event.starts_at|date:"d" }}</span>
+    <span class="weekday">{{ entry.event.starts_at|date:"M" }}</span>
+  </div>
+  <div class="row-main">
+    <span class="tag{% if out %} tag-live{% endif %}">{% if out %}Live · {% endif %}{{ entry.event.category.name }}</span>
+    <h3 class="row-title"><a href="{{ entry.event.get_absolute_url }}">{{ entry.event.title }}</a></h3>
+    <p class="row-sub">{{ entry.event.venue.name }} · {{ entry.event.venue.city }}</p>
+    {% if entry.note %}<p class="row-note">{{ entry.note }}</p>{% endif %}
+  </div>
+  <div class="row-end">
+    {% if entry.rating %}<span class="rating">{{ entry.rating }}<span>/10</span></span>{% endif %}
+    {% if is_own %}<a class="link-button" href="{{ entry.get_edit_url }}">Edit</a>{% else %}<span class="arrow" aria-hidden="true">→</span>{% endif %}
+  </div>
 </li>

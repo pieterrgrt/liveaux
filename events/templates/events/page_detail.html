@@ -3,27 +3,38 @@
 {% block title %}{{ page.name }} — liveaux{% endblock %}
 
 {% block content %}
-<a class="back" href="{% url 'events:event_list' %}">← Everything on</a>
+<a class="back" href="{% url 'events:event_list' %}">What's on</a>
 
-<section class="venue-header">
-  <p class="eyebrow">{{ page.kind_label }}</p>
-  <h1>{{ page.name }}</h1>
-  {% if page.kind == "venue" %}
-    <p class="muted">{{ page.address }}{% if page.district %} · {{ page.district }}{% endif %}</p>
-  {% elif page.kind == "artist" and page.hometown %}
-    <p class="muted">From {{ page.hometown }}</p>
-  {% endif %}
-  {% if page.description %}<div class="description">{{ page.description|linebreaks }}</div>{% endif %}
-  <div class="actions">
-    {% include "events/_follow_button.html" %}
-    {% if page.website %}<a class="button button-ghost" href="{{ page.website }}" rel="noopener">Website</a>{% endif %}
-    {% if is_member %}<a class="link-button" href="{{ page.get_manage_url }}">Manage this page</a>{% endif %}
+<article class="detail">
+  <div class="poster">
+    <span class="poster-big">{{ events|length }}</span>
+    <span class="poster-label">coming up</span>
   </div>
-</section>
+
+  <div class="detail-body">
+    <header class="page-head">
+      <p class="eyebrow">{{ page.kind_label }}</p>
+      <h1>{{ page.name }}</h1>
+      {% if page.kind == "venue" %}
+        <p class="page-meta">{{ page.address }}{% if page.district %} · {{ page.district }}{% endif %}</p>
+      {% elif page.kind == "artist" and page.hometown %}
+        <p class="page-meta">From {{ page.hometown }}</p>
+      {% endif %}
+    </header>
+
+    <div class="actions">
+      {% include "events/_follow_button.html" %}
+      {% if page.website %}<a class="button button-ghost" href="{{ page.website }}" rel="noopener">Website</a>{% endif %}
+      {% if is_member %}<a class="link-button" href="{{ page.get_manage_url }}">Manage this page</a>{% endif %}
+    </div>
+
+    {% if page.description %}<div class="description">{{ page.description|linebreaks }}</div>{% endif %}
+  </div>
+</article>
 
 <section class="month">
-  <h2 class="month-heading">Upcoming</h2>
-  <ul class="event-list">
+  <h2 class="month-heading">Coming up</h2>
+  <ul class="rows">
     {% for event in events %}{% include "events/_event_row.html" %}
     {% empty %}<li class="empty">Nothing scheduled right now.</li>{% endfor %}
   </ul>

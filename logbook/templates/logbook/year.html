@@ -3,17 +3,19 @@
 {% block title %}{{ year }} in review — liveaux{% endblock %}
 
 {% block content %}
-<a class="back" href="{% if is_own %}{% url 'logbook:mine' %}{% else %}{% url 'logbook:public' owner.pk %}{% endif %}">← {% if is_own %}My log{% else %}{{ owner.public_name }}{% endif %}</a>
+<a class="back" href="{% if is_own %}{% url 'logbook:mine' %}{% else %}{% url 'logbook:public' owner.pk %}{% endif %}">{% if is_own %}Your log{% else %}{{ owner.public_name }}{% endif %}</a>
 
-<section class="hero">
+<header class="page-head">
   <p class="eyebrow">{% if is_own %}Your{% else %}{{ owner.public_name }}'s{% endif %} year in review</p>
-  <h1>{{ year }} <em>in {{ stats.count }} event{{ stats.count|pluralize }}</em></h1>
-  {% if years|length > 1 %}
-    <div class="filters">
-      {% for y in years %}<a class="chip{% if y == year %} active{% endif %}" href="{% if is_own %}{% url 'logbook:my_year' y %}{% else %}{% url 'logbook:public_year' owner.pk y %}{% endif %}">{{ y }}</a>{% endfor %}
-    </div>
-  {% endif %}
-</section>
+  <h1>{{ year }}</h1>
+  <p class="page-meta">{{ stats.count }} event{{ stats.count|pluralize }}</p>
+</header>
+
+{% if years|length > 1 %}
+  <nav class="filters" aria-label="Year">
+    {% for y in years %}<a class="chip{% if y == year %} active{% endif %}" href="{% if is_own %}{% url 'logbook:my_year' y %}{% else %}{% url 'logbook:public_year' owner.pk y %}{% endif %}">{{ y }}</a>{% endfor %}
+  </nav>
+{% endif %}
 
 {% if stats.count %}
 <div class="stats">
@@ -68,7 +70,7 @@
 {% if stats.best %}
 <section class="month">
   <h2 class="month-heading">Best of {{ year }}</h2>
-  <ul class="event-list">
+  <ul class="rows">
     {% for entry in stats.best %}{% include "logbook/_entry_row.html" %}{% endfor %}
   </ul>
 </section>
@@ -76,7 +78,7 @@
 
 <section class="month">
   <h2 class="month-heading">Everything</h2>
-  <ul class="event-list">
+  <ul class="rows">
     {% for entry in entries %}{% include "logbook/_entry_row.html" %}{% endfor %}
   </ul>
 </section>

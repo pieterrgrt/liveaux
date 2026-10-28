@@ -4,9 +4,12 @@
 {% block main_class %}narrow{% endblock %}
 
 {% block content %}
-<a class="back" href="{% if item %}{{ item.get_absolute_url }}{% else %}{% url 'library:search' %}{% endif %}">← {% if item %}{{ item.title }}{% else %}Search{% endif %}</a>
-<h1>{% if item %}Edit {{ item.title }}{% else %}Add by hand{% endif %}</h1>
-<p class="muted">For things liveaux can't find. Only you see what you add here.</p>
+<a class="back" href="{% if item %}{{ item.get_absolute_url }}{% else %}{% url 'library:search' %}{% endif %}">{% if item %}{{ item.title }}{% else %}Search{% endif %}</a>
+<header class="page-head">
+  <p class="eyebrow">Library</p>
+  <h1>{% if item %}Edit {{ item.title }}{% else %}Add by hand{% endif %}</h1>
+  <p class="page-meta">For things liveaux can't find. Only you see what you add here.</p>
+</header>
 
 <form class="form" method="post">
   {% csrf_token %}

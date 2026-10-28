@@ -4,9 +4,12 @@
 {% block main_class %}narrow{% endblock %}
 
 {% block content %}
-<a class="back" href="{% url 'library:index' %}">← Library</a>
-<h1>Connect</h1>
-<p class="muted">These addresses contain your secret token. Keep them to yourself.</p>
+<a class="back" href="{% url 'library:index' %}">Library</a>
+<header class="page-head">
+  <p class="eyebrow">Apps</p>
+  <h1>Connect</h1>
+  <p class="page-meta">These addresses contain your secret token. Keep them to yourself.</p>
+</header>
 
 <h2>Calendar</h2>
 <p>New episodes, releases and saved events, in your calendar app.</p>

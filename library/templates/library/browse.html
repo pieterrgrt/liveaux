@@ -3,11 +3,11 @@
 {% block title %}{{ heading }} — Library — liveaux{% endblock %}
 
 {% block content %}
-<section class="venue-header page-top">
+<header class="page-head">
   <p class="eyebrow">Library</p>
   <h1>{{ heading }}</h1>
-  {% include "library/_subnav.html" %}
-</section>
+  <p class="page-meta">{{ entries|length }} title{{ entries|length|pluralize }}</p>
+</header>
 
 <form class="form form-search" method="get">
   {% for key, value in request.GET.items %}{% if key != "q" %}<input type="hidden" name="{{ key }}" value="{{ value }}">{% endif %}{% endfor %}

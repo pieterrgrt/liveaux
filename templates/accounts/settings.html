@@ -4,8 +4,11 @@
 {% block main_class %}narrow{% endblock %}
 
 {% block content %}
-<a class="back" href="{% url 'accounts:dashboard' %}">← My liveaux</a>
-<h1>Account settings</h1>
+<a class="back" href="{% url 'accounts:dashboard' %}">My liveaux</a>
+<header class="page-head">
+  <p class="eyebrow">Account</p>
+  <h1>Account settings</h1>
+</header>
 
 <form class="form" method="post">
   {% csrf_token %}
@@ -23,7 +26,7 @@
   <div><dt>Connect</dt><dd><a href="{% url 'library:connect' %}">Calendar feed, Plex, Jellyfin and the API</a></dd></div>
   <div><dt>Import</dt><dd><a href="{% url 'library:import' %}">From Letterboxd, Goodreads or IMDb</a></dd></div>
 </dl>
-{% if user.library_is_public %}<p class="privacy-note">Your library is public: <a href="{% url 'library:public' user.pk %}">{{ request.scheme }}://{{ request.get_host }}{% url 'library:public' user.pk %}</a></p>{% endif %}
+{% if user.library_is_public %}<p class="help">Your library is public: <a href="{% url 'library:public' user.pk %}">{{ request.scheme }}://{{ request.get_host }}{% url 'library:public' user.pk %}</a></p>{% endif %}
 
 <h2>Your data</h2>
 <p class="muted">Your log and library are private unless you switch on <em>Public log</em> or <em>Public library</em> above. Read how we handle your data in the <a href="{% url 'privacy' %}">privacy statement</a>.</p>
