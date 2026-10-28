@@ -39,12 +39,14 @@
 
 <h2>Sources on this server</h2>
 <dl class="facts">
-  <div><dt>Films, series</dt><dd>{% if tmdb %}TMDB{% else %}By hand (no TMDB key){% endif %}</dd></div>
+  <div><dt>Films</dt><dd>{% if tmdb %}TMDB{% else %}Wikidata and Wikipedia (no TMDB key){% endif %}</dd></div>
+  <div><dt>Series</dt><dd>{% if tmdb %}TMDB{% else %}TVmaze (no TMDB key){% endif %}</dd></div>
   <div><dt>Anime, manga</dt><dd>AniList</dd></div>
   <div><dt>Books</dt><dd>Open Library</dd></div>
   <div><dt>Albums</dt><dd>MusicBrainz</dd></div>
   <div><dt>Podcasts</dt><dd>Apple Podcasts directory</dd></div>
-  <div><dt>Games</dt><dd>{% if igdb %}IGDB{% else %}By hand (no IGDB access){% endif %}</dd></div>
+  <div><dt>Games</dt><dd>{% if igdb %}IGDB{% else %}Wikidata and Wikipedia (no IGDB access){% endif %}</dd></div>
   <div><dt>Comics, board games</dt><dd>By hand</dd></div>
+  <div><dt>Elsewhere</dt><dd>Scores from Wikidata, TVmaze, AniList, Open Library and MusicBrainz{% if tmdb %}, TMDB{% endif %}{% if igdb %}, IGDB{% endif %}</dd></div>
 </dl>
 {% endblock %}

@@ -60,9 +60,55 @@
     });
   }
 
+  // ---- Elsewhere: ratings from other sites --------------------------------------------------
+  // The item page shows the scores liveaux has stored. When they're old, the block carries
+  // data-elsewhere: fetch that fragment (the server fetches fresh scores) and swap it in.
+  // If anything goes wrong the stored scores just stay; the page never breaks over this.
+  function loadElsewhere() {
+    var block = document.querySelector("[data-elsewhere]");
+    if (!block || !window.fetch) return;
+    var url = block.getAttribute("data-elsewhere");
+    block.classList.add("is-loading");
+    var controller = window.AbortController ? new AbortController() : null;
+    var timer = setTimeout(function () { if (controller) controller.abort(); }, 20000);
+
+    function quiet() {
+      block.classList.remove("is-loading");
+      block.removeAttribute("data-elsewhere");
+      var looking = block.querySelector(".elsewhere-looking");
+      if (looking) looking.textContent = "Couldn't reach the other sites just now";
+    }
+
+    fetch(url, {
+      credentials: "same-origin",
+      headers: { "X-Requested-With": "fetch" },
+      signal: controller ? controller.signal : undefined
+    })
+      .then(function (response) {
+        if (!response.ok) throw new Error(response.status);
+        return response.text();
+      })
+      .then(function (html) {
+        clearTimeout(timer);
+        var holder = document.createElement("div");
+        holder.innerHTML = html;
+        var fresh = holder.querySelector(".elsewhere");
+        if (!fresh) return quiet();
+        fresh.removeAttribute("data-elsewhere");  // one fetch per page load is enough
+        fresh.classList.add("is-fresh");
+        block.replaceWith(fresh);
+      })
+      .catch(function () {
+        clearTimeout(timer);
+        quiet();
+      });
+  }
+  // ---- end Elsewhere -----------------------------------------------------------------------
+
   function ready() {
     placeArrival();
     setUpChoice();
+    loadElsewhere();
   }
 
   if (document.readyState === "loading") {

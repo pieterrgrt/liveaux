@@ -17,5 +17,6 @@
     </div>
     <h3>{{ r.title }}</h3>
     <p>{% if r.year %}{{ r.year }}{% endif %}{% if r.year and r.creator %} · {% endif %}{{ r.creator }}</p>
+    {% if r.source_label %}<p class="muted card-source">{{ r.source_label }}</p>{% endif %}
   {% if r.in_library %}</a>{% else %}</button></form>{% endif %}
 </li>

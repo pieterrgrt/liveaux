@@ -19,7 +19,7 @@
   </form>
   <p class="help">Details from {{ source_label }}. Not there? <a href="{% url 'library:add_manual' %}?type={{ media_type }}&q={{ query|urlencode }}">Add it by hand</a>.</p>
 {% else %}
-  <p class="empty">liveaux has no source to search {{ media_label }} on this server yet{% if media_type == "movie" or media_type == "tv" %} (it needs a TMDB key){% elif media_type == "game" %} (it needs IGDB access){% endif %}. You can add them by hand.</p>
+  <p class="empty">liveaux has no source to search {{ media_label }}. You can add them by hand.</p>
   <div class="actions"><a class="button" href="{% url 'library:add_manual' %}?type={{ media_type }}">Add by hand</a></div>
 {% endif %}
 

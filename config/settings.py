@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.humanize",
     "allauth",
     "allauth.account",
     "accounts",
@@ -167,25 +168,50 @@ AUTHENTICATION_BACKENDS = [
 ACCOUNT_LOGIN_METHODS = {"email"}
 ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
-ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_LOGOUT_REDIRECT_URL = "/"
+ACCOUNT_FORMS = {"reset_password": "accounts.forms.ResetPasswordForm"}
 LOGIN_REDIRECT_URL = "accounts:dashboard"
 LOGIN_URL = "account_login"
 
-# Email: printed in the terminal locally; SMTP in production when EMAIL_HOST is set.
+# Email: SMTP when EMAIL_HOST points at a real mail server, else printed in the terminal (or the logs).
+# A placeholder such as smtp.example.com counts as no server: nothing would ever arrive.
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "liveaux <noreply@liveaux.eu>")
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
-if os.environ.get("EMAIL_HOST"):
+
+
+def _real_mail_host(host):
+    host = host.strip().lower().rstrip(".")
+    placeholders = ("example.com", "example.org", "example.net", "localhost.invalid")
+    return bool(host) and not any(host == p or host.endswith("." + p) for p in placeholders)
+
+
+EMAIL_HOST = os.environ.get("EMAIL_HOST", "")
+EMAIL_IS_CONFIGURED = _real_mail_host(EMAIL_HOST)
+if EMAIL_IS_CONFIGURED:
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-    EMAIL_HOST = os.environ["EMAIL_HOST"]
     EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "587"))
     EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
     EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
     EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "1") == "1"
+    EMAIL_TIMEOUT = 15
 else:
+    EMAIL_HOST = ""
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+# Locally the console counts: the mail shows up in the terminal. In production it only counts with SMTP.
+EMAIL_CAN_SEND = EMAIL_IS_CONFIGURED or DEBUG
+
+# Confirming an email address before logging in only makes sense when the mail can arrive.
+# ACCOUNT_EMAIL_VERIFICATION: mandatory, optional or none. Default: mandatory with real SMTP, else optional.
+ACCOUNT_EMAIL_VERIFICATION = os.environ.get("ACCOUNT_EMAIL_VERIFICATION", "").strip().lower()
+if ACCOUNT_EMAIL_VERIFICATION not in ("mandatory", "optional", "none"):
+    ACCOUNT_EMAIL_VERIFICATION = "mandatory" if EMAIL_IS_CONFIGURED else "optional"
+
+# Stay logged in: liveaux is mostly used from a phone. A year, unless you log out.
+ACCOUNT_SESSION_REMEMBER = True
+SESSION_COOKIE_AGE = int(os.environ.get("SESSION_COOKIE_AGE", str(60 * 60 * 24 * 365)))
 
 # Shown in the privacy statement as the address for data requests.
 CONTACT_EMAIL = os.environ.get("LIVEAUX_CONTACT_EMAIL", "privacy@liveaux.eu")
@@ -194,7 +220,8 @@ CONTACT_EMAIL = os.environ.get("LIVEAUX_CONTACT_EMAIL", "privacy@liveaux.eu")
 ADMINS = [("liveaux", a.strip()) for a in os.environ.get("DJANGO_ADMIN_EMAILS", "").split(",") if a.strip()]
 
 # The library: where details about films, series, books, games and music come from.
-# Without TMDB_API_KEY films and series can only be added by hand; same for games without IGDB.
+# With TMDB_API_KEY films and series come from TMDB, and games from IGDB with the IGDB keys.
+# Without them films come from Wikidata and Wikipedia, series from TVmaze and games from Wikidata.
 # Anime, manga, books, albums and podcasts need no key.
 TMDB_API_KEY = os.environ.get("TMDB_API_KEY", "")
 IGDB_CLIENT_ID = os.environ.get("IGDB_CLIENT_ID", "")

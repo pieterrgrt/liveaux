@@ -2,7 +2,7 @@ import re
 from datetime import timedelta
 
 from django.core import mail
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 
@@ -17,6 +17,7 @@ def music():
 
 
 class SignupTests(TestCase):
+    @override_settings(ACCOUNT_EMAIL_VERIFICATION="mandatory")
     def test_signup_confirm_email_and_reach_dashboard(self):
         response = self.client.post(
             reverse("account_signup"),

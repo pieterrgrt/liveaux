@@ -17,7 +17,7 @@ from django.utils import timezone
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 
-from . import ical, imports, providers, services
+from . import ical, imports, providers, ratings, services
 from . import stats as library_stats
 from .forms import CheckInForm, CopyForm, EntryForm, ImportForm, ListForm, ManualItemForm
 from .models import MEDIA, Copy, Entry, Item, ListItem, MediaList, MediaType, Play, Source, Status
@@ -148,6 +148,7 @@ def search(request):
         r["item"] = item
         r["in_library"] = item is not None and item.pk in mine
         r["cover"] = proxied_cover(r["cover_url"])
+        r["source_label"] = Source(r["source"]).label
     return render(
         request,
         "library/search.html",
@@ -266,8 +267,19 @@ def item_detail(request, pk):
             "can_edit": item.is_manual and item.created_by_id == user.pk,
             "others": item.entries.exclude(user=user).count(),
             "today": timezone.localdate(),
+            "elsewhere": ratings.summary(item),
         },
     )
+
+
+@login_required
+def elsewhere(request, pk):
+    """The Elsewhere block on its own, with fresh scores: the item page swaps it in once it's loaded."""
+    item = _visible_item(request, pk)
+    ratings.refresh(item)
+    response = render(request, "library/_elsewhere.html", {"item": item, "elsewhere": ratings.summary(item)})
+    response["Cache-Control"] = "private, no-cache"
+    return response
 
 
 @require_POST
@@ -346,6 +358,7 @@ def refresh(request, pk):
     item = _visible_item(request, pk)
     try:
         services.refresh_item(item)
+        ratings.refresh(item, force=True)
         messages.success(request, "Details are up to date.")
     except providers.ProviderError:
         messages.error(request, "Couldn't reach the source. Try again later.")
@@ -377,6 +390,7 @@ def link(request, pk):
             error = "The source didn't answer. Try again in a moment."
     for r in results:
         r["cover"] = proxied_cover(r["cover_url"])
+        r["source_label"] = Source(r["source"]).label
     return render(
         request,
         "library/link.html",
@@ -517,7 +531,7 @@ def connect(request):
             "api_url": absolute("library:api_entries"),
             "token": token,
             "tmdb": bool(settings.TMDB_API_KEY),
-            "igdb": bool(settings.IGDB_CLIENT_ID),
+            "igdb": providers.igdb_configured(),
         },
     )
 
