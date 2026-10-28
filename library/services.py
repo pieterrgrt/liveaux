@@ -154,7 +154,9 @@ def _still_airing(item):
     if item.media_type not in (MediaType.TV, MediaType.ANIME):
         return False
     status = item.status_text.lower()
-    return status in ("returning series", "in production", "releasing") or item.episodes.filter(
+    # TMDB: Returning Series, In Production. AniList: Releasing. TVmaze: Running, To Be Determined, In Development.
+    running = ("returning series", "in production", "releasing", "running", "to be determined", "in development")
+    return status in running or item.episodes.filter(
         Q(air_date__gt=timezone.localdate()) | Q(air_date__isnull=True)
     ).exists()
 

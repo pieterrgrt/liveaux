@@ -44,6 +44,8 @@ class Source(models.TextChoices):
     MUSICBRAINZ = "musicbrainz", "MusicBrainz"
     ITUNES = "itunes", "Apple Podcasts"
     IGDB = "igdb", "IGDB"
+    TVMAZE = "tvmaze", "TVmaze"
+    WIKIDATA = "wikidata", "Wikidata"
     MANUAL = "manual", "Added by hand"
 
 
@@ -363,3 +365,40 @@ class Copy(models.Model):
 
     def __str__(self):
         return f"{self.item} on {self.get_format_display()}"
+
+
+class ExternalRating(models.Model):
+    """What another site says about an item: a score and how many people gave one. Shown under Elsewhere.
+
+    Only from official APIs and open data (Wikidata, TMDB, TVmaze, AniList, Open Library, MusicBrainz, IGDB).
+    """
+
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name="external_ratings")
+    key = models.CharField(max_length=120, help_text="Which score this is, e.g. 'wikidata:Q105584:Q108403393'.")
+    source = models.CharField(max_length=40, help_text="Where liveaux got it, e.g. Wikidata or TMDB.")
+    label = models.CharField(max_length=120, help_text="Whose score it is, e.g. Rotten Tomatoes.")
+    detail = models.CharField(max_length=120, blank=True, help_text="Which score, e.g. Tomatometer.")
+    value = models.FloatField(null=True, blank=True)
+    scale = models.FloatField(null=True, blank=True, help_text="The best possible score: 10, 100, 5…")
+    display = models.CharField(max_length=40, blank=True, help_text="The score as the source writes it.")
+    count = models.PositiveIntegerField(null=True, blank=True)
+    count_label = models.CharField(max_length=40, blank=True, help_text="ratings, reviews, votes…")
+    extra = models.JSONField(default=dict, blank=True)
+    url = models.URLField(max_length=500, blank=True)
+    as_of = models.DateField(null=True, blank=True, help_text="When the source measured it, if it says.")
+    position = models.PositiveSmallIntegerField(default=0)
+    fetched_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        ordering = ["position", "label"]
+        constraints = [models.UniqueConstraint(fields=["item", "key"], name="unique_external_rating")]
+
+    def __str__(self):
+        return f"{self.item}: {self.label} {self.display}"
+
+    @property
+    def percent(self):
+        """The score out of 100, for the little bar."""
+        if self.value is None or not self.scale:
+            return None
+        return max(0, min(100, round(100 * self.value / self.scale)))

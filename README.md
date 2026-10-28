@@ -35,8 +35,18 @@ Tests draaien: `uv run python manage.py test`
 
 ## Accounts
 
-Iedereen logt in met e-mail en wachtwoord (django-allauth, met e-mailbevestiging).
-Lokaal verschijnen de bevestigingsmails in de terminal waar `runserver` draait.
+Iedereen logt in met e-mail en wachtwoord (django-allauth). Je blijft een jaar ingelogd (handig op de
+iPhone), tot je zelf uitlogt; `SESSION_COOKIE_AGE` (seconden) verandert dat.
+
+E-mail en bevestiging:
+
+- **Zonder mailserver** (`EMAIL_HOST` leeg, of een voorbeeldadres als `smtp.example.com`) gaan mails
+  alleen naar de terminal of de logs. Bevestigen is dan *optional*: nieuwe mensen zijn na het
+  aanmelden meteen binnen. *Wachtwoord vergeten* zegt dan eerlijk dat er geen mail kan komen en
+  noemt `LIVEAUX_CONTACT_EMAIL`. Lokaal (`DEBUG` aan) werkt het wel: de link staat in de terminal.
+- **Met een echte SMTP-server** (`EMAIL_HOST`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`) moeten nieuwe
+  mensen eerst hun adres bevestigen (*mandatory*).
+- `ACCOUNT_EMAIL_VERIFICATION` (`mandatory`, `optional` of `none`) zet dat zelf vast.
 
 - **Fans:** evenementen opslaan en zalen, artiesten en organisatoren volgen → *My liveaux* (`/me/`)
 - **Zalen, organisatoren, artiesten:** een account kan lid zijn van zo'n pagina, als *owner* of *editor*.
@@ -76,19 +86,45 @@ Privacy:
 
 Zoeken en toevoegen via `/library/search/`. De gegevens komen van:
 
-| Soort | Bron | Sleutel nodig |
+| Soort | Zonder sleutel | Met sleutel |
 |---|---|---|
-| Films, series (met seizoenen en afleveringen) | TMDB | `TMDB_API_KEY` (v3-sleutel of v4-token) |
-| Anime, manga | AniList | nee |
-| Boeken | Open Library | nee |
-| Albums | MusicBrainz | nee |
-| Podcasts | Apple Podcasts-directory | nee |
-| Games | IGDB | `IGDB_CLIENT_ID` + `IGDB_CLIENT_SECRET` (Twitch-app) |
+| Films | Wikidata + Wikipedia (titel, jaar, regisseur, genres, duur, samenvatting, poster) | TMDB (`TMDB_API_KEY`, v3-sleutel of v4-token) |
+| Series (met seizoenen en afleveringen) | TVmaze (afleveringen met datum en duur, status, volgende aflevering) | TMDB |
+| Anime, manga | AniList | – |
+| Boeken | Open Library (Engelse titel en cover als die er is) | – |
+| Albums | MusicBrainz | – |
+| Podcasts | Apple Podcasts-directory | – |
+| Games | Wikidata + Wikipedia (jaar, ontwikkelaar, genres, cover) | IGDB (`IGDB_CLIENT_ID` + `IGDB_CLIENT_SECRET`, Twitch-app) |
 | Comics, bordspellen | met de hand | – |
 
-Zonder sleutel kun je die soorten nog steeds met de hand toevoegen; later koppel je ze met *Find details*.
-Alle verzoeken gaan via de server, en covers worden door liveaux zelf opgeslagen en geserveerd: de browser
+Alles werkt dus zonder sleutels. Met een sleutel neemt TMDB of IGDB het over voor nieuwe zoekopdrachten;
+wat al in je bibliotheek staat blijft bij zijn bron. Zoekresultaten zeggen waar ze vandaan komen.
+Met de hand toegevoegde titels koppel je later met *Find details*.
+Samenvattingen uit Wikipedia staan er met bronvermelding (CC BY-SA). De zoekfunctie van Apple (iTunes)
+geeft geen films meer terug, daarom komen films zonder sleutel van Wikidata.
+
+Alle verzoeken gaan via de server (met een User-Agent met contactadres, korte time-outs en een cache van een
+uur voor zoekopdrachten), en covers worden door liveaux zelf opgeslagen en geserveerd: de browser
 van bezoekers praat nooit met die diensten.
+
+### Elsewhere: scores van andere sites
+
+Op elke titelpagina staat onder de gegevens het blok **Elsewhere**: wat andere sites ervan vinden, met
+score, aantal beoordelingen, een link naar de bron en wanneer liveaux het ophaalde. Daarboven het
+gemiddelde cijfer van mensen op liveaux zelf.
+
+- **Wikidata** (CC0): de review-scores die daar staan (Rotten Tomatoes, Metacritic, IMDb, OpenCritic…),
+  met aantal reviews en de datum van de meting. liveaux vindt de titel op Wikidata via de id bij de bron
+  (TMDB, TVmaze, AniList, Open Library, MusicBrainz, IGDB, Apple Podcasts).
+- **TVmaze**, **AniList** (score en op hoeveel lijsten), **Open Library** (cijfer en *want to read / reading /
+  read*), **MusicBrainz**, en met sleutel **TMDB** en **IGDB**.
+- Alleen officiële API's en open data. IMDb, Letterboxd, Rotten Tomatoes en Metacritic zelf worden nooit
+  bezocht of gescrapet; er wordt alleen naar ze gelinkt.
+
+De pagina laadt meteen met wat er is opgeslagen (model `ExternalRating`). Is dat ouder dan zes uur, dan haalt
+een klein script (`liveaux.js`) `/library/items/<id>/elsewhere/` op; de server vraagt de bronnen opnieuw
+(korte time-outs, een bron die faalt valt stil weg) en het blok wordt vervangen. Zonder JavaScript zie je de
+opgeslagen scores. *Refresh details* en `refresh_library` halen ze ook op.
 
 Wat er in zit:
 
@@ -105,7 +141,7 @@ Wat er in zit:
 - **Lijsten** (`/lists/`): privé of openbaar (met RSS), of *smart*: ze vullen zich met regels
   (soort, status, minimale score, genre, jaren).
 - **Collectie**: welke exemplaren je hebt (Blu-ray, vinyl, paperback…).
-- **Discover**: aanbevelingen op basis van wat je hoog scoorde (TMDB), wat populair is op liveaux, en je planning.
+- **Discover**: aanbevelingen op basis van wat je hoog scoorde (alleen met TMDB-sleutel), wat populair is op liveaux, en je planning.
 - **Import/export** (`/library/import/`): CSV van Letterboxd, Goodreads, IMDb of liveaux zelf; export als CSV.
   Alles staat ook in de JSON-download onder *Account settings*.
 - **Koppelen** (`/library/connect/`): webhooks voor Plex en Jellyfin (bekeken films en afleveringen worden
@@ -115,10 +151,10 @@ Wat er in zit:
 - **Privacy**: de bibliotheek is standaard privé. Met *Public library* in de instellingen staat hij op
   `/people/<id>/library/`.
 
-Nieuwe afleveringen en releasedata ophalen (dagelijks):
+Nieuwe afleveringen, releasedata en scores van elders ophalen (dagelijks):
 
 ```bash
-uv run python manage.py refresh_library
+uv run python manage.py refresh_library            # --no-ratings: zonder scores; --ratings-limit 300
 ```
 
 Met docker-compose gebeurt dat vanzelf (service `refresh`).
@@ -179,8 +215,8 @@ gemaild worden, zet dan `DJANGO_ADMIN_EMAILS`.
 - `logbook/` – het logboek (*Ik was erbij*), openbare logboeken en jaaroverzichten
 - `social/` – recensies, reacties, likes en meldingen; de blokken voor andere pagina's staan in
   `social/templates/social/_*.html` (één `{% include %}` per pagina)
-- `library/` – de bibliotheek: modellen (`Item`, `Episode`, `Entry`, `Play`, `MediaList`, `Copy`), bronnen
-  (`providers.py`), inchecken en kalender (`services.py`), stats, import/export, Plex/Jellyfin (`scrobble.py`)
+- `library/` – de bibliotheek: modellen (`Item`, `Episode`, `Entry`, `Play`, `MediaList`, `Copy`, `ExternalRating`),
+  bronnen (`providers.py`), scores van elders (`ratings.py`), inchecken en kalender (`services.py`), stats, import/export, Plex/Jellyfin (`scrobble.py`)
   en de API (`views_api.py`)
 - `config/views.py` – de voorpagina
 - `templates/` – gedeelde layout en de opgemaakte inlogpagina's van allauth
@@ -201,8 +237,10 @@ Stel deze omgevingsvariabelen in bij je hostingplatform (zie `.env.example`):
 | `DATABASE_URL` | wordt meestal door het platform zelf ingevuld |
 | `LIVEAUX_CONTACT_EMAIL` | adres voor privacyvragen, staat in de privacyverklaring |
 | `DJANGO_ADMIN_EMAILS` | wie een mail krijgt bij een nieuwe inzending (optioneel) |
-| `TMDB_API_KEY` | films en series zoeken (optioneel) |
-| `IGDB_CLIENT_ID`, `IGDB_CLIENT_SECRET` | games zoeken (optioneel) |
+| `EMAIL_HOST`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD` | echte SMTP-server voor bevestigings- en resetmails (optioneel) |
+| `ACCOUNT_EMAIL_VERIFICATION` | `mandatory`, `optional` of `none` (optioneel, zie *Accounts*) |
+| `TMDB_API_KEY` | films en series via TMDB in plaats van Wikidata/TVmaze (optioneel) |
+| `IGDB_CLIENT_ID`, `IGDB_CLIENT_SECRET` | games via IGDB in plaats van Wikidata (optioneel) |
 
 Een secret key maken:
 
@@ -213,3 +251,16 @@ uv run python -c "from django.core.management.utils import get_random_secret_key
 Lokaal verandert er niets: zonder deze variabelen draait alles met SQLite en `DEBUG` aan.
 
 Op een eigen server naast andere sites: zie [`deploy/README.md`](deploy/README.md).
+
+## Wat Pieter nog moet doen
+
+Dingen die alleen jij kunt regelen (alles werkt ook zonder):
+
+1. **SMTP instellen** in `.env` op de server: `EMAIL_HOST` (nu `smtp.example.com`, dat telt als geen
+   server), `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, eventueel `EMAIL_PORT`/`EMAIL_USE_TLS`. Bijvoorbeeld de
+   SMTP van je mailprovider of een dienst als Postmark/Brevo, met `noreply@liveaux.eu` als afzender
+   (SPF/DKIM voor liveaux.eu). Daarna is bevestigen weer *mandatory* en werkt *Wachtwoord vergeten*.
+2. **Gratis TMDB-sleutel** (optioneel): account op themoviedb.org → Settings → API → *Request an API key*
+   (persoonlijk gebruik), en `TMDB_API_KEY` in `.env`. Dan: TMDB voor films en series, TMDB-scores en Discover.
+3. **IGDB** (optioneel): een Twitch-developer-app op dev.twitch.tv → `IGDB_CLIENT_ID` en `IGDB_CLIENT_SECRET`.
+4. Controleer dat `LIVEAUX_CONTACT_EMAIL` bestaat: de resetpagina verwijst ernaar zolang er geen SMTP is.

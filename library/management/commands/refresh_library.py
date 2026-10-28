@@ -4,17 +4,21 @@ from django.core.management.base import BaseCommand
 from django.db.models import Q
 from django.utils import timezone
 
-from library import providers, services
+from library import providers, ratings, services
 from library.models import Item, MediaType, Source, Status
 
 
 class Command(BaseCommand):
-    help = "Fetch new episodes and release dates for what people follow. Run once a day."
+    help = "Fetch new episodes, release dates and scores from elsewhere for what people follow. Run once a day."
 
     def add_arguments(self, parser):
         parser.add_argument("--all", action="store_true", help="Refresh every item, not just running ones.")
+        parser.add_argument("--no-ratings", action="store_true", help="Leave the scores from elsewhere alone.")
+        parser.add_argument(
+            "--ratings-limit", type=int, default=300, help="At most this many items' scores per run (default 300)."
+        )
 
-    def handle(self, *args, all=False, **options):
+    def handle(self, *args, all=False, no_ratings=False, ratings_limit=300, **options):
         items = Item.objects.exclude(source=Source.MANUAL)
         if not all:
             today = timezone.localdate()
@@ -34,3 +38,20 @@ class Command(BaseCommand):
                 failed += 1
                 self.stderr.write(f"{item}: {error}")
         self.stdout.write(f"Refreshed {refreshed} item(s), {failed} failed.")
+
+        if no_ratings:
+            return
+        # Scores from elsewhere for everything someone tracks, stalest first, so item pages open with fresh ones.
+        tracked = (
+            Item.objects.exclude(source=Source.MANUAL)
+            .filter(entries__status__in=[s for s in Status.values if s != Status.DROPPED])
+            .distinct()
+            .order_by("refreshed_at")
+        )
+        scored = 0
+        for item in tracked:
+            if scored >= ratings_limit:
+                break
+            if ratings.is_stale(item) and ratings.refresh(item):
+                scored += 1
+        self.stdout.write(f"Fetched scores from elsewhere for {scored} item(s).")

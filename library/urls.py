@@ -18,6 +18,7 @@ urlpatterns = [
     path("library/items/<int:pk>/seasons/<int:season>/check-in/", views.check_in_season, name="check_in_season"),
     path("library/items/<int:pk>/refresh/", views.refresh, name="refresh"),
     path("library/items/<int:pk>/link/", views.link, name="link"),
+    path("library/items/<int:pk>/elsewhere/", views.elsewhere, name="elsewhere"),
     path("library/items/<int:pk>/cover/", views.cover, name="cover"),
     path("library/items/<int:pk>/copies/", views.copy_add, name="copy_add"),
     path("library/cover/", views.cover_proxy, name="cover_proxy"),

@@ -2897,3 +2897,137 @@ code {
     animation: none;
   }
 }
+
+/* Elsewhere: ratings from other sites -------------------------------------------------------- */
+/* library/_elsewhere.html on the item page; swapped in fresh by liveaux.js (loadElsewhere). */
+
+.elsewhere {
+  margin: 0 0 32px;
+}
+
+.elsewhere-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 16px;
+  margin: 0 0 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.elsewhere-updated {
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: 13px;
+}
+
+.elsewhere-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-bottom: 1px solid var(--line);
+}
+
+.elsewhere-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 2px 16px;
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+}
+
+.elsewhere-name {
+  grid-column: 1;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.elsewhere-name a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.elsewhere-name a:hover,
+.elsewhere-name a:focus-visible {
+  color: var(--accent-text);
+  text-decoration: underline;
+}
+
+.elsewhere-name .muted {
+  display: block;
+  margin-top: 2px;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.elsewhere-score {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: center;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.elsewhere-row .meter {
+  grid-column: 1 / -1;
+  margin: 8px 0 2px;
+}
+
+.elsewhere-liveaux .meter::after {
+  background: var(--accent);
+}
+
+.elsewhere-count,
+.elsewhere-via {
+  grid-column: 1 / -1;
+  font-size: 13px;
+}
+
+.elsewhere-count:empty {
+  display: none;
+}
+
+.elsewhere-credit,
+.elsewhere-empty {
+  margin: 8px 0 0;
+  font-size: 13px;
+}
+
+.elsewhere.is-loading .elsewhere-looking {
+  animation: elsewhere-pulse 1.2s ease-in-out infinite alternate;
+}
+
+.elsewhere.is-fresh {
+  animation: elsewhere-in var(--slow) var(--ease) both;
+}
+
+@keyframes elsewhere-pulse {
+  from { opacity: 1; }
+  to { opacity: 0.35; }
+}
+
+@keyframes elsewhere-in {
+  from { opacity: 0.4; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .elsewhere.is-loading .elsewhere-looking,
+  .elsewhere.is-fresh {
+    animation: none;
+  }
+}
+/* end Elsewhere ------------------------------------------------------------------------------ */

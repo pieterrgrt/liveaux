@@ -31,6 +31,8 @@
       {% if others %}<div><dt>Also</dt><dd class="muted">{{ others }} other{{ others|pluralize }} on liveaux track{{ others|pluralize:"s," }} this</dd></div>{% endif %}
     </dl>
 
+    {% include "library/_elsewhere.html" %}
+
     <div class="actions">
       {% if item.has_episodes %}
         {% if next_episode %}
