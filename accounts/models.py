@@ -62,6 +62,11 @@ class User(AbstractUser):
         """Name shown on a public log. Never the email address."""
         return self.display_name or "A liveaux fan"
 
+    @property
+    def initial(self):
+        """One letter for the account button: from the name, or else the email address."""
+        return (self.display_name or self.email or "?")[:1].upper()
+
     def get_api_token(self):
         if not self.api_token:
             self.reset_api_token()

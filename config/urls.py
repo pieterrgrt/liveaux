@@ -7,10 +7,13 @@ from . import views
 
 urlpatterns = [
     path("", views.home, name="home"),
+    path("live/", views.live, name="live"),
+    path("aux/", views.aux, name="aux"),
     path("admin/", admin.site.urls),
     path("account/", include("allauth.urls")),
     path("", include("logbook.urls")),
     path("", include("library.urls")),
+    path("", include("social.urls")),
     path("me/", include("accounts.urls")),
     path(
         "privacy/",

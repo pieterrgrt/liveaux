@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Report — liveaux{% endblock %}
+{% block main_class %}narrow{% endblock %}
+
+{% block content %}
+<a class="back" href="{{ page_of.get_absolute_url }}">← Back</a>
+<header class="page-head">
+  <p class="eyebrow">Report a {{ kind }}</p>
+  <h1>Something wrong?</h1>
+  <p class="page-meta">Someone at liveaux reads every report. If it breaks the rules, it comes down.</p>
+</header>
+
+<blockquote class="report-quote">
+  <p class="review-meta">{{ content.user.public_name }}</p>
+  {{ content.body|truncatewords:60|linebreaks }}
+</blockquote>
+
+<form class="form" method="post">
+  {% csrf_token %}
+  {% include "_form_fields.html" %}
+  <div class="form-actions"><button type="submit" class="button">Send report</button> <a class="link-button" href="{{ page_of.get_absolute_url }}">Cancel</a></div>
+</form>
+{% endblock %}

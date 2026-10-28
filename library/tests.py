@@ -59,6 +59,10 @@ class LibraryTestCase(TestCase):
 
     def setUp(self):
         self.client.force_login(self.user)
+        # Tests never reach the real sources: anything that tries fails loudly.
+        guard = mock.patch("urllib.request.urlopen", side_effect=AssertionError("No network in tests"))
+        guard.start()
+        self.addCleanup(guard.stop)
 
     def film(self):
         with mock.patch.object(providers, "fetch", return_value=dict(FILM)):
@@ -100,8 +104,26 @@ class AddAndCheckInTests(LibraryTestCase):
         self.assertEqual(Entry.objects.get(user=self.user).status, Status.PLANNING)
         self.assertContains(self.client.get(item.get_absolute_url()), "Celine Song")
 
-    def test_without_key_films_are_added_by_hand(self):
-        response = self.client.get(reverse("library:search"), {"type": "movie", "q": "x"})
+    def test_without_key_films_come_from_wikidata(self):
+        self.assertEqual(providers.source_for(MediaType.MOVIE), Source.WIKIDATA)
+        result = {
+            "source": "wikidata",
+            "source_id": "Q117663112",
+            "media_type": "movie",
+            "title": "Perfect Days",
+            "year": 2023,
+            "creator": "Wim Wenders",
+            "cover_url": "",
+        }
+        fake_search = mock.Mock(return_value=[result])
+        with mock.patch.dict(providers.PROVIDERS, {Source.WIKIDATA: (fake_search, providers.wikidata_fetch)}):
+            response = self.client.get(reverse("library:search"), {"type": "movie", "q": "perfect days"})
+        self.assertContains(response, "Perfect Days")
+        self.assertContains(response, "Details from Wikidata")
+        self.assertContains(response, '<p class="muted card-source">Wikidata</p>', html=True)
+
+    def test_comics_are_added_by_hand(self):
+        response = self.client.get(reverse("library:search"), {"type": "comic", "q": "saga"})
         self.assertContains(response, "Add by hand")
         response = self.client.post(
             reverse("library:add_manual"),
@@ -463,7 +485,8 @@ class PagesTests(LibraryTestCase):
     def test_home_for_visitors(self):
         self.client.logout()
         response = self.client.get(reverse("home"))
-        self.assertContains(response, "Everything you stay in for")
+        self.assertContains(response, "At home")
+        self.assertContains(self.client.get(reverse("aux")), "Your library")
         self.assertEqual(self.client.get(reverse("library:index")).status_code, 302)
 
     def test_public_library(self):

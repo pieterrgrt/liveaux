@@ -1,133 +1,44 @@
 {% extends "base.html" %}
 
+{% block body_class %}choose-page{% endblock %}
+{% block header %}{% endblock %}
+{% block footer %}{% endblock %}
+
 {% block content %}
-{% if user.is_authenticated %}
-
-<section class="hero">
-  <p class="eyebrow">{% now "l j F" %}</p>
-  <h1>Hi {{ user }}. <em>Out tonight, or staying in?</em></h1>
-</section>
-
-<div class="split">
-  <section class="split-half">
-    <p class="split-label">Out</p>
-
-    {% if to_log %}
-    <section class="month">
-      <h2 class="month-heading">Were you there?</h2>
-      <ul class="manage-list">
-        {% for event in to_log %}
-          <li>
-            <span class="manage-date">{{ event.starts_at|date:"j M" }}</span>
-            <a href="{{ event.get_absolute_url }}">{{ event.title }}</a>
-            <span class="muted">{{ event.venue.name }}</span>
-            <form method="post" action="{% url 'logbook:attended' event.pk %}">
-              {% csrf_token %}
-              <button type="submit" class="link-button">I was there</button>
-            </form>
-          </li>
-        {% endfor %}
-      </ul>
-    </section>
+<div class="choose">
+  <nav class="choose-account" aria-label="Account">
+    {% if user.is_authenticated %}
+      <a class="account-link" href="{% url 'accounts:dashboard' %}"><span class="avatar" aria-hidden="true">{{ user.initial }}</span><span class="account-name">{{ user }}</span></a>
+    {% else %}
+      <a href="{% url 'account_login' %}">Log in</a>
+      <a class="nav-cta" href="{% url 'account_signup' %}">Sign up</a>
     {% endif %}
+  </nav>
 
-    <section class="month">
-      <h2 class="month-heading">Your week</h2>
-      <ul class="event-list">
-        {% for event in my_week %}{% include "events/_event_row.html" %}
-        {% empty %}<li class="empty">Nothing saved this week. Save an event, or follow a venue or artist, and it shows up here.</li>{% endfor %}
-      </ul>
-    </section>
+  <h1 class="choose-logo" data-choose-logo>
+    {% include "_logo.html" %}
+    {# The two halves of the logo are also the two ways in. #}
+    <a class="choose-hit choose-hit-live" href="{% url 'live' %}" data-choose="live" tabindex="-1" aria-hidden="true"></a>
+    <a class="choose-hit choose-hit-aux" href="{% url 'aux' %}" data-choose="aux" tabindex="-1" aria-hidden="true"></a>
+  </h1>
 
-    {% if events %}
-    <section class="month">
-      <h2 class="month-heading">Also this week</h2>
-      <ul class="event-list">
-        {% for event in events %}{% include "events/_event_row.html" %}{% endfor %}
-      </ul>
-      <p class="week-link"><a href="{% url 'events:this_week' %}">The whole week →</a></p>
-    </section>
-    {% endif %}
-  </section>
-
-  <section class="split-half">
-    <p class="split-label">In</p>
-
-    <section class="month">
-      <h2 class="month-heading">Up next</h2>
-      <ul class="up-next-list">
-        {% for row in up_next %}{% include "library/_up_next.html" %}
-        {% empty %}<li class="empty">{% if library_count %}You're caught up on your series.{% else %}Add a series to your <a href="{% url 'library:search' %}?type=tv">library</a> and the next episode waits here.{% endif %}</li>{% endfor %}
-      </ul>
-    </section>
-
-    {% if in_progress %}
-    <section class="month">
-      <h2 class="month-heading">On the go</h2>
-      <ul class="shelf shelf-small">
-        {% for entry in in_progress %}{% include "library/_card.html" with item=entry.item %}{% endfor %}
-      </ul>
-    </section>
-    {% endif %}
-
-    <section class="month">
-      <h2 class="month-heading">Coming this week</h2>
-      {% include "library/_days.html" with days=coming empty="No new episodes, releases or saved events this week." %}
-      <p class="week-link"><a href="{% url 'library:calendar' %}">Your calendar →</a></p>
-    </section>
-
-    {% if recent_plays %}
-    <section class="month">
-      <h2 class="month-heading">Lately</h2>
-      <ul class="diary">
-        {% for play in recent_plays %}{% include "library/_play_row.html" with is_own=True %}{% endfor %}
-      </ul>
-      <p class="week-link"><a href="{% url 'library:diary' %}">Your diary →</a></p>
-    </section>
-    {% endif %}
-
-    <div class="actions">
-      <a class="button" href="{% url 'library:search' %}">Add to your library</a>
-      <a class="button button-ghost" href="{% url 'library:stats' %}">Your stats</a>
-    </div>
-  </section>
+  <nav class="choose-options" aria-label="Live or aux">
+    <a class="choose-option" href="{% url 'live' %}" data-choose="live">
+      <span class="choose-name">Live</span>
+      <span class="choose-what">Out in the city</span>
+      <span class="choose-now">
+        {% if saved_count %}{{ saved_count }} of yours this week · {% endif %}{{ event_count }} on in Berlin and Hamburg this week
+      </span>
+      <span class="choose-arrow" aria-hidden="true">↗</span>
+    </a>
+    <a class="choose-option" href="{% url 'aux' %}" data-choose="aux">
+      <span class="choose-name">Aux</span>
+      <span class="choose-what">At home</span>
+      <span class="choose-now">
+        {% if next_up %}Up next: {{ next_up.entry.item.title }} {{ next_up.episode.code }}{% elif in_progress_count %}{{ in_progress_count }} on the go{% elif user.is_authenticated %}Your films, series, books, games and albums{% else %}Films, series, books, games, albums{% endif %}
+      </span>
+      <span class="choose-arrow" aria-hidden="true">↘</span>
+    </a>
+  </nav>
 </div>
-
-{% else %}
-
-<section class="hero">
-  <h1>Everything you go out for. <em>Everything you stay in for.</em></h1>
-  <p class="hero-count">{{ event_count }} event{{ event_count|pluralize }} this week in Berlin and Hamburg</p>
-</section>
-
-<div class="split">
-  <section class="split-half">
-    <p class="split-label">Out</p>
-    <p class="split-intro">Concerts, club nights, exhibitions, theatre, film, comedy and talks, in one agenda. Save what you want to go to, follow venues and artists, and keep a log of where you've been.</p>
-    <ul class="event-list">
-      {% for event in events %}{% include "events/_event_row.html" %}
-      {% empty %}<li class="empty">Nothing on this week yet.</li>{% endfor %}
-    </ul>
-    <p class="week-link"><a href="{% url 'events:event_list' %}">What's on →</a></p>
-  </section>
-
-  <section class="split-half">
-    <p class="split-label">In</p>
-    <p class="split-intro">Your own library of films, series, anime, books, comics, manga, games, board games, albums and podcasts. Private, unless you say otherwise.</p>
-    <ol class="ranking feature-list">
-      <li><span><strong>Know what's next.</strong> The next episode of every series you're watching, with the time left.</span></li>
-      <li><span><strong>One diary.</strong> Check in what you watch, read, play and listen to, next to the concerts and exhibitions you went to.</span></li>
-      <li><span><strong>A calendar.</strong> New episodes, releases and the events you saved, in one feed for your phone.</span></li>
-      <li><span><strong>Stats.</strong> Hours per kind of media, streaks, favourite genres, and how this year compares.</span></li>
-      <li><span><strong>Lists and a collection.</strong> Public or private lists, smart lists that fill themselves, and the copies you own.</span></li>
-      <li><span><strong>Bring it along.</strong> Import from Letterboxd, Goodreads and IMDb; check in automatically from Plex and Jellyfin. Export everything, any time.</span></li>
-    </ol>
-    <div class="actions">
-      <a class="button" href="{% url 'account_signup' %}">Sign up</a>
-      <a class="button button-ghost" href="{% url 'account_login' %}">Log in</a>
-    </div>
-  </section>
-</div>
-
-{% endif %}
 {% endblock %}

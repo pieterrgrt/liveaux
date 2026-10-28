@@ -3,9 +3,9 @@
 {% block title %}Manage {{ page.name }} — liveaux{% endblock %}
 
 {% block content %}
-<a class="back" href="{% url 'accounts:dashboard' %}">← My liveaux</a>
+<a class="back" href="{% url 'accounts:dashboard' %}">My liveaux</a>
 
-<section class="venue-header">
+<header class="page-head">
   <p class="eyebrow">Manage {{ page.kind_label }}{% if membership %} · you are {{ membership.get_role_display|lower }}{% endif %}</p>
   <h1>{{ page.name }}</h1>
   <div class="actions">
@@ -13,17 +13,19 @@
     <a class="button button-ghost" href="{% url 'events:edit_page' page.kind page.pk %}">Edit page</a>
     <a class="link-button" href="{{ page.get_absolute_url }}">View public page</a>
   </div>
-</section>
+</header>
 
 <section class="month">
   <h2 class="month-heading">Current and upcoming</h2>
-  <ul class="manage-list">
+  <ul class="rows">
     {% for event in upcoming %}
-      <li>
-        <span class="manage-date">{{ event.starts_at|date:"D d M · H:i" }}</span>
-        <a href="{{ event.get_absolute_url }}">{{ event.title }}</a>
-        <span class="muted">{{ event.venue.name }}</span>
-        <a class="link-button" href="{% url 'events:edit_event' event.pk %}">Edit</a>
+      <li class="row">
+        <div class="row-date"><span class="day">{{ event.starts_at|date:"d" }}</span><span class="weekday">{{ event.starts_at|date:"M" }}</span></div>
+        <div class="row-main">
+          <h3 class="row-title"><a href="{{ event.get_absolute_url }}">{{ event.title }}</a></h3>
+          <p class="row-sub">{{ event.venue.name }} · {{ event.starts_at|date:"D H:i" }}</p>
+        </div>
+        <div class="row-end"><a class="link-button" href="{% url 'events:edit_event' event.pk %}">Edit</a></div>
       </li>
     {% empty %}
       <li class="empty">{% if can_add_events %}No upcoming events. Add your first one.{% else %}Nothing coming up yet. Venues and organisers add you to their events.{% endif %}</li>
@@ -34,13 +36,15 @@
 {% if past %}
 <section class="month">
   <h2 class="month-heading">Past events</h2>
-  <ul class="manage-list">
+  <ul class="rows">
     {% for event in past %}
-      <li class="is-past">
-        <span class="manage-date">{{ event.starts_at|date:"D d M Y" }}</span>
-        <a href="{{ event.get_absolute_url }}">{{ event.title }}</a>
-        <span class="muted">{{ event.venue.name }}</span>
-        <span></span>
+      <li class="row is-past">
+        <div class="row-date"><span class="day">{{ event.starts_at|date:"d" }}</span><span class="weekday">{{ event.starts_at|date:"M Y" }}</span></div>
+        <div class="row-main">
+          <h3 class="row-title"><a href="{{ event.get_absolute_url }}">{{ event.title }}</a></h3>
+          <p class="row-sub">{{ event.venue.name }}</p>
+        </div>
+        <div class="row-end"></div>
       </li>
     {% endfor %}
   </ul>
@@ -49,17 +53,21 @@
 
 <section class="month">
   <h2 class="month-heading">Team</h2>
-  <ul class="manage-list">
+  <ul class="rows">
     {% for m in memberships %}
-      <li>
-        <span class="manage-date">{{ m.get_role_display }}</span>
-        <span>{{ m.user }}</span>
-        <span class="muted">{{ m.user.email }}</span>
-        {% if is_owner and m.user != user %}
-          <form method="post" action="{% url 'events:remove_member' page.kind page.pk m.pk %}">
-            {% csrf_token %}<button type="submit" class="link-button">Remove</button>
-          </form>
-        {% else %}<span></span>{% endif %}
+      <li class="row row-plain">
+        <div class="row-main">
+          <span class="tag">{{ m.get_role_display }}</span>
+          <h3 class="row-title">{{ m.user }}</h3>
+          <p class="row-sub">{{ m.user.email }}</p>
+        </div>
+        <div class="row-end">
+          {% if is_owner and m.user != user %}
+            <form method="post" action="{% url 'events:remove_member' page.kind page.pk m.pk %}">
+              {% csrf_token %}<button type="submit" class="link-button danger">Remove</button>
+            </form>
+          {% endif %}
+        </div>
       </li>
     {% endfor %}
   </ul>

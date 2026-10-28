@@ -4,9 +4,12 @@
 {% block main_class %}narrow{% endblock %}
 
 {% block content %}
-<a class="back" href="{% url 'library:index' %}">← Library</a>
-<h1>Import</h1>
-<p class="muted">Bring your history along. Importing twice is fine: nothing is added twice, and nothing you finished goes back to planning.</p>
+<a class="back" href="{% url 'library:index' %}">Library</a>
+<header class="page-head">
+  <p class="eyebrow">Library</p>
+  <h1>Import</h1>
+  <p class="page-meta">Bring your history along. Importing twice is fine: nothing is added twice, and nothing you finished goes back to planning.</p>
+</header>
 
 <form class="form" method="post" enctype="multipart/form-data">
   {% csrf_token %}

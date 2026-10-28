@@ -1,48 +1,49 @@
 {% load static %}<!doctype html>
-<html lang="en">
+<html lang="en"{% if side %} data-side="{{ side }}"{% endif %}>
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="light dark">
-  <title>{% block title %}liveaux — out in the city, in at home{% endblock %}</title>
-  <link rel="stylesheet" href="{% static 'events/style.css' %}">
+  <meta name="theme-color" content="{% if side == 'live' %}#ff4f00{% elif side == 'aux' %}#3b2cf6{% else %}#ffffff{% endif %}">
+  <title>{% block title %}liveaux{% endblock %}</title>
   <link rel="icon" href="{% static 'events/icons/icon.svg' %}" type="image/svg+xml">
   <link rel="icon" href="{% static 'events/icons/favicon-32.png' %}" type="image/png" sizes="32x32">
   <link rel="apple-touch-icon" href="{% static 'events/icons/apple-touch-icon.png' %}">
   <meta name="apple-mobile-web-app-title" content="liveaux">
+  <link rel="stylesheet" href="{% static 'events/style.css' %}">
+  {# Coming in through the e on the front page: the colour of the side you chose closes in on the logo. #}
+  <script>try{var a=sessionStorage.getItem("liveaux-arrive");if(a){sessionStorage.removeItem("liveaux-arrive");document.documentElement.dataset.arrive=a}}catch(e){}</script>
+  <script src="{% static 'events/liveaux.js' %}" defer></script>
   {% block extra_head %}{% endblock %}
 </head>
-<body>
-  <div class="ticker" aria-label="What's on liveaux">
-    <div class="ticker-track">
-      {% for copy in "12" %}
-        <p{% if not forloop.first %} aria-hidden="true"{% endif %}>
-          <span>Concerts</span><span>Exhibitions</span><span>Theatre</span><span>Club nights</span><span>Films</span><span>Series</span><span>Books</span><span>Games</span><span>Albums</span><span>Podcasts</span><span>Comedy</span><span>Anime</span><span>Berlin</span><span>Hamburg</span>
-        </p>
-      {% endfor %}
-    </div>
-  </div>
-
+<body class="{% block body_class %}{% endblock %}">
+  {% block header %}
   <header class="site-header">
-    <nav class="main-nav" aria-label="Main">
-      <span class="nav-group"><span class="nav-label">Out</span><a href="{% url 'events:this_week' %}">This week</a><a href="{% url 'events:event_list' %}">What's on</a></span>
-      <span class="nav-group"><span class="nav-label">In</span><a href="{% url 'library:index' %}">Library</a>{% if user.is_authenticated %}<a href="{% url 'library:calendar' %}">Calendar</a>{% endif %}</span>
+    <a class="wordmark" href="{% url 'home' %}" aria-label="liveaux, choose live or aux">{% include "_logo.html" with decorative=True %}</a>
+
+    <nav class="side-switch" aria-label="Live or aux">
+      <a class="side-live" href="{% url 'live' %}"{% if side == "live" %} aria-current="true"{% endif %}>Live</a>
+      <a class="side-aux" href="{% url 'aux' %}"{% if side == "aux" %} aria-current="true"{% endif %}>Aux</a>
     </nav>
-    <a class="wordmark" href="{% url 'home' %}">{% include "_logo.html" %}</a>
+
     <nav class="account-nav" aria-label="Account">
       {% if user.is_authenticated %}
-        <a href="{% url 'library:diary' %}">Diary</a>
-        <a href="{% url 'accounts:dashboard' %}">Account</a>
-        <form method="post" action="{% url 'account_logout' %}">
-          {% csrf_token %}
-          <button type="submit" class="nav-button">Log out</button>
-        </form>
+        <a class="account-link" href="{% url 'accounts:dashboard' %}"{% if request.resolver_match.namespace == "accounts" %} aria-current="page"{% endif %}><span class="avatar" aria-hidden="true">{{ user.initial }}</span><span class="account-name">{{ user }}</span></a>
       {% else %}
         <a href="{% url 'account_login' %}">Log in</a>
         <a class="nav-cta" href="{% url 'account_signup' %}">Sign up</a>
       {% endif %}
     </nav>
   </header>
+
+  {% if side_nav %}
+  <nav class="side-nav" aria-label="{{ side|capfirst }}">
+    <div class="side-nav-track">
+      {% for link in side_nav %}<a href="{{ link.href }}"{% if link.current %} aria-current="page"{% endif %}>{{ link.label }}</a>{% endfor %}
+    </div>
+  </nav>
+  {% endif %}
+  {% endblock %}
 
   <main class="{% block main_class %}{% endblock %}">
     {% if messages %}
@@ -53,17 +54,22 @@
     {% block content %}{% endblock %}
   </main>
 
+  {% block footer %}
   <footer class="site-footer">
     <nav class="footer-links" aria-label="Footer">
-      <a href="{% url 'events:this_week' %}">This week</a>
-      <a href="{% url 'events:event_list' %}">What's on</a>
-      <a href="{% url 'library:index' %}">Library</a>
-      <a href="{% url 'library:stats' %}">Stats</a>
-      <a href="{% url 'library:lists' %}">Lists</a>
-      <a href="{% url 'events:submit_event' %}">Submit an event</a>
+      <a href="{% url 'live' %}">Live</a>
+      <a href="{% url 'aux' %}">Aux</a>
+      {% if user.is_authenticated %}
+        <a href="{% url 'accounts:dashboard' %}">Account</a>
+        <form method="post" action="{% url 'account_logout' %}">
+          {% csrf_token %}
+          <button type="submit" class="nav-button">Log out</button>
+        </form>
+      {% endif %}
       <a href="{% url 'privacy' %}">Privacy</a>
     </nav>
-    <div class="footer-mark">{% include "_logo.html" with decorative=True %}</div>
+    <a class="footer-mark" href="{% url 'home' %}" tabindex="-1" aria-hidden="true">{% include "_logo.html" with decorative=True %}</a>
   </footer>
+  {% endblock %}
 </body>
 </html>

@@ -28,7 +28,12 @@ class RouteTests(TestCase):
         response = self.client.get("/")
         self.assertContains(response, 'rel="apple-touch-icon"')
         self.assertContains(response, "events/icons/icon.svg")
-        self.assertContains(response, 'class="logo-e"', count=2)
+        # The front page is the logo, big, with the two ways in.
+        self.assertContains(response, 'class="logo-e"', count=1)
+        self.assertContains(response, 'href="/live/"')
+        self.assertContains(response, 'href="/aux/"')
+        # Every other page has the logo in the header and the footer.
+        self.assertContains(self.client.get("/live/"), 'class="logo-e"', count=2)
 
     def test_privacy(self):
         self.assertEqual(self.client.get("/privacy/").status_code, 200)

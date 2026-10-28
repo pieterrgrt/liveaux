@@ -1,0 +1,5 @@
+<form class="form review-form" method="post" action="{% url 'social:write_review' kind target.pk %}">
+  {% csrf_token %}
+  {% include "_form_fields.html" %}
+  <div class="form-actions"><button type="submit" class="button">{{ button|default:"Save review" }}</button></div>
+</form>

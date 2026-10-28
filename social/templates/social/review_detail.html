@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}{{ review.user.public_name }} on {{ target.title }} — liveaux{% endblock %}
+
+{% block extra_head %}{% include "social/_meta.html" with title=meta_title description=meta_description image=review.item.cover_src type="article" %}{% endblock %}
+
+{% block content %}
+{% if can_see_target %}<a class="back" href="{{ target.get_absolute_url }}#reviews">← {{ target.title }}</a>{% endif %}
+
+<header class="page-head review-target{% if review.item.cover_src %} has-cover{% endif %}">
+  {% if review.item.cover_src %}<img class="review-cover" src="{{ review.item.cover_src }}" alt="" onerror="this.remove()">{% endif %}
+  <div>
+    <p class="eyebrow">Review · {% if review.item_id %}{{ review.item.get_media_type_display }}{% if review.item.year %}, {{ review.item.year }}{% endif %}{% else %}{{ review.event.venue.name }}, {{ review.event.starts_at|date:"j M Y" }}{% endif %}</p>
+    <h1>{% if can_see_target %}<a href="{{ target.get_absolute_url }}">{{ target.title }}</a>{% else %}{{ target.title }}{% endif %}</h1>
+    <div class="actions">
+      {% include "social/_share.html" with title=target.title %}
+      {% if review.user_id == user.pk %}<a class="link-button" href="{{ target.get_absolute_url }}#reviews">Edit</a>{% endif %}
+    </div>
+  </div>
+</header>
+
+<div class="month">
+  {% include "social/_review.html" with full=True %}
+</div>
+
+{% url 'social:add_comment' 'review' review.pk as comment_action %}
+{% include "social/_comments.html" with count=comments|length action=comment_action empty="No replies yet." %}
+{% endblock %}

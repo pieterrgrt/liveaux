@@ -1,0 +1,47 @@
+{# One review. `full`: the whole text (the review page). `show_target`: say what it is about (lists). `compact`: numbers only, no buttons. #}
+<article class="review{% if review.is_hidden %} is-hidden{% endif %}" id="review-{{ review.pk }}">
+  <header class="review-head">
+    {% if review.score %}<span class="review-score">{{ review.score }}<span>/10</span></span>{% endif %}
+    <div class="review-by">
+      {% if show_target %}
+        <p class="review-on"><span class="tag">{% if review.item_id %}{{ review.item.get_media_type_display }}{% else %}{{ review.event.category.name }}{% endif %}</span>
+          {% if review.event_id or user.is_authenticated %}<a href="{{ review.target.get_absolute_url }}">{{ review.target.title }}</a>{% else %}{{ review.target.title }}{% endif %}</p>
+      {% endif %}
+      <p class="review-meta"><a class="review-author" href="{% url 'social:person' review.user_id %}">{{ review.user.public_name }}</a> <span class="muted">· <time datetime="{{ review.created_at|date:'c' }}">{{ review.created_at|date:"j M Y" }}</time>{% if review.updated_at|date:"Ymd" != review.created_at|date:"Ymd" %} · edited{% endif %}</span>{% if review.is_hidden %} <span class="tag">Hidden</span>{% endif %}</p>
+    </div>
+  </header>
+
+  {% if review.contains_spoilers %}
+  <div class="spoiler">
+    <input type="checkbox" class="spoiler-toggle" id="spoiler-{{ review.pk }}">
+    <label class="link-button spoiler-label" for="spoiler-{{ review.pk }}">Spoilers · show</label>
+  {% endif %}
+    <div class="review-body">
+      {% if full %}{{ review.body|linebreaks }}{% else %}{{ review.body|truncatewords:60|linebreaks }}{% endif %}
+    </div>
+  {% if review.contains_spoilers %}</div>{% endif %}
+
+  <footer class="review-actions">
+    {% if compact or not user.is_authenticated or review.user_id == user.pk or review.is_hidden %}
+      {% if review.like_count %}<span class="review-count">{{ review.like_count }} like{{ review.like_count|pluralize }}</span>{% endif %}
+    {% else %}
+      <form method="post" action="{% url 'social:like' review.pk %}">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.get_full_path }}#review-{{ review.pk }}">
+        <button type="submit" class="link-button like{% if review.is_liked %} is-on{% endif %}" aria-pressed="{{ review.is_liked|yesno:'true,false' }}">{% if review.is_liked %}Liked{% else %}Like{% endif %}{% if review.like_count %} · {{ review.like_count }}{% endif %}</button>
+      </form>
+    {% endif %}
+    {% if not full %}<a class="link-button" href="{{ review.get_absolute_url }}#comments">{% if review.comment_count %}{{ review.comment_count }} comment{{ review.comment_count|pluralize }}{% else %}Reply{% endif %}</a>{% endif %}
+    {% if not full and review.body|wordcount > 60 %}<a class="link-button" href="{{ review.get_absolute_url }}">Read on</a>{% endif %}
+    {% if not compact %}
+      {% if user.is_authenticated and review.user_id != user.pk and not review.is_hidden %}<a class="link-button" href="{% url 'social:report' 'review' review.pk %}">Report</a>{% endif %}
+      {% if user.is_staff %}
+        <form method="post" action="{% url 'social:hide' 'review' review.pk %}">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.get_full_path }}">
+          <button type="submit" class="link-button danger">{% if review.is_hidden %}Unhide{% else %}Hide{% endif %}</button>
+        </form>
+      {% endif %}
+    {% endif %}
+  </footer>
+</article>

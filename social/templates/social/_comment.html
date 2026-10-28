@@ -1,0 +1,24 @@
+<li class="comment{% if comment.is_hidden %} is-hidden{% endif %}" id="comment-{{ comment.pk }}">
+  <p class="review-meta"><a class="review-author" href="{% url 'social:person' comment.user_id %}">{{ comment.user.public_name }}</a> <span class="muted">· <time datetime="{{ comment.created_at|date:'c' }}">{{ comment.created_at|date:"j M, H:i" }}</time></span>{% if comment.is_hidden %} <span class="tag">Hidden</span>{% endif %}</p>
+  <div class="comment-body">{{ comment.body|linebreaksbr }}</div>
+  {% if user.is_authenticated %}
+  <div class="review-actions">
+    {% if comment.user_id == user.pk %}
+      <form method="post" action="{% url 'social:delete_comment' comment.pk %}">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.get_full_path }}#comments">
+        <button type="submit" class="link-button danger">Delete</button>
+      </form>
+    {% elif not comment.is_hidden %}
+      <a class="link-button" href="{% url 'social:report' 'comment' comment.pk %}">Report</a>
+    {% endif %}
+    {% if user.is_staff %}
+      <form method="post" action="{% url 'social:hide' 'comment' comment.pk %}">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.get_full_path }}#comment-{{ comment.pk }}">
+        <button type="submit" class="link-button danger">{% if comment.is_hidden %}Unhide{% else %}Hide{% endif %}</button>
+      </form>
+    {% endif %}
+  </div>
+  {% endif %}
+</li>

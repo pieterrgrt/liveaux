@@ -3,25 +3,28 @@
 {% block title %}Collection — liveaux{% endblock %}
 
 {% block content %}
-<section class="venue-header page-top">
+<header class="page-head">
   <p class="eyebrow">Collection</p>
   <h1>On the shelf</h1>
-  <p class="muted">{{ copies|length }} cop{{ copies|length|pluralize:"y,ies" }}. Add one from the page of a film, book, game or album.</p>
-  {% include "library/_subnav.html" %}
-</section>
+  <p class="page-meta">{{ copies|length }} cop{{ copies|length|pluralize:"y,ies" }}. Add one from the page of a film, book, game or album.</p>
+</header>
 
 {% if format_chips|length > 2 %}{% include "events/_chips.html" with chips=format_chips label="Format" %}{% endif %}
 
-<ul class="manage-list">
+<ul class="rows">
   {% for copy in copies %}
-    <li>
-      <span class="manage-date">{{ copy.get_format_display }}{% if copy.resolution %} · {{ copy.get_resolution_display }}{% endif %}</span>
-      <a href="{{ copy.item.get_absolute_url }}">{{ copy.item }}</a>
-      <span class="muted">{{ copy.note }}{% if copy.acquired_on %} {{ copy.acquired_on|date:"M Y" }}{% endif %}</span>
-      <form method="post" action="{% url 'library:copy_delete' copy.pk %}">
-        {% csrf_token %}
-        <button type="submit" class="link-button danger">Remove</button>
-      </form>
+    <li class="row row-plain">
+      <div class="row-main">
+        <span class="tag">{{ copy.get_format_display }}{% if copy.resolution %} · {{ copy.get_resolution_display }}{% endif %}</span>
+        <h3 class="row-title"><a href="{{ copy.item.get_absolute_url }}">{{ copy.item }}</a></h3>
+        {% if copy.note or copy.acquired_on %}<p class="row-sub">{{ copy.note }}{% if copy.note and copy.acquired_on %} · {% endif %}{% if copy.acquired_on %}{{ copy.acquired_on|date:"M Y" }}{% endif %}</p>{% endif %}
+      </div>
+      <div class="row-end">
+        <form method="post" action="{% url 'library:copy_delete' copy.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="link-button danger">Remove</button>
+        </form>
+      </div>
     </li>
   {% empty %}
     <li class="empty">Your collection is empty.</li>

@@ -5,16 +5,14 @@
 {% block extra_head %}{% if media_list.is_public %}<link rel="alternate" type="application/rss+xml" title="{{ media_list.name }}" href="{% url 'library:list_feed' media_list.pk %}">{% endif %}{% endblock %}
 
 {% block content %}
-{% if is_own %}<a class="back" href="{% url 'library:lists' %}">← Lists</a>{% endif %}
-<section class="venue-header{% if not is_own %} page-top{% endif %}">
+{% if is_own %}<a class="back" href="{% url 'library:lists' %}">Lists</a>{% endif %}
+<header class="page-head">
   <p class="eyebrow">{% if media_list.is_smart %}Smart list{% else %}List{% endif %} by {% if is_own %}you{% else %}{{ media_list.user.public_name }}{% endif %}</p>
   <h1>{{ media_list.name }}</h1>
+  <p class="page-meta">{{ items|length }} item{{ items|length|pluralize }}{% if media_list.is_public %} · <a href="{% url 'library:list_feed' media_list.pk %}">RSS</a>{% endif %}{% if is_own %} · {% if media_list.is_public %}public, anyone with the link can see it{% else %}only you can see this list{% endif %} · <a href="{% url 'library:list_edit' media_list.pk %}">edit</a>{% endif %}</p>
   {% if media_list.description %}<div class="description">{{ media_list.description|linebreaks }}</div>{% endif %}
-  <p class="muted">{{ items|length }} item{{ items|length|pluralize }}{% if media_list.is_public %} · <a href="{% url 'library:list_feed' media_list.pk %}">RSS</a>{% endif %}</p>
-  {% if is_own %}
-    <p class="privacy-note">{% if media_list.is_public %}Public: anyone with the link can see it.{% else %}Only you can see this list.{% endif %} <a href="{% url 'library:list_edit' media_list.pk %}">Edit</a></p>
-  {% endif %}
-</section>
+  {% if media_list.is_public %}{% include "social/_share.html" with title=media_list.name %}{% endif %}
+</header>
 
 <ul class="shelf">
   {% for item in items %}

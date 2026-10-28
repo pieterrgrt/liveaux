@@ -4,10 +4,12 @@
 {% block main_class %}narrow{% endblock %}
 
 {% block content %}
-<a class="back" href="{% url 'logbook:mine' %}">← My log</a>
-<p class="eyebrow">You were there</p>
-<h1>{{ entry.event.title }}</h1>
-<p class="muted">{{ entry.event.venue.name }} · {{ entry.event.starts_at|date:"l j F Y" }}</p>
+<a class="back" href="{% url 'logbook:mine' %}">Your log</a>
+<header class="page-head">
+  <p class="eyebrow">You were there</p>
+  <h1>{{ entry.event.title }}</h1>
+  <p class="page-meta">{{ entry.event.venue.name }} · {{ entry.event.starts_at|date:"l j F Y" }}</p>
+</header>
 
 <form class="form" method="post">
   {% csrf_token %}

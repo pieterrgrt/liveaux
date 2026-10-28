@@ -1,0 +1,36 @@
+{# Elsewhere: what other sites and people on liveaux say. Needs `item` and `elsewhere` (library.ratings.summary). #}
+{% load humanize %}{# The item page shows what's stored; liveaux.js swaps in /elsewhere/ with fresh scores when they're stale. #}
+<section class="elsewhere" id="elsewhere" aria-labelledby="elsewhere-heading" aria-live="polite"{% if elsewhere.stale %} data-elsewhere="{% url 'library:elsewhere' item.pk %}"{% endif %}>
+  <h2 class="elsewhere-heading" id="elsewhere-heading">Elsewhere
+    <span class="muted elsewhere-updated">{% if elsewhere.stale and not elsewhere.rows %}<span class="elsewhere-looking">Looking around…</span>{% elif elsewhere.updated %}Updated {% if elsewhere.just_now %}just now{% else %}{{ elsewhere.updated|timesince }} ago{% endif %}{% endif %}</span>
+  </h2>
+  <ul class="elsewhere-list">
+    {% if elsewhere.community %}
+      <li class="elsewhere-row elsewhere-liveaux">
+        <span class="elsewhere-name">liveaux<span class="muted">People here</span></span>
+        <span class="elsewhere-score">{{ elsewhere.community.display }}</span>
+        <span class="meter" style="--size: {{ elsewhere.community.percent }}%"></span>
+        <span class="elsewhere-count muted">{{ elsewhere.community.count }} score{{ elsewhere.community.count|pluralize }}</span>
+      </li>
+    {% endif %}
+    {% for r in elsewhere.rows %}
+      <li class="elsewhere-row">
+        <span class="elsewhere-name">{% if r.url %}<a href="{{ r.url }}" rel="noopener noreferrer" target="_blank">{{ r.label }} <span aria-hidden="true">↗</span></a>{% else %}{{ r.label }}{% endif %}{% if r.detail %}<span class="muted">{{ r.detail }}</span>{% endif %}</span>
+        <span class="elsewhere-score">{{ r.display|default:"–" }}</span>
+        {% if r.percent is not None %}<span class="meter" style="--size: {{ r.percent }}%"></span>{% endif %}
+        <span class="elsewhere-count muted">
+          {% if r.count %}{{ r.count|intcomma }} {{ r.count_label }}{% endif %}
+          {% if r.extra.shelves %}{% if r.count %} · {% endif %}{{ r.extra.shelves.want_to_read|intcomma }} want to read · {{ r.extra.shelves.currently_reading|intcomma }} reading · {{ r.extra.shelves.already_read|intcomma }} read{% endif %}
+          {% if r.as_of %}{% if r.count or r.extra.shelves %} · {% endif %}as of {{ r.as_of|date:"M Y" }}{% endif %}
+        </span>
+        {% if r.source != r.label %}<span class="elsewhere-via muted">via {{ r.source }}</span>{% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+  {% if elsewhere.rows %}
+    <p class="muted elsewhere-credit">From {{ elsewhere.sources|join:", " }}, live through their open data and APIs.{% if "TMDB" in elsewhere.sources %} This product uses the TMDB API but is not endorsed or certified by TMDB.{% endif %}</p>
+  {% endif %}
+  {% if not elsewhere.rows and not elsewhere.community %}
+    <p class="muted elsewhere-empty">{% if elsewhere.manual %}Link it to a source with Find details to see scores from elsewhere.{% elif elsewhere.stale %}No scores from other sites yet.{% else %}No other site has a score for this yet.{% endif %}</p>
+  {% endif %}
+</section>
